@@ -91,7 +91,6 @@
     <Compile Include="..\..\..\..\Common\Core\Base\Domain.DataModel.Base\Properties\Version.cs">
       <Link>Properties\Version.cs</Link>
     </Compile>
-    <Compile Include="ageVerifyClass.cs" />
     <Compile Include="JMapping\ContactJMapping.cs" />
     <Compile Include="JMapping\OrderJMapping.cs" />
     <Compile Include="MySoapHttpClientProtocol.cs" />
