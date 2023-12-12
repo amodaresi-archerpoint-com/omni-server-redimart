@@ -10,6 +10,7 @@ using LSOmni.DataAccess.Interface.BOConnection;
 using LSRetail.Omni.Domain.DataModel.Base;
 using System.Collections.Generic;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
+using System.Threading.Tasks;
 
 namespace LSOmni.DataAccess.BOConnection.CentralPre
 {
@@ -36,7 +37,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
             }
         }
 
-        #region Altria Phase I
+        #region Altria Phase I - Offer Impression Logging
         private const string CreateAltriaLogEntryRequestId = "CREATE_ALTRIA_LOG_ENTRY";
         private int base64ConversionMinLength = 1024 * 100; //50KB 75KB  minimum length to base64 conversion
         private string wsEncoding = "utf-8"; //default to utf-8
@@ -342,12 +343,35 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
         }
         #endregion Altria Phase I
 
-        #region Altria Phase II
+        #region Altria Phase II - Filteration of Offers
         public virtual List<PublishedOffer> PublishedOffersGet(string cardId, string itemId, string storeId, Statistics stat)
         {
             return LSCentralWSBase.PublishedOffersGet2(cardId, itemId, storeId, stat);
         }
         #endregion Altria Phase II
 
+        #region Altria Phase II - AgeChecker
+        public virtual List<string> GetAgeCheckerReply(string cardId, string firstName, string lastName, DateTime dobDT, string phoneNo, string address, string city, string state, string zip, string email, Statistics stat)
+        {
+            return LSCentralWSBase.AgeVerifyReg(stat, firstName, lastName, address, city, state, zip, "US", phoneNo, email, "", "", dobDT.Day, dobDT.Month, dobDT.Year);
+        }
+        #endregion AgeChecker
+
+        #region Altria Phase II - Member Attributes
+        public virtual void SetMemberAttributes(string cardId, string tobaccoValue, string cigValue, string cigarValue, string dipValue, string onpValue, string snusValue, string eaivValue, Statistics stat)
+        {
+            Dictionary<string, string> myDictionary = new Dictionary<string, string>()
+            {
+                { Constants.CAT_TOBACCO, tobaccoValue },
+                { Constants.AD_CONSENT_CIGARETTE, cigValue },
+                { Constants.AD_CONSENT_CIGAR, cigarValue },
+                { Constants.AD_CONSENT_DIP, dipValue },
+                { Constants.AD_CONSENT_ONP, onpValue },
+                { Constants.AD_CONSENT_SNUS, snusValue },
+                { Constants.AGE_VERIFIED, eaivValue }
+            };
+            LSCentralWSBase.SetMemberAttributes(cardId, myDictionary, stat);
+        }
+        #endregion
     }
 }

@@ -11,6 +11,9 @@ using LSOmni.DataAccess.BOConnection.PreCommon.Mapping;
 using LSRetail.Omni.Domain.DataModel.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
 using System.ComponentModel;
+using System.Threading;
+using System.Net;
+using System.Collections;
 
 namespace LSOmni.DataAccess.BOConnection.PreCommon
 {
@@ -25,7 +28,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             return "My return data + Incoming data: " + data;
         }
 
-        #region Altria Phase II
+        #region Altria Phase II - Filtration of Offers
         public List<PublishedOffer> PublishedOffersGet2(string cardId, string itemId, string storeId, Statistics stat)
         {
             logger.StatisticStartSub(true, ref stat, out int index);
@@ -55,8 +58,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
         }
         #endregion Altria Phase II
 
-        #region AgeChecker
-        public async Task<List<string>> AgeVerifyAsync(
+        #region Altria Phase II - AgeChecker
+
+
+        public List<string> AgeVerifyReg(
             Statistics stat,
             string IDNameFirst,
             string IDNameLast,
@@ -65,6 +70,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             string IDState,
             string IDZip,
             string IDCountry,
+            string phoneNumber,
+            string emailAddress,
             string OptionsCustIP,
             string UUID,
             int IDDOBDay,
@@ -96,12 +103,15 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 country = IDCountry,
                 dob_day = IDDOBDay,
                 dob_month = IDDOBMonth,
-                dob_year = IDDOBYear
+                dob_year = IDDOBYear,
+                phone = phoneNumber,
+                email = emailAddress
             };
             var obj2 = new
             {
                 min_age = OptionsMinAge,
-                customer_ip = OptionsCustIP
+                customer_ip = OptionsCustIP,
+                contact_customer = true
             };
             var obj3 = new
             {
@@ -112,9 +122,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             };
             JsonContent content = JsonContent.Create(obj3);
             logger.Debug(config.LSKey.Key, "request.PostAsync(APISite, content)");
-            HttpResponseMessage response = await request.PostAsync(APISite, content);
+
+            HttpResponseMessage response = request.PostAsync(APISite, content).Result;
             logger.Debug(config.LSKey.Key, "response.Content.ReadAsStringAsync()");
-            string jsonResponse = await response.Content.ReadAsStringAsync();
+            string jsonResponse = response.Content.ReadAsStringAsync().Result;
             logger.Debug(config.LSKey.Key, "AgeVerifyAsync(): jsonResponse: {0}", jsonResponse);
             AgeVerifyGetValues(
                 jsonResponse,
@@ -249,5 +260,40 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
         }
         #endregion AgeChecker
 
+        #region Altria Phase II - Member Attributes
+        public virtual void SetMemberAttributes(string cardId, Dictionary<string, string> attributes, Statistics stat)
+        {
+            logger.StatisticStartSub(true, ref stat, out int index);
+
+            centralWS2 = new OmniWrapper2.OmniWrapper2();
+            string url = config.SettingsGetByKey(ConfigKey.BOUrl);
+            centralWS2.Url = url.Replace("RetailWebServices", "OmniWrapper2");
+            centralWS2.Timeout = config.SettingsIntGetByKey(ConfigKey.BOTimeout) * 1000;  //millisecs,  60 seconds
+            centralWS2.PreAuthenticate = true;
+            centralWS2.AllowAutoRedirect = true;
+            centralWS2.Credentials = new System.Net.NetworkCredential(
+                                    config.Settings.FirstOrDefault(x => x.Key == ConfigKey.BOUser.ToString()).Value,
+                                    config.Settings.FirstOrDefault(x => x.Key == ConfigKey.BOPassword.ToString()).Value);
+            string respCode = string.Empty;
+            string errorText = string.Empty;
+
+            OmniWrapper2.RootSetMemberAttributes root = new OmniWrapper2.RootSetMemberAttributes();
+            root.MemberAttribute = new OmniWrapper2.MemberAttribute[attributes.Count];
+            var keyList = new List<string>(attributes.Keys);
+            for (int i = 0; i < keyList.Count; i++)
+            {
+                OmniWrapper2.MemberAttribute memberAttribute = new OmniWrapper2.MemberAttribute();
+                memberAttribute.AttributeCode = keyList[i];
+                memberAttribute.AttributeValue = attributes[keyList[i]];
+                root.MemberAttribute[i] = memberAttribute;
+            }
+            logger.Debug(config.LSKey.Key, "SetMemberAttributes - CardId: {0}", cardId);
+            logger.Debug(config.LSKey.Key, "SetMemberAttributes Request - " + Serialization.ToXml(root, true));
+            centralWS2.UpdateMemberAttributes(ref respCode, ref errorText, XMLHelper.GetString(cardId), ref root);
+            logger.Debug(config.LSKey.Key, "SetMemberAttributes Response - " + Serialization.ToXml(root, true));
+            HandleWS2ResponseCode("SetMemberAttributes", respCode, errorText, ref stat, index);
+            logger.StatisticEndSub(ref stat, index);
+        }
+        #endregion
     }
 }
