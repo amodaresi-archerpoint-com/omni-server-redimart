@@ -27,9 +27,11 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Web.Services.WebServiceBindingAttribute(Name="OmniWrapper2_Binding", Namespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2")]
-    public partial class OmniWrapper2 : MySoapHttpClientProtocol {
+    public partial class OmniWrapper2 : System.Web.Services.Protocols.SoapHttpClientProtocol {
         
         private System.Threading.SendOrPostCallback GetDirectMarketingInfoOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback UpdateMemberAttributesOperationCompleted;
         
         private bool useDefaultCredentialsSetExplicitly;
         
@@ -73,6 +75,9 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
         public event GetDirectMarketingInfoCompletedEventHandler GetDirectMarketingInfoCompleted;
         
         /// <remarks/>
+        public event UpdateMemberAttributesCompletedEventHandler UpdateMemberAttributesCompleted;
+        
+        /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2:GetDirectMarketingInfo", RequestNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2", ResponseElementName="GetDirectMarketingInfo_Result", ResponseNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public void GetDirectMarketingInfo(ref string responseCode, ref string errorText, string cardId, string itemNo, string storeNo, ref RootGetDirectMarketingInfo loadMemberDirMarkInfoXML) {
             object[] results = this.Invoke("GetDirectMarketingInfo", new object[] {
@@ -110,6 +115,43 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
             if ((this.GetDirectMarketingInfoCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.GetDirectMarketingInfoCompleted(this, new GetDirectMarketingInfoCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2:UpdateMemberAttributes", RequestNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2", ResponseElementName="UpdateMemberAttributes_Result", ResponseNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public void UpdateMemberAttributes(ref string responseCode, ref string errorText, string cardId, ref RootSetMemberAttributes setMemberAttributesXML) {
+            object[] results = this.Invoke("UpdateMemberAttributes", new object[] {
+                        responseCode,
+                        errorText,
+                        cardId,
+                        setMemberAttributesXML});
+            responseCode = ((string)(results[0]));
+            errorText = ((string)(results[1]));
+            setMemberAttributesXML = ((RootSetMemberAttributes)(results[2]));
+        }
+        
+        /// <remarks/>
+        public void UpdateMemberAttributesAsync(string responseCode, string errorText, string cardId, RootSetMemberAttributes setMemberAttributesXML) {
+            this.UpdateMemberAttributesAsync(responseCode, errorText, cardId, setMemberAttributesXML, null);
+        }
+        
+        /// <remarks/>
+        public void UpdateMemberAttributesAsync(string responseCode, string errorText, string cardId, RootSetMemberAttributes setMemberAttributesXML, object userState) {
+            if ((this.UpdateMemberAttributesOperationCompleted == null)) {
+                this.UpdateMemberAttributesOperationCompleted = new System.Threading.SendOrPostCallback(this.OnUpdateMemberAttributesOperationCompleted);
+            }
+            this.InvokeAsync("UpdateMemberAttributes", new object[] {
+                        responseCode,
+                        errorText,
+                        cardId,
+                        setMemberAttributesXML}, this.UpdateMemberAttributesOperationCompleted, userState);
+        }
+        
+        private void OnUpdateMemberAttributesOperationCompleted(object arg) {
+            if ((this.UpdateMemberAttributesCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.UpdateMemberAttributesCompleted(this, new UpdateMemberAttributesCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -365,6 +407,74 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
             }
             set {
                 this.endingDateField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4161.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x50001")]
+    public partial class MemberAttribute {
+        
+        private string attributeCodeField;
+        
+        private string attributeValueField;
+        
+        /// <remarks/>
+        public string AttributeCode {
+            get {
+                return this.attributeCodeField;
+            }
+            set {
+                this.attributeCodeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string AttributeValue {
+            get {
+                return this.attributeValueField;
+            }
+            set {
+                this.attributeValueField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4161.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x50001")]
+    public partial class RootSetMemberAttributes {
+        
+        private MemberAttribute[] memberAttributeField;
+        
+        private string[] textField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("MemberAttribute")]
+        public MemberAttribute[] MemberAttribute {
+            get {
+                return this.memberAttributeField;
+            }
+            set {
+                this.memberAttributeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlTextAttribute()]
+        public string[] Text {
+            get {
+                return this.textField;
+            }
+            set {
+                this.textField = value;
             }
         }
     }
@@ -986,6 +1096,48 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((RootGetDirectMarketingInfo)(this.results[2]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4161.0")]
+    public delegate void UpdateMemberAttributesCompletedEventHandler(object sender, UpdateMemberAttributesCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4161.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class UpdateMemberAttributesCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal UpdateMemberAttributesCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public string responseCode {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+        
+        /// <remarks/>
+        public string errorText {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[1]));
+            }
+        }
+        
+        /// <remarks/>
+        public RootSetMemberAttributes setMemberAttributesXML {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((RootSetMemberAttributes)(this.results[2]));
             }
         }
     }

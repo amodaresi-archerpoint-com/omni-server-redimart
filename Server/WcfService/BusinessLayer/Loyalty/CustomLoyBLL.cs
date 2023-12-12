@@ -34,7 +34,7 @@ namespace LSOmni.BLL.Loyalty
         {
         }
 
-        #region Altria Phase I
+        #region Altria Phase I - Log ad impression
         public void AltriaLogEntryCreate(string storeId, string offerId, string cardId, int activityType, int channelType)
         {
             //In Phase I we added ability to log impressions (seeing offer page) of altria api offers
@@ -42,13 +42,27 @@ namespace LSOmni.BLL.Loyalty
         }
         #endregion
 
-        #region Altria Phase II
+        #region Altria Phase II - Filtration of Offers
         public virtual List<PublishedOffer> PublishedOffersGet(string cardId, string itemId, string storeId, Statistics stat)
         {
             // In Phase II we made our own published offer function, to filter the published altria offers in case user is not age verified yet
             return BOCustom.PublishedOffersGet(cardId, itemId, storeId, stat);
         }
         #endregion
+
+        #region Altria Phase II - AgeChecker & Member Attributes
+        public virtual List<string> GetAgeCheckerReply(string cardId, string firstName, string lastName, DateTime dobDT, string phoneNo, string address, string city, string state, string zip, string email, string tobaccoValue, string cigValue, string cigarValue,
+                                                                    string dipValue, string onpValue, string snusValue, Statistics stat)
+        {
+            List<string> ret = BOCustom.GetAgeCheckerReply(cardId, firstName, lastName, dobDT, phoneNo, address, city, state, zip, email, stat);
+            string eaivValue = "1";
+            if (ret[2].ToUpper().Equals(Constants.REPLY_ACCEPTED)) eaivValue = "2";
+            if (ret[2].ToUpper().Equals(Constants.REPLY_DENIED)) eaivValue = "3";
+            BOCustom.SetMemberAttributes(cardId, tobaccoValue, cigValue, cigarValue, dipValue, onpValue, snusValue, eaivValue, stat);
+            return ret;
+        }
+        #endregion
+
     }
 }
 
