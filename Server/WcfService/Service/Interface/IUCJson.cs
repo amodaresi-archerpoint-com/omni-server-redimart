@@ -51,13 +51,13 @@ namespace LSOmni.Service
 
         #endregion
 
-        #region Altria phase II
+        #region Altria phase II - Filtration of Offers
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         List<PublishedOffer> PublishedOffersGetByCardId2(string cardId, string itemId, string storeId);
         #endregion
 
-        #region AgeChecker
+        #region Altria Phase II - AgeChecker && Member attributes
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         List<string> GetAgeCheckerReply(string cardId, string firstName, string lastName, DateTime dobDT, string phoneNo, string address, string city, string state, string zip, string email, string tobaccoValue, string cigValue, string cigarValue,

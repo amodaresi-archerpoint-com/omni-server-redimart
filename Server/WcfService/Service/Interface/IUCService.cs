@@ -45,12 +45,12 @@ namespace LSOmni.Service
 
         #endregion
 
-        #region Altria phase II
+        #region Altria phase II - filtration of Offers
         [OperationContract]
         List<PublishedOffer> PublishedOffersGetByCardId2(string cardId, string itemId, string storeId);
         #endregion
 
-        #region AgeChecker
+        #region Altria Phase II - AgeChecker & save member attributes
         [OperationContract]
         List<string> GetAgeCheckerReply(string cardId, string firstName, string lastName, DateTime dobDT, string phoneNo, string address, string city, string state, string zip, string email, string tobaccoValue, string cigValue, string cigarValue,
                                                                     string dipValue, string onpValue, string snusValue);

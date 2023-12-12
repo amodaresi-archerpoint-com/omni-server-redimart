@@ -27,7 +27,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Web.Services.WebServiceBindingAttribute(Name="OmniWrapper2_Binding", Namespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2")]
-    public partial class OmniWrapper2 : System.Web.Services.Protocols.SoapHttpClientProtocol {
+    public partial class OmniWrapper2 : MySoapHttpClientProtocol {
         
         private System.Threading.SendOrPostCallback GetDirectMarketingInfoOperationCompleted;
         
