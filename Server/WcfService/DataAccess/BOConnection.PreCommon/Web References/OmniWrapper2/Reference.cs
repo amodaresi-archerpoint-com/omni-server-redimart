@@ -27,7 +27,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Web.Services.WebServiceBindingAttribute(Name="OmniWrapper2_Binding", Namespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2")]
-    public partial class OmniWrapper2 : MySoapHttpClientProtocol {
+    public partial class OmniWrapper2 : System.Web.Services.Protocols.SoapHttpClientProtocol {
         
         private System.Threading.SendOrPostCallback GetDirectMarketingInfoOperationCompleted;
         
@@ -179,7 +179,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x50000")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55000")]
     public partial class RootGetDirectMarketingInfo {
         
         private PublishedOffer[] publishedOfferField;
@@ -305,7 +305,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x50000")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55000")]
     public partial class PublishedOffer {
         
         private string noField;
@@ -416,7 +416,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x50001")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55001")]
     public partial class MemberAttribute {
         
         private string attributeCodeField;
@@ -449,7 +449,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x50001")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55001")]
     public partial class RootSetMemberAttributes {
         
         private MemberAttribute[] memberAttributeField;
@@ -484,7 +484,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x50000")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55000")]
     public partial class PublishedOfferLine {
         
         private string publishedOfferNoField;
@@ -644,7 +644,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x50000")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55000")]
     public partial class MemberNotificationImages {
         
         private string keyValueField;
@@ -693,7 +693,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x50000")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55000")]
     public partial class MemberNotification {
         
         private string noField;
@@ -871,7 +871,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x50000")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55000")]
     public partial class MemberCouponBuffer {
         
         private string couponCodeField;
@@ -916,7 +916,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x50000")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55000")]
     public partial class PublishedOfferDetailLineImages {
         
         private string keyValueField;
@@ -965,7 +965,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x50000")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55000")]
     public partial class PublishedOfferDetailLine {
         
         private string offerNoField;
@@ -1014,7 +1014,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x50000")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55000")]
     public partial class PublishedOfferImages {
         
         private string keyValueField;
