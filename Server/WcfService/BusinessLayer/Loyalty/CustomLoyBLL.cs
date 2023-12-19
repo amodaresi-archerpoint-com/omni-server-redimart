@@ -56,9 +56,12 @@ namespace LSOmni.BLL.Loyalty
         {
             List<string> ret = BOCustom.GetAgeCheckerReply(cardId, firstName, lastName, dobDT, phoneNo, address, city, state, zip, email, stat);
             string eaivValue = "1";
-            if (ret[2].ToUpper().Equals(Constants.REPLY_ACCEPTED)) eaivValue = "2";
-            if (ret[2].ToUpper().Equals(Constants.REPLY_DENIED)) eaivValue = "3";
-            BOCustom.SetMemberAttributes(cardId, tobaccoValue, cigValue, cigarValue, dipValue, onpValue, snusValue, eaivValue, stat);
+            if (ret[1].ToUpper().Equals(Constants.STATUS_OK))
+            {
+                if (ret[2].ToUpper().Equals(Constants.REPLY_ACCEPTED)) eaivValue = "2";
+                if (ret[2].ToUpper().Equals(Constants.REPLY_DENIED)) eaivValue = "3";
+                BOCustom.SetMemberAttributes(cardId, tobaccoValue, cigValue, cigarValue, dipValue, onpValue, snusValue, eaivValue, stat);
+            }
             return ret;
         }
         #endregion

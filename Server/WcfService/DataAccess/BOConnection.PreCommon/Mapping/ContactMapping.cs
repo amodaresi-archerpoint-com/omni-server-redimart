@@ -662,6 +662,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                     Id = offer.No,
                     Description = offer.PrimaryText,
                     Details = offer.SecondaryText,
+                    EncodedHtml = offer.encodedhtml,
                     ExpirationDate = ConvertTo.SafeJsonDate(offer.EndingDate, IsJson),
                     OfferId = offer.DiscountNo,
                     Code = (OfferDiscountType)Convert.ToInt32(offer.DiscountType),

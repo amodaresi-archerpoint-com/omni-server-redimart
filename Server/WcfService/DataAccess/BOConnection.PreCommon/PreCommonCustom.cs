@@ -126,7 +126,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             HttpResponseMessage response = request.PostAsync(APISite, content).Result;
             logger.Debug(config.LSKey.Key, "response.Content.ReadAsStringAsync()");
             string jsonResponse = response.Content.ReadAsStringAsync().Result;
-            logger.Debug(config.LSKey.Key, "AgeVerifyAsync(): jsonResponse: {0}", jsonResponse);
+            logger.Debug(config.LSKey.Key, "jsonResponse: {0}", jsonResponse);
             AgeVerifyGetValues(
                 jsonResponse,
                 ref ResultsErrorCode,
@@ -135,12 +135,13 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 ref ResultsUploadType,
                 ref ResultsUUID,
                 ref ResultsBlocked);
-            logger.Debug(config.LSKey.Key, "AgeVerifyAsync(): ResultsErrorCode: {0}", ResultsErrorCode);
-            logger.Debug(config.LSKey.Key, "AgeVerifyAsync(): ResultsErrorMsg: {0}", ResultsErrorMsg);
-            logger.Debug(config.LSKey.Key, "AgeVerifyAsync(): ResultsStatus: {0}", ResultsStatus);
-            logger.Debug(config.LSKey.Key, "AgeVerifyAsync(): ResultsUploadType: {0}", ResultsUploadType);
-            logger.Debug(config.LSKey.Key, "AgeVerifyAsync(): ResultsUUID: {0}", ResultsUUID);
-            logger.Debug(config.LSKey.Key, "AgeVerifyAsync(): ResultsBlocked: {0}", ResultsBlocked);
+            logger.Debug(config.LSKey.Key, "StatusCode: {0}", response.StatusCode.ToString());
+            logger.Debug(config.LSKey.Key, "ResultsErrorCode: {0}", ResultsErrorCode);
+            logger.Debug(config.LSKey.Key, "ResultsErrorMsg: {0}", ResultsErrorMsg);
+            logger.Debug(config.LSKey.Key, "ResultsStatus: {0}", ResultsStatus);
+            logger.Debug(config.LSKey.Key, "ResultsUploadType: {0}", ResultsUploadType);
+            logger.Debug(config.LSKey.Key, "ResultsUUID: {0}", ResultsUUID);
+            logger.Debug(config.LSKey.Key, "ResultsBlocked: {0}", ResultsBlocked);
             List <string> data = new List<string> { ResultsUUID, response.StatusCode.ToString(), ResultsStatus, ResultsErrorCode, ResultsErrorMsg };
             logger.StatisticEndSub(ref stat, index);
             return data;
