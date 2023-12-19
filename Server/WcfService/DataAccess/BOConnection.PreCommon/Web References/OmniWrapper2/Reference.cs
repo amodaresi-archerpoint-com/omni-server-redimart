@@ -324,6 +324,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
         
         private System.DateTime endingDateField;
         
+        private string encodedhtmlField;
+        
         public PublishedOffer() {
             this.endingDateField = new System.DateTime(0);
         }
@@ -407,6 +409,16 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
             }
             set {
                 this.endingDateField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string encodedhtml {
+            get {
+                return this.encodedhtmlField;
+            }
+            set {
+                this.encodedhtmlField = value;
             }
         }
     }

@@ -12,6 +12,7 @@
           <element minOccurs="1" maxOccurs="1" name="PrimaryText" type="string" />
           <element minOccurs="1" maxOccurs="1" name="SecondaryText" type="string" />
           <element minOccurs="0" maxOccurs="1" default="0001-01-01" name="EndingDate" type="date" />
+          <element minOccurs="0" maxOccurs="1" name="encodedhtml" type="string" />
         </sequence>
       </complexType>
       <complexType name="PublishedOfferImages">
