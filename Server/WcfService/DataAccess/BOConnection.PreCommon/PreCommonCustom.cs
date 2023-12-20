@@ -10,6 +10,8 @@ using LSOmni.Common.Util;
 using LSOmni.DataAccess.BOConnection.PreCommon.Mapping;
 using LSRetail.Omni.Domain.DataModel.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
+using LSRetail.Omni.Domain.DataModel.Loyalty.Members;
+using LSRetail.Omni.Domain.DataModel.Loyalty.Setup;
 using System.ComponentModel;
 using System.Threading;
 using System.Net;
@@ -294,6 +296,66 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             logger.Debug(config.LSKey.Key, "SetMemberAttributes Response - " + Serialization.ToXml(root, true));
             HandleWS2ResponseCode("SetMemberAttributes", respCode, errorText, ref stat, index);
             logger.StatisticEndSub(ref stat, index);
+        }
+        #endregion
+
+        #region Altria Phase II - Login for existing members
+        public MemberContact ContactCreate2(MemberContact contact, Statistics stat)
+        {
+            logger.StatisticStartSub(true, ref stat, out int index);
+
+            string respCode = string.Empty;
+            string errorText = string.Empty;
+            ContactMapping map = new ContactMapping(config.IsJson, LSCVersion);
+
+            string clubId = string.Empty;
+            string cardId = string.Empty;
+            string contId = string.Empty;
+            string acctId = string.Empty;
+            string schmId = string.Empty;
+            decimal point = 0;
+
+            centralWS2 = new OmniWrapper2.OmniWrapper2();
+            string url = config.SettingsGetByKey(ConfigKey.BOUrl);
+            centralWS2.Url = url.Replace("RetailWebServices", "OmniWrapper2");
+            centralWS2.Timeout = config.SettingsIntGetByKey(ConfigKey.BOTimeout) * 1000;  //millisecs,  60 seconds
+            centralWS2.PreAuthenticate = true;
+            centralWS2.AllowAutoRedirect = true;
+            centralWS2.Credentials = new System.Net.NetworkCredential(
+                                    config.Settings.FirstOrDefault(x => x.Key == ConfigKey.BOUser.ToString()).Value,
+                                    config.Settings.FirstOrDefault(x => x.Key == ConfigKey.BOPassword.ToString()).Value);
+
+            OmniWrapper2.RootMemberContactCreate root = map.MapToRoot2(contact);
+            //LSCentral.RootMemberContactCreate root = map.MapToRoot(contact);
+            logger.Debug(config.LSKey.Key, "MemberContactCreate Request - " + Serialization.ToXml(root, true));
+
+            //centralWS.MemberContactCreate(ref respCode, ref errorText, ref clubId, ref schmId, ref acctId, ref contId, ref cardId, ref point, ref root);
+            centralWS2.MemberContactCreate(ref respCode, ref errorText, ref clubId, ref schmId, ref acctId, ref contId, ref cardId, ref point, ref root);
+            HandleWS2ResponseCode("MemberContactCreate", respCode, errorText, ref stat, index);
+            logger.Debug(config.LSKey.Key, "MemberContactCreate Response - ClubId: {0}, SchemeId: {1}, AccountId: {2}, ContactId: {3}, CardId: {4}, PointsRemaining: {5}",
+                clubId, schmId, acctId, contId, cardId, point);
+
+            logger.StatisticEndSub(ref stat, index);
+            MemberContact cont = new MemberContact(contId)
+            {
+                FirstName = contact.FirstName,
+                LastName = contact.LastName,
+                MiddleName = contact.MiddleName,
+                Name = contact.Name
+            };
+            cont.Cards = new List<Card>();
+            cont.Cards.Add(new Card(cardId)
+            {
+                ClubId = clubId,
+            });
+            cont.Account = new Account(acctId)
+            {
+                Scheme = new Scheme(schmId)
+                {
+                    Club = new Club(clubId)
+                },
+            };
+            return cont;
         }
         #endregion
     }

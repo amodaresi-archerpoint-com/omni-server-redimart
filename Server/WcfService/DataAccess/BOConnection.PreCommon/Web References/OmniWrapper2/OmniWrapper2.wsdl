@@ -97,6 +97,54 @@
       </complexType>
       <element name="RootGetDirectMarketingInfo" type="tns:RootGetDirectMarketingInfo" />
     </schema>
+    <schema xmlns:tns="urn:microsoft-dynamics-nav/xmlports/x55002" elementFormDefault="qualified" targetNamespace="urn:microsoft-dynamics-nav/xmlports/x55002" xmlns="http://www.w3.org/2001/XMLSchema">
+      <complexType name="ContactCreateParameters">
+        <sequence>
+          <element minOccurs="0" maxOccurs="1" name="LoginID" type="string" />
+          <element minOccurs="0" maxOccurs="1" name="Password" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="Email" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="FirstName" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="LastName" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="MiddleName" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="Gender" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="Phone" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="Address1" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="Address2" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="City" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="PostCode" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="StateProvinceRegion" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="Country" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="AccountID" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="DeviceID" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="DeviceFriendlyName" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="ExternalID" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="ExternalSystem" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="ContactID" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="ClubID" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="SchemeID" type="string" />
+          <element minOccurs="0" maxOccurs="1" default="0001-01-01" name="DateOfBirth" type="date" />
+          <element minOccurs="1" maxOccurs="1" name="MobilePhoneNo" type="string" />
+          <element minOccurs="0" maxOccurs="1" name="HouseApartmentNo" type="string" />
+          <element minOccurs="0" maxOccurs="1" name="TerritoryCode" type="string" />
+          <element minOccurs="0" maxOccurs="1" name="SendReceiptbyEmail" type="string" />
+          <element minOccurs="0" maxOccurs="1" name="Authenticator" type="string" />
+          <element minOccurs="0" maxOccurs="1" name="AuthenticationId" type="string" />
+        </sequence>
+      </complexType>
+      <complexType name="MemberAttributeValue">
+        <sequence>
+          <element minOccurs="1" maxOccurs="1" name="AttributeCode" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="AttributeValue" type="string" />
+        </sequence>
+      </complexType>
+      <complexType name="RootMemberContactCreate" mixed="true">
+        <sequence>
+          <element minOccurs="0" maxOccurs="unbounded" name="ContactCreateParameters" type="tns:ContactCreateParameters" />
+          <element minOccurs="0" maxOccurs="unbounded" name="MemberAttributeValue" type="tns:MemberAttributeValue" />
+        </sequence>
+      </complexType>
+      <element name="RootMemberContactCreate" type="tns:RootMemberContactCreate" />
+    </schema>
     <schema xmlns:tns="urn:microsoft-dynamics-nav/xmlports/x55001" elementFormDefault="qualified" targetNamespace="urn:microsoft-dynamics-nav/xmlports/x55001" xmlns="http://www.w3.org/2001/XMLSchema">
       <complexType name="MemberAttribute">
         <sequence>
@@ -133,13 +181,43 @@
           </sequence>
         </complexType>
       </element>
+      <element name="MemberContactCreate">
+        <complexType>
+          <sequence>
+            <element minOccurs="1" maxOccurs="1" name="responseCode" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="errorText" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="clubID" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="schemeID" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="accountID" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="contactID" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="cardID" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="totalRemainingPoints" type="decimal" />
+            <element xmlns:q3="urn:microsoft-dynamics-nav/xmlports/x55002" minOccurs="1" maxOccurs="1" name="memberContactCreateXML" type="q3:RootMemberContactCreate" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="MemberContactCreate_Result">
+        <complexType>
+          <sequence>
+            <element minOccurs="1" maxOccurs="1" name="responseCode" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="errorText" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="clubID" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="schemeID" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="accountID" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="contactID" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="cardID" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="totalRemainingPoints" type="decimal" />
+            <element xmlns:q4="urn:microsoft-dynamics-nav/xmlports/x55002" minOccurs="1" maxOccurs="1" name="memberContactCreateXML" type="q4:RootMemberContactCreate" />
+          </sequence>
+        </complexType>
+      </element>
       <element name="UpdateMemberAttributes">
         <complexType>
           <sequence>
             <element minOccurs="1" maxOccurs="1" name="responseCode" type="string" />
             <element minOccurs="1" maxOccurs="1" name="errorText" type="string" />
             <element minOccurs="1" maxOccurs="1" name="cardId" type="string" />
-            <element xmlns:q3="urn:microsoft-dynamics-nav/xmlports/x55001" minOccurs="1" maxOccurs="1" name="setMemberAttributesXML" type="q3:RootSetMemberAttributes" />
+            <element xmlns:q5="urn:microsoft-dynamics-nav/xmlports/x55001" minOccurs="1" maxOccurs="1" name="setMemberAttributesXML" type="q5:RootSetMemberAttributes" />
           </sequence>
         </complexType>
       </element>
@@ -148,7 +226,7 @@
           <sequence>
             <element minOccurs="1" maxOccurs="1" name="responseCode" type="string" />
             <element minOccurs="1" maxOccurs="1" name="errorText" type="string" />
-            <element xmlns:q4="urn:microsoft-dynamics-nav/xmlports/x55001" minOccurs="1" maxOccurs="1" name="setMemberAttributesXML" type="q4:RootSetMemberAttributes" />
+            <element xmlns:q6="urn:microsoft-dynamics-nav/xmlports/x55001" minOccurs="1" maxOccurs="1" name="setMemberAttributesXML" type="q6:RootSetMemberAttributes" />
           </sequence>
         </complexType>
       </element>
@@ -160,6 +238,12 @@
   <message name="GetDirectMarketingInfo_Result">
     <part name="parameters" element="tns:GetDirectMarketingInfo_Result" />
   </message>
+  <message name="MemberContactCreate">
+    <part name="parameters" element="tns:MemberContactCreate" />
+  </message>
+  <message name="MemberContactCreate_Result">
+    <part name="parameters" element="tns:MemberContactCreate_Result" />
+  </message>
   <message name="UpdateMemberAttributes">
     <part name="parameters" element="tns:UpdateMemberAttributes" />
   </message>
@@ -170,6 +254,10 @@
     <operation name="GetDirectMarketingInfo">
       <input name="GetDirectMarketingInfo" message="tns:GetDirectMarketingInfo" />
       <output name="GetDirectMarketingInfo_Result" message="tns:GetDirectMarketingInfo_Result" />
+    </operation>
+    <operation name="MemberContactCreate">
+      <input name="MemberContactCreate" message="tns:MemberContactCreate" />
+      <output name="MemberContactCreate_Result" message="tns:MemberContactCreate_Result" />
     </operation>
     <operation name="UpdateMemberAttributes">
       <input name="UpdateMemberAttributes" message="tns:UpdateMemberAttributes" />
@@ -184,6 +272,15 @@
         <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
       </input>
       <output name="GetDirectMarketingInfo_Result">
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </output>
+    </operation>
+    <operation name="MemberContactCreate">
+      <operation soapAction="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2:MemberContactCreate" style="document" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      <input name="MemberContactCreate">
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </input>
+      <output name="MemberContactCreate_Result">
         <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
       </output>
     </operation>

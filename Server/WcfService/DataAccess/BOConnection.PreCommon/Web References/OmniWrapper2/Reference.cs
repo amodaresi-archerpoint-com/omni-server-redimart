@@ -27,9 +27,12 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Web.Services.WebServiceBindingAttribute(Name="OmniWrapper2_Binding", Namespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2")]
-    public partial class OmniWrapper2 : System.Web.Services.Protocols.SoapHttpClientProtocol {
+    public partial class OmniWrapper2 : MySoapHttpClientProtocol
+    {
         
         private System.Threading.SendOrPostCallback GetDirectMarketingInfoOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback MemberContactCreateOperationCompleted;
         
         private System.Threading.SendOrPostCallback UpdateMemberAttributesOperationCompleted;
         
@@ -75,6 +78,9 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
         public event GetDirectMarketingInfoCompletedEventHandler GetDirectMarketingInfoCompleted;
         
         /// <remarks/>
+        public event MemberContactCreateCompletedEventHandler MemberContactCreateCompleted;
+        
+        /// <remarks/>
         public event UpdateMemberAttributesCompletedEventHandler UpdateMemberAttributesCompleted;
         
         /// <remarks/>
@@ -115,6 +121,59 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
             if ((this.GetDirectMarketingInfoCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.GetDirectMarketingInfoCompleted(this, new GetDirectMarketingInfoCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2:MemberContactCreate", RequestNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2", ResponseElementName="MemberContactCreate_Result", ResponseNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public void MemberContactCreate(ref string responseCode, ref string errorText, ref string clubID, ref string schemeID, ref string accountID, ref string contactID, ref string cardID, ref decimal totalRemainingPoints, ref RootMemberContactCreate memberContactCreateXML) {
+            object[] results = this.Invoke("MemberContactCreate", new object[] {
+                        responseCode,
+                        errorText,
+                        clubID,
+                        schemeID,
+                        accountID,
+                        contactID,
+                        cardID,
+                        totalRemainingPoints,
+                        memberContactCreateXML});
+            responseCode = ((string)(results[0]));
+            errorText = ((string)(results[1]));
+            clubID = ((string)(results[2]));
+            schemeID = ((string)(results[3]));
+            accountID = ((string)(results[4]));
+            contactID = ((string)(results[5]));
+            cardID = ((string)(results[6]));
+            totalRemainingPoints = ((decimal)(results[7]));
+            memberContactCreateXML = ((RootMemberContactCreate)(results[8]));
+        }
+        
+        /// <remarks/>
+        public void MemberContactCreateAsync(string responseCode, string errorText, string clubID, string schemeID, string accountID, string contactID, string cardID, decimal totalRemainingPoints, RootMemberContactCreate memberContactCreateXML) {
+            this.MemberContactCreateAsync(responseCode, errorText, clubID, schemeID, accountID, contactID, cardID, totalRemainingPoints, memberContactCreateXML, null);
+        }
+        
+        /// <remarks/>
+        public void MemberContactCreateAsync(string responseCode, string errorText, string clubID, string schemeID, string accountID, string contactID, string cardID, decimal totalRemainingPoints, RootMemberContactCreate memberContactCreateXML, object userState) {
+            if ((this.MemberContactCreateOperationCompleted == null)) {
+                this.MemberContactCreateOperationCompleted = new System.Threading.SendOrPostCallback(this.OnMemberContactCreateOperationCompleted);
+            }
+            this.InvokeAsync("MemberContactCreate", new object[] {
+                        responseCode,
+                        errorText,
+                        clubID,
+                        schemeID,
+                        accountID,
+                        contactID,
+                        cardID,
+                        totalRemainingPoints,
+                        memberContactCreateXML}, this.MemberContactCreateOperationCompleted, userState);
+        }
+        
+        private void OnMemberContactCreateOperationCompleted(object arg) {
+            if ((this.MemberContactCreateCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.MemberContactCreateCompleted(this, new MemberContactCreateCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -476,6 +535,450 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
             }
             set {
                 this.memberAttributeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlTextAttribute()]
+        public string[] Text {
+            get {
+                return this.textField;
+            }
+            set {
+                this.textField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4161.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55002")]
+    public partial class MemberAttributeValue {
+        
+        private string attributeCodeField;
+        
+        private string attributeValueField;
+        
+        /// <remarks/>
+        public string AttributeCode {
+            get {
+                return this.attributeCodeField;
+            }
+            set {
+                this.attributeCodeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string AttributeValue {
+            get {
+                return this.attributeValueField;
+            }
+            set {
+                this.attributeValueField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4161.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55002")]
+    public partial class ContactCreateParameters {
+        
+        private string loginIDField;
+        
+        private string passwordField;
+        
+        private string emailField;
+        
+        private string firstNameField;
+        
+        private string lastNameField;
+        
+        private string middleNameField;
+        
+        private string genderField;
+        
+        private string phoneField;
+        
+        private string address1Field;
+        
+        private string address2Field;
+        
+        private string cityField;
+        
+        private string postCodeField;
+        
+        private string stateProvinceRegionField;
+        
+        private string countryField;
+        
+        private string accountIDField;
+        
+        private string deviceIDField;
+        
+        private string deviceFriendlyNameField;
+        
+        private string externalIDField;
+        
+        private string externalSystemField;
+        
+        private string contactIDField;
+        
+        private string clubIDField;
+        
+        private string schemeIDField;
+        
+        private System.DateTime dateOfBirthField;
+        
+        private string mobilePhoneNoField;
+        
+        private string houseApartmentNoField;
+        
+        private string territoryCodeField;
+        
+        private string sendReceiptbyEmailField;
+        
+        private string authenticatorField;
+        
+        private string authenticationIdField;
+        
+        public ContactCreateParameters() {
+            this.dateOfBirthField = new System.DateTime(0);
+        }
+        
+        /// <remarks/>
+        public string LoginID {
+            get {
+                return this.loginIDField;
+            }
+            set {
+                this.loginIDField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Password {
+            get {
+                return this.passwordField;
+            }
+            set {
+                this.passwordField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Email {
+            get {
+                return this.emailField;
+            }
+            set {
+                this.emailField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string FirstName {
+            get {
+                return this.firstNameField;
+            }
+            set {
+                this.firstNameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string LastName {
+            get {
+                return this.lastNameField;
+            }
+            set {
+                this.lastNameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string MiddleName {
+            get {
+                return this.middleNameField;
+            }
+            set {
+                this.middleNameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Gender {
+            get {
+                return this.genderField;
+            }
+            set {
+                this.genderField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Phone {
+            get {
+                return this.phoneField;
+            }
+            set {
+                this.phoneField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Address1 {
+            get {
+                return this.address1Field;
+            }
+            set {
+                this.address1Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Address2 {
+            get {
+                return this.address2Field;
+            }
+            set {
+                this.address2Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string City {
+            get {
+                return this.cityField;
+            }
+            set {
+                this.cityField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string PostCode {
+            get {
+                return this.postCodeField;
+            }
+            set {
+                this.postCodeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string StateProvinceRegion {
+            get {
+                return this.stateProvinceRegionField;
+            }
+            set {
+                this.stateProvinceRegionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Country {
+            get {
+                return this.countryField;
+            }
+            set {
+                this.countryField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string AccountID {
+            get {
+                return this.accountIDField;
+            }
+            set {
+                this.accountIDField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string DeviceID {
+            get {
+                return this.deviceIDField;
+            }
+            set {
+                this.deviceIDField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string DeviceFriendlyName {
+            get {
+                return this.deviceFriendlyNameField;
+            }
+            set {
+                this.deviceFriendlyNameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string ExternalID {
+            get {
+                return this.externalIDField;
+            }
+            set {
+                this.externalIDField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string ExternalSystem {
+            get {
+                return this.externalSystemField;
+            }
+            set {
+                this.externalSystemField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string ContactID {
+            get {
+                return this.contactIDField;
+            }
+            set {
+                this.contactIDField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string ClubID {
+            get {
+                return this.clubIDField;
+            }
+            set {
+                this.clubIDField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string SchemeID {
+            get {
+                return this.schemeIDField;
+            }
+            set {
+                this.schemeIDField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(DataType="date")]
+        [System.ComponentModel.DefaultValueAttribute(typeof(System.DateTime), "0001-01-01")]
+        public System.DateTime DateOfBirth {
+            get {
+                return this.dateOfBirthField;
+            }
+            set {
+                this.dateOfBirthField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string MobilePhoneNo {
+            get {
+                return this.mobilePhoneNoField;
+            }
+            set {
+                this.mobilePhoneNoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string HouseApartmentNo {
+            get {
+                return this.houseApartmentNoField;
+            }
+            set {
+                this.houseApartmentNoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string TerritoryCode {
+            get {
+                return this.territoryCodeField;
+            }
+            set {
+                this.territoryCodeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string SendReceiptbyEmail {
+            get {
+                return this.sendReceiptbyEmailField;
+            }
+            set {
+                this.sendReceiptbyEmailField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Authenticator {
+            get {
+                return this.authenticatorField;
+            }
+            set {
+                this.authenticatorField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string AuthenticationId {
+            get {
+                return this.authenticationIdField;
+            }
+            set {
+                this.authenticationIdField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4161.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55002")]
+    public partial class RootMemberContactCreate {
+        
+        private ContactCreateParameters[] contactCreateParametersField;
+        
+        private MemberAttributeValue[] memberAttributeValueField;
+        
+        private string[] textField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("ContactCreateParameters")]
+        public ContactCreateParameters[] ContactCreateParameters {
+            get {
+                return this.contactCreateParametersField;
+            }
+            set {
+                this.contactCreateParametersField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("MemberAttributeValue")]
+        public MemberAttributeValue[] MemberAttributeValue {
+            get {
+                return this.memberAttributeValueField;
+            }
+            set {
+                this.memberAttributeValueField = value;
             }
         }
         
@@ -1108,6 +1611,96 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((RootGetDirectMarketingInfo)(this.results[2]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4161.0")]
+    public delegate void MemberContactCreateCompletedEventHandler(object sender, MemberContactCreateCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4161.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class MemberContactCreateCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal MemberContactCreateCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public string responseCode {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+        
+        /// <remarks/>
+        public string errorText {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[1]));
+            }
+        }
+        
+        /// <remarks/>
+        public string clubID {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[2]));
+            }
+        }
+        
+        /// <remarks/>
+        public string schemeID {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[3]));
+            }
+        }
+        
+        /// <remarks/>
+        public string accountID {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[4]));
+            }
+        }
+        
+        /// <remarks/>
+        public string contactID {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[5]));
+            }
+        }
+        
+        /// <remarks/>
+        public string cardID {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[6]));
+            }
+        }
+        
+        /// <remarks/>
+        public decimal totalRemainingPoints {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((decimal)(this.results[7]));
+            }
+        }
+        
+        /// <remarks/>
+        public RootMemberContactCreate memberContactCreateXML {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((RootMemberContactCreate)(this.results[8]));
             }
         }
     }

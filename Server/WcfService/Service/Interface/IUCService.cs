@@ -941,6 +941,9 @@ namespace LSOmni.Service
         [OperationContract]
         MemberContact ContactCreate(MemberContact contact, bool doLogin);
 
+        [OperationContract]
+        MemberContact ContactCreate2(MemberContact contact, bool doLogin);
+
         /// <summary>
         /// Update Member Contact
         /// </summary>

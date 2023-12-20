@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LSOmni.Common.Util;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
+using LSRetail.Omni.Domain.DataModel.Loyalty.Members;
 
 namespace LSOmni.DataAccess.Interface.BOConnection
 {
@@ -22,6 +23,10 @@ namespace LSOmni.DataAccess.Interface.BOConnection
 
         #region Altria Phase II - Member Attributes
         void SetMemberAttributes(string cardId, string tobaccoValue, string cigValue, string cigarValue, string dipValue, string onpValue, string snusValue, string eaivValue, Statistics stat);
+        #endregion
+
+        #region Altria Phase II - Login for existing members
+        MemberContact ContactCreate(MemberContact contact, Statistics stat);
         #endregion
     }
 }

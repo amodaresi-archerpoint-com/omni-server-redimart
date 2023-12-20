@@ -646,7 +646,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
 
         #endregion
 
-        #region Altria Phase II
+        #region Altria Phase II - Filtration of offers
         //a copy of original mapping
         //duplication but might be better to have ours separate
         public List<PublishedOffer> MapFromRootToPublishedOffers(OmniWrapper2.RootGetDirectMarketingInfo root)
@@ -751,6 +751,83 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                 });
             }
             return list;
+        }
+
+        #endregion
+
+        #region Altria Phase II - Login for exisiting members
+        public OmniWrapper2.RootMemberContactCreate MapToRoot2(MemberContact contact)
+        {
+            Address addr = (contact.Addresses == null || contact.Addresses.Count == 0) ? new Address() : contact.Addresses[0];
+
+            List<OmniWrapper2.ContactCreateParameters> members = new List<OmniWrapper2.ContactCreateParameters>();
+            OmniWrapper2.ContactCreateParameters mem = new OmniWrapper2.ContactCreateParameters()
+            {
+                ContactID = XMLHelper.GetString(contact.Id),
+                AccountID = XMLHelper.GetString(contact.Account?.Id),
+                ClubID = XMLHelper.GetString(contact.Account?.Scheme?.Club?.Id),
+                SchemeID = XMLHelper.GetString(contact.Account?.Scheme?.Id),
+                ExternalID = XMLHelper.GetString(contact.AlternateId),
+
+                FirstName = contact.FirstName,
+                MiddleName = XMLHelper.GetString(contact.MiddleName),
+                LastName = contact.LastName,
+                DateOfBirth = contact.BirthDay,
+                Email = contact.Email.ToLower(),
+                Gender = ((int)contact.Gender).ToString(),
+
+                Address1 = XMLHelper.GetString(addr.Address1),
+                Address2 = XMLHelper.GetString(addr.Address2),
+                HouseApartmentNo = XMLHelper.GetString(addr.HouseNo),
+                City = XMLHelper.GetString(addr.City),
+                Country = XMLHelper.GetString(addr.Country),
+                PostCode = XMLHelper.GetString(addr.PostCode),
+                TerritoryCode = XMLHelper.GetString(addr.StateProvinceRegion),
+                StateProvinceRegion = XMLHelper.GetString(addr.County),
+
+                Phone = XMLHelper.GetString(addr.PhoneNumber),
+                MobilePhoneNo = XMLHelper.GetString(addr.CellPhoneNumber),
+
+                LoginID = contact.UserName.ToLower(),
+                Password = contact.Password,
+                AuthenticationId = contact.AuthenticationId,
+                Authenticator = contact.Authenticator,
+                DeviceID = contact.LoggedOnToDevice.Id,
+                DeviceFriendlyName = contact.LoggedOnToDevice.DeviceFriendlyName,
+
+                ExternalSystem = string.Empty
+            };
+
+            if (LSCVersion >= new Version("19.2"))
+            {
+                mem.SendReceiptbyEmail = ((int)contact.SendReceiptByEMail).ToString();
+            }
+
+            OmniWrapper2.RootMemberContactCreate root = new OmniWrapper2.RootMemberContactCreate();
+            members.Add(mem);
+            root.ContactCreateParameters = members.ToArray();
+
+            List<OmniWrapper2.MemberAttributeValue> attr = new List<OmniWrapper2.MemberAttributeValue>();
+            if (contact.Profiles != null)
+            {
+                foreach (Profile prof in contact.Profiles)
+                {
+                    OmniWrapper2.MemberAttributeValue val = new OmniWrapper2.MemberAttributeValue()
+                    {
+                        AttributeCode = prof.Id,
+                    };
+                    if (prof.DataType == ProfileDataType.Text)
+                        val.AttributeValue = prof.TextValue;
+                    else
+                        val.AttributeValue = (prof.ContactValue) ? "Yes" : "No";
+                    attr.Add(val);
+                }
+            }
+
+            root.MemberAttributeValue = attr.ToArray();
+            root.Text = new string[1];
+            root.Text[0] = string.Empty;
+            return root;
         }
 
         #endregion

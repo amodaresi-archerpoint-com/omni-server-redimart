@@ -6,6 +6,7 @@ using LSOmni.BLL;
 using LSOmni.BLL.Loyalty;
 using LSOmni.Common.Util;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
+using LSRetail.Omni.Domain.DataModel.Loyalty.Members;
 
 namespace LSOmni.Service
 {
@@ -17,6 +18,7 @@ namespace LSOmni.Service
             return myBLL.MyCustomFunction(data);
         }
 
+        #region Phase II - Filtration of offers
         public virtual List<PublishedOffer> PublishedOffersGetByCardId2(string cardId, string itemId, string storeId)
         {
             if (cardId == null)
@@ -61,7 +63,8 @@ namespace LSOmni.Service
                 logger.StatisticEndMain(stat);
             }
         }
-
+        #endregion
+        #region Phase II - Age checker
         public virtual List<string> GetAgeCheckerReply(string cardId, string firstName, string lastName, DateTime dobDT, string phoneNo, string address, string city, string state, string zip, string email, string tobaccoValue, string cigValue, string cigarValue,
                                                                     string dipValue, string onpValue, string snusValue)
         {
@@ -119,5 +122,47 @@ namespace LSOmni.Service
             }
 
         }
+        #endregion
+        #region Phase II - Login for existing members
+        public virtual MemberContact ContactCreate2(MemberContact contact, bool doLogin)
+        {
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+
+            try
+            {
+                logger.Debug(config.LSKey.Key, $"DoLogin:{doLogin} > " + LogJson(contact));
+
+                if (contact.Cards == null)
+                    contact.Cards = new List<Card>();
+
+                ContactBLL contactBLL = new ContactBLL(config, clientTimeOutInSeconds);//not using security token here, so no security checks
+                CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
+                MemberContact contactOut = customLoyBll.ContactCreate(contact, doLogin, stat);
+
+                if (doLogin)
+                {
+                    if (string.IsNullOrWhiteSpace(contact.Authenticator))
+                        contactOut = contactBLL.Login(contact.UserName, contact.Password, true, contact.LoggedOnToDevice.Id, stat);
+                    else
+                        contactOut = contactBLL.SocialLogon(contact.Authenticator, contact.AuthenticationId, contact.LoggedOnToDevice.Id, string.Empty, true, stat);
+                }
+                customLoyBll.SecurityCheck();
+
+                contactOut.Environment.Version = this.Version();
+                ContactSetLocation(contactOut);
+                return contactOut;
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "ContactCreate()");
+                return null; //never gets here
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
+        }
+
+        #endregion
     }
 }

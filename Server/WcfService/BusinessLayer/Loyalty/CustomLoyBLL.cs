@@ -8,6 +8,8 @@ using LSOmni.DataAccess.Interface.BOConnection;
 using LSRetail.Omni.DiscountEngine.DataModels;
 using LSRetail.Omni.Domain.DataModel.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
+using LSRetail.Omni.Domain.DataModel.Loyalty.Members;
+using LSRetail.Omni.Domain.DataModel.Loyalty.Setup;
 
 namespace LSOmni.BLL.Loyalty
 {
@@ -66,6 +68,68 @@ namespace LSOmni.BLL.Loyalty
         }
         #endregion
 
+        #region Altria Phase II - Login for existing members
+        public virtual MemberContact ContactCreate(MemberContact contact, bool doLogin, Statistics stat)
+        {
+            //minor validation before going further 
+            if (contact == null)
+                throw new LSOmniException(StatusCode.ObjectMissing, "Null Object");
+
+            if (string.IsNullOrEmpty(contact.UserName) == false)
+            {
+                if (Validation.IsValidUserName(contact.UserName) == false)
+                    throw new LSOmniException(StatusCode.UserNameInvalid, "Validation of user name failed");
+                contact.UserName = contact.UserName.Trim();
+                contact.Password = contact.Password.Trim();
+            }
+
+            if (string.IsNullOrEmpty(contact.Password) == false && Validation.IsValidPassword(contact.Password) == false)
+                throw new LSOmniException(StatusCode.PasswordInvalid, "Validation of password failed");
+
+            if (Validation.IsValidEmail(contact.Email) == false)
+                throw new LSOmniException(StatusCode.EmailInvalid, "Validation of email failed");
+
+            //check if user exist before calling NAV
+            if (config.SettingsBoolGetByKey(ConfigKey.Allow_Dublicate_Email) == false && BOLoyConnection.ContactGet(ContactSearchType.Email, contact.Email, stat) != null)
+                throw new LSOmniServiceException(StatusCode.EmailExists, "Email already exists: " + contact.UserName);
+
+            if (string.IsNullOrEmpty(contact.AuthenticationId) == false)
+            {
+                contact.AuthenticationId = contact.AuthenticationId.Trim();
+                contact.Authenticator = contact.Authenticator.Trim();
+            }
+
+            //Web pages do not need to fill in a Card
+            // the deviceId will be set to the UserName.
+            if (contact.Cards == null)
+                contact.Cards = new List<Card>();
+
+            if (contact.LoggedOnToDevice == null)
+                contact.LoggedOnToDevice = new Device();
+            if (string.IsNullOrWhiteSpace(contact.LoggedOnToDevice.Id))
+                contact.LoggedOnToDevice.Id = GetDefaultDeviceId(contact.UserName);
+            if (string.IsNullOrWhiteSpace(contact.LoggedOnToDevice.DeviceFriendlyName))
+                contact.LoggedOnToDevice.DeviceFriendlyName = "Web application";
+
+            if (contact.Profiles == null)
+                contact.Profiles = new List<Profile>();
+
+            MemberContact newcontact = BOCustom.ContactCreate(contact, stat);
+
+            //login moved to upstream
+
+            return newcontact;
+        }
+        private string GetDefaultDeviceId(string userName)
+        {
+            return ("WEB-" + userName);
+        }
+
+        public new void SecurityCheck()
+        {
+            base.SecurityCheck();
+        }
+        #endregion
     }
 }
 
