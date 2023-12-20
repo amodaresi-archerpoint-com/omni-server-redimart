@@ -10,6 +10,7 @@ using LSOmni.DataAccess.Interface.BOConnection;
 using LSRetail.Omni.Domain.DataModel.Base;
 using System.Collections.Generic;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
+using LSRetail.Omni.Domain.DataModel.Loyalty.Members;
 using System.Threading.Tasks;
 
 namespace LSOmni.DataAccess.BOConnection.CentralPre
@@ -371,6 +372,13 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
                 { Constants.AGE_VERIFIED, eaivValue }
             };
             LSCentralWSBase.SetMemberAttributes(cardId, myDictionary, stat);
+        }
+        #endregion
+
+        #region Altria Phase II - Login for existing customers
+        public virtual MemberContact ContactCreate(MemberContact contact, Statistics stat)
+        {
+            return LSCentralWSBase.ContactCreate2(contact, stat);
         }
         #endregion
     }

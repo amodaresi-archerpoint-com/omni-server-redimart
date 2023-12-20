@@ -1114,6 +1114,10 @@ namespace LSOmni.Service
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         MemberContact ContactCreate(MemberContact contact, bool doLogin);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
+        MemberContact ContactCreate2(MemberContact contact, bool doLogin);
+
         /// <summary>
         /// Update Member Contact
         /// </summary>
