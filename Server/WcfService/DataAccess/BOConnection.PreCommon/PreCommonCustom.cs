@@ -149,7 +149,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             return data;
         }
 
-        public async Task<List<string>> AgeVerifyCheckResultAsync(Statistics stat, string UUID)
+        public List<string> AgeVerifyCheck(Statistics stat, string UUID)
         {
             string ResultsErrorCode = string.Empty,
                 ResultsErrorMsg = string.Empty,
@@ -160,14 +160,14 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
 
             if (UUID == string.Empty)
             {
-                throw new Exception("UUID is required");
+                throw new LSOmniException(StatusCode.ParameterInvalid, "UUID is required");
             }
             logger.StatisticStartSub(true, ref stat, out int index);
-            logger.Debug(config.LSKey.Key, "AgeVerifyCheckResultAsync(): begin");
+            logger.Debug(config.LSKey.Key, "AgeVerifyCheck(): begin");
             logger.Debug(config.LSKey.Key, "https://api.agechecker.net/v1/status/{0}", UUID);
             HttpClient request = new HttpClient();
-            var response = await request.GetAsync("https://api.agechecker.net/v1/status/" + UUID);
-            string responseText = await response.Content.ReadAsStringAsync();
+            var response = request.GetAsync("https://api.agechecker.net/v1/status/" + UUID).Result;
+            string responseText = response.Content.ReadAsStringAsync().Result;
             logger.Debug(config.LSKey.Key, "AgeVerifyGetValues: resultText: {0}", responseText);
             AgeVerifyGetValues(
                 responseText,

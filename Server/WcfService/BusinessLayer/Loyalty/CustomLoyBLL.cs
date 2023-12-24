@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using LSOmni.Common.Util;
@@ -63,6 +64,19 @@ namespace LSOmni.BLL.Loyalty
                 if (ret[2].ToUpper().Equals(Constants.REPLY_ACCEPTED)) eaivValue = "2";
                 if (ret[2].ToUpper().Equals(Constants.REPLY_DENIED)) eaivValue = "3";
                 BOCustom.SetMemberAttributes(cardId, tobaccoValue, cigValue, cigarValue, dipValue, onpValue, snusValue, eaivValue, stat);
+            }
+            return ret;
+        }
+
+        public virtual List<string> GetAgeCheckerStatus(string cardId, string UUID, Statistics stat)
+        {
+            List<string> ret = BOCustom.GetAgeCheckerStatus(stat, UUID);
+            string eaivValue = "1";
+            if (ret[1].ToUpper().Equals(Constants.STATUS_OK))
+            {
+                if (ret[2].ToUpper().Equals(Constants.REPLY_ACCEPTED)) eaivValue = "2";
+                if (ret[2].ToUpper().Equals(Constants.REPLY_DENIED)) eaivValue = "3";
+                BOCustom.SetMemberAttributes(cardId, null, null, null, null, null, null, eaivValue, stat);
             }
             return ret;
         }

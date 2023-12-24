@@ -54,6 +54,8 @@ namespace LSOmni.Service
         [OperationContract]
         List<string> GetAgeCheckerReply(string cardId, string firstName, string lastName, DateTime dobDT, string phoneNo, string address, string city, string state, string zip, string email, string tobaccoValue, string cigValue, string cigarValue,
                                                                     string dipValue, string onpValue, string snusValue);
+        [OperationContract]
+        List<string> GetAgeCheckerStatus(string cardId, string UUID);
         #endregion
 
         #region Discount, Offers and GiftCards

@@ -356,21 +356,24 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
         {
             return LSCentralWSBase.AgeVerifyReg(stat, firstName, lastName, address, city, state, zip, "US", phoneNo, email, "", "", dobDT.Day, dobDT.Month, dobDT.Year);
         }
+
+        public virtual List<string> GetAgeCheckerStatus(Statistics stat, string UUID)
+        {
+            return LSCentralWSBase.AgeVerifyCheck(stat, UUID);
+        }
         #endregion AgeChecker
 
         #region Altria Phase II - Member Attributes
         public virtual void SetMemberAttributes(string cardId, string tobaccoValue, string cigValue, string cigarValue, string dipValue, string onpValue, string snusValue, string eaivValue, Statistics stat)
         {
-            Dictionary<string, string> myDictionary = new Dictionary<string, string>()
-            {
-                { Constants.CAT_TOBACCO, tobaccoValue },
-                { Constants.AD_CONSENT_CIGARETTE, cigValue },
-                { Constants.AD_CONSENT_CIGAR, cigarValue },
-                { Constants.AD_CONSENT_DIP, dipValue },
-                { Constants.AD_CONSENT_ONP, onpValue },
-                { Constants.AD_CONSENT_SNUS, snusValue },
-                { Constants.AGE_VERIFIED, eaivValue }
-            };
+            Dictionary<string, string> myDictionary = new Dictionary<string, string>();
+            if (tobaccoValue != null) { myDictionary.Add(Constants.CAT_TOBACCO, tobaccoValue); }
+            if (cigValue != null) { myDictionary.Add(Constants.AD_CONSENT_CIGARETTE, cigValue); }
+            if (cigarValue != null) { myDictionary.Add(Constants.AD_CONSENT_CIGAR, cigarValue); }
+            if (dipValue != null) { myDictionary.Add(Constants.AD_CONSENT_DIP, dipValue); }
+            if (onpValue != null) { myDictionary.Add(Constants.AD_CONSENT_ONP, onpValue); }
+            if (snusValue != null) { myDictionary.Add(Constants.AD_CONSENT_SNUS, snusValue); }
+            if (eaivValue != null) { myDictionary.Add(Constants.AGE_VERIFIED, eaivValue); }
             LSCentralWSBase.SetMemberAttributes(cardId, myDictionary, stat);
         }
         #endregion
