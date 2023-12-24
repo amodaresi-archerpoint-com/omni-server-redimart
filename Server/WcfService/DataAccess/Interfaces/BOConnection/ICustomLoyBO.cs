@@ -19,6 +19,8 @@ namespace LSOmni.DataAccess.Interface.BOConnection
 
         #region Altria Phase II - AgeChecker
         List<string> GetAgeCheckerReply(string cardId, string firstName, string lastName, DateTime dobDT, string phoneNo, string address, string city, string state, string zip, string email, Statistics stat);
+
+        List<string> GetAgeCheckerStatus(Statistics stat, string UUID);
         #endregion
 
         #region Altria Phase II - Member Attributes

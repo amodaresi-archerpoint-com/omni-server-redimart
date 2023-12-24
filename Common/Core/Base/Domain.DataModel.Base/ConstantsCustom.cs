@@ -16,5 +16,6 @@ namespace LSRetail.Omni.Domain.DataModel.Base
         public const string REPLY_DENIED = "DENIED";
         public const string AGE_VERIFIED = "EAIV";
         public const string STATUS_OK = "OK";
+        public const string VAR_UUID = "UUID";
     }
 }

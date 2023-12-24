@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 using LSOmni.BLL;
@@ -114,6 +115,33 @@ namespace LSOmni.Service
             {
                 HandleExceptions(ex, "cardId:{0} firstName:{1} lastName:{2} dobDT:{3} phoneNo:{4} address:{5} city:{6} state:{7} zip:{8} email:{9} tobaccoValue:{10} cigValue:{11} cigarValue:{12} dipValue:{13} onpValue:{14} snusValue:{15}",
                     cardId, firstName, lastName, dobDT.ToString(), phoneNo, address, city, state, zip, email, tobaccoValue, cigValue, cigarValue, dipValue, onpValue, snusValue);
+                return null; //never gets here
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
+
+        }
+
+        public virtual List<string> GetAgeCheckerStatus(string cardId, string UUID)
+        {
+            if (cardId == null)
+                cardId = string.Empty;
+            if (UUID == null)
+                UUID = string.Empty;
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+            try
+            {
+                logger.Debug(config.LSKey.Key, "GetAgeCheckerStatus was called");
+                logger.Debug(config.LSKey.Key, "cardId:{0} UUID:{1}", cardId, UUID);
+                CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
+                List<string> list = customLoyBll.GetAgeCheckerStatus(cardId, UUID, stat);
+                return list;
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "cardId:{0} UUID:{1}", cardId, UUID);
                 return null; //never gets here
             }
             finally
