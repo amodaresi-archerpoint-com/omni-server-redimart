@@ -30,5 +30,9 @@ namespace LSOmni.DataAccess.Interface.BOConnection
         #region Altria Phase II - Login for existing members
         MemberContact ContactCreate(MemberContact contact, Statistics stat);
         #endregion
+
+        #region Altria Phase II - Altria Offer Retrieval
+        void RetrievePersonalizedOfferForCardId(string cardId, Statistics stat);
+        #endregion
     }
 }

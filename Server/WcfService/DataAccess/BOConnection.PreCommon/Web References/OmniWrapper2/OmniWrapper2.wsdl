@@ -211,6 +211,23 @@
           </sequence>
         </complexType>
       </element>
+      <element name="RetrievePersonalizedOffer">
+        <complexType>
+          <sequence>
+            <element minOccurs="1" maxOccurs="1" name="responseCode" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="errorText" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="cardID" type="string" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="RetrievePersonalizedOffer_Result">
+        <complexType>
+          <sequence>
+            <element minOccurs="1" maxOccurs="1" name="responseCode" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="errorText" type="string" />
+          </sequence>
+        </complexType>
+      </element>
       <element name="UpdateMemberAttributes">
         <complexType>
           <sequence>
@@ -244,6 +261,12 @@
   <message name="MemberContactCreate_Result">
     <part name="parameters" element="tns:MemberContactCreate_Result" />
   </message>
+  <message name="RetrievePersonalizedOffer">
+    <part name="parameters" element="tns:RetrievePersonalizedOffer" />
+  </message>
+  <message name="RetrievePersonalizedOffer_Result">
+    <part name="parameters" element="tns:RetrievePersonalizedOffer_Result" />
+  </message>
   <message name="UpdateMemberAttributes">
     <part name="parameters" element="tns:UpdateMemberAttributes" />
   </message>
@@ -258,6 +281,10 @@
     <operation name="MemberContactCreate">
       <input name="MemberContactCreate" message="tns:MemberContactCreate" />
       <output name="MemberContactCreate_Result" message="tns:MemberContactCreate_Result" />
+    </operation>
+    <operation name="RetrievePersonalizedOffer">
+      <input name="RetrievePersonalizedOffer" message="tns:RetrievePersonalizedOffer" />
+      <output name="RetrievePersonalizedOffer_Result" message="tns:RetrievePersonalizedOffer_Result" />
     </operation>
     <operation name="UpdateMemberAttributes">
       <input name="UpdateMemberAttributes" message="tns:UpdateMemberAttributes" />
@@ -281,6 +308,15 @@
         <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
       </input>
       <output name="MemberContactCreate_Result">
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </output>
+    </operation>
+    <operation name="RetrievePersonalizedOffer">
+      <operation soapAction="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2:RetrievePersonalizedOffer" style="document" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      <input name="RetrievePersonalizedOffer">
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </input>
+      <output name="RetrievePersonalizedOffer_Result">
         <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
       </output>
     </operation>

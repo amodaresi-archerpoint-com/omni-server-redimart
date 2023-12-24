@@ -144,6 +144,13 @@ namespace LSOmni.BLL.Loyalty
             base.SecurityCheck();
         }
         #endregion
+
+        #region Altria Phase II - Altria Offer Retrieval
+        public void RetrievePersonalizedOfferForCardId(string cardId, Statistics stat)
+        {
+            BOCustom.RetrievePersonalizedOfferForCardId(cardId, stat);
+        }
+        #endregion
     }
 }
 

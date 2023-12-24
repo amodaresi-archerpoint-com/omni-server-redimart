@@ -27,12 +27,13 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Web.Services.WebServiceBindingAttribute(Name="OmniWrapper2_Binding", Namespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2")]
-    public partial class OmniWrapper2 : MySoapHttpClientProtocol
-    {
+    public partial class OmniWrapper2 : MySoapHttpClientProtocol {
         
         private System.Threading.SendOrPostCallback GetDirectMarketingInfoOperationCompleted;
         
         private System.Threading.SendOrPostCallback MemberContactCreateOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback RetrievePersonalizedOfferOperationCompleted;
         
         private System.Threading.SendOrPostCallback UpdateMemberAttributesOperationCompleted;
         
@@ -79,6 +80,9 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
         
         /// <remarks/>
         public event MemberContactCreateCompletedEventHandler MemberContactCreateCompleted;
+        
+        /// <remarks/>
+        public event RetrievePersonalizedOfferCompletedEventHandler RetrievePersonalizedOfferCompleted;
         
         /// <remarks/>
         public event UpdateMemberAttributesCompletedEventHandler UpdateMemberAttributesCompleted;
@@ -174,6 +178,40 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
             if ((this.MemberContactCreateCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.MemberContactCreateCompleted(this, new MemberContactCreateCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2:RetrievePersonalizedOffer", RequestNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2", ResponseElementName="RetrievePersonalizedOffer_Result", ResponseNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public void RetrievePersonalizedOffer(ref string responseCode, ref string errorText, string cardID) {
+            object[] results = this.Invoke("RetrievePersonalizedOffer", new object[] {
+                        responseCode,
+                        errorText,
+                        cardID});
+            responseCode = ((string)(results[0]));
+            errorText = ((string)(results[1]));
+        }
+        
+        /// <remarks/>
+        public void RetrievePersonalizedOfferAsync(string responseCode, string errorText, string cardID) {
+            this.RetrievePersonalizedOfferAsync(responseCode, errorText, cardID, null);
+        }
+        
+        /// <remarks/>
+        public void RetrievePersonalizedOfferAsync(string responseCode, string errorText, string cardID, object userState) {
+            if ((this.RetrievePersonalizedOfferOperationCompleted == null)) {
+                this.RetrievePersonalizedOfferOperationCompleted = new System.Threading.SendOrPostCallback(this.OnRetrievePersonalizedOfferOperationCompleted);
+            }
+            this.InvokeAsync("RetrievePersonalizedOffer", new object[] {
+                        responseCode,
+                        errorText,
+                        cardID}, this.RetrievePersonalizedOfferOperationCompleted, userState);
+        }
+        
+        private void OnRetrievePersonalizedOfferOperationCompleted(object arg) {
+            if ((this.RetrievePersonalizedOfferCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.RetrievePersonalizedOfferCompleted(this, new RetrievePersonalizedOfferCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -1701,6 +1739,40 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((RootMemberContactCreate)(this.results[8]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4161.0")]
+    public delegate void RetrievePersonalizedOfferCompletedEventHandler(object sender, RetrievePersonalizedOfferCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4161.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class RetrievePersonalizedOfferCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal RetrievePersonalizedOfferCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public string responseCode {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+        
+        /// <remarks/>
+        public string errorText {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[1]));
             }
         }
     }

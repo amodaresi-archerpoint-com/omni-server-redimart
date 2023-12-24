@@ -384,5 +384,12 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
             return LSCentralWSBase.ContactCreate2(contact, stat);
         }
         #endregion
+
+        #region Altria Phase II - Altria Offer Retrieval
+        public void RetrievePersonalizedOfferForCardId(string cardId, Statistics stat)
+        {
+            LSCentralWSBase.RetrievePersonalizedOfferForCardId(cardId, stat);
+        }
+        #endregion
     }
 }

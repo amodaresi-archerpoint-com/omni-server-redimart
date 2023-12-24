@@ -358,5 +358,31 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             return cont;
         }
         #endregion
+
+        #region Altria Phase II - Altria Offer Retrieval
+        public void RetrievePersonalizedOfferForCardId(string cardId, Statistics stat)
+        {
+            logger.StatisticStartSub(true, ref stat, out int index);
+
+            string respCode = string.Empty;
+            string errorText = string.Empty;
+
+            centralWS2 = new OmniWrapper2.OmniWrapper2();
+            string url = config.SettingsGetByKey(ConfigKey.BOUrl);
+            centralWS2.Url = url.Replace("RetailWebServices", "OmniWrapper2");
+            centralWS2.Timeout = config.SettingsIntGetByKey(ConfigKey.BOTimeout) * 1000;  //millisecs,  60 seconds
+            centralWS2.PreAuthenticate = true;
+            centralWS2.AllowAutoRedirect = true;
+            centralWS2.Credentials = new System.Net.NetworkCredential(
+                                    config.Settings.FirstOrDefault(x => x.Key == ConfigKey.BOUser.ToString()).Value,
+                                    config.Settings.FirstOrDefault(x => x.Key == ConfigKey.BOPassword.ToString()).Value);
+
+            logger.Debug(config.LSKey.Key, "RetrievePersonalizedOfferForCardId Request - cardId: " + cardId);
+            centralWS2.RetrievePersonalizedOffer(ref respCode, ref errorText, cardId);
+            HandleWS2ResponseCode("RetrievePersonalizedOfferForCardId", respCode, errorText, ref stat, index);
+            logger.Debug(config.LSKey.Key, "MemberContactCreate Response received");
+            logger.StatisticEndSub(ref stat, index);
+        }
+        #endregion
     }
 }

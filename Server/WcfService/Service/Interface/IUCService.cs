@@ -25,6 +25,7 @@ using LSRetail.Omni.Domain.DataModel.Activity.Activities;
 using LSRetail.Omni.Domain.DataModel.Activity.Client;
 using LSRetail.Omni.Domain.DataModel.ScanPayGo.Payment;
 using LSRetail.Omni.Domain.DataModel.ScanPayGo.Setup;
+using System.Drawing;
 
 namespace LSOmni.Service
 {
@@ -56,6 +57,16 @@ namespace LSOmni.Service
                                                                     string dipValue, string onpValue, string snusValue);
         [OperationContract]
         List<string> GetAgeCheckerStatus(string cardId, string UUID);
+        #endregion
+
+        #region Altria Phase II - Login For Existing Cardholders
+        [OperationContract]
+        MemberContact ContactCreate2(MemberContact contact, bool doLogin);
+        #endregion
+
+        #region Altria Phase II - Altria Offer Retrieval
+        [OperationContract]
+        void RetrievePersonalizedOfferForCardId(string cardId);
         #endregion
 
         #region Discount, Offers and GiftCards
@@ -942,9 +953,6 @@ namespace LSOmni.Service
         /// </exception>
         [OperationContract]
         MemberContact ContactCreate(MemberContact contact, bool doLogin);
-
-        [OperationContract]
-        MemberContact ContactCreate2(MemberContact contact, bool doLogin);
 
         /// <summary>
         /// Update Member Contact
