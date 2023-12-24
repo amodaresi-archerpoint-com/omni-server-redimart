@@ -64,11 +64,6 @@ namespace LSOmni.Service
         MemberContact ContactCreate2(MemberContact contact, bool doLogin);
         #endregion
 
-        #region Altria Phase II - Altria Offer Retrieval
-        [OperationContract]
-        void RetrievePersonalizedOfferForCardId(string cardId);
-        #endregion
-
         #region Discount, Offers and GiftCards
 
         /// <summary>

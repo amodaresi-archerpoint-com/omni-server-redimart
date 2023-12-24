@@ -193,30 +193,5 @@ namespace LSOmni.Service
         }
 
         #endregion
-
-        #region Altria Phase II - Altria Offer Retrieval
-        public virtual void RetrievePersonalizedOfferForCardId(string cardId)
-        {
-            if (cardId == null)
-                cardId = string.Empty;
-            Statistics stat = logger.StatisticStartMain(config, serverUri);
-            try
-            {
-                logger.Debug(config.LSKey.Key, $"RetrievePersonalizedOfferForCardId:{cardId}");
-                CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
-                customLoyBll.RetrievePersonalizedOfferForCardId(cardId, stat);
-                customLoyBll.SecurityCheck();
-            }
-            catch (Exception ex)
-            {
-                HandleExceptions(ex, "RetrievePersonalizedOfferForCardId()");
-            }
-            finally
-            {
-                logger.StatisticEndMain(stat);
-            }
-
-        }
-        #endregion
     }
 }

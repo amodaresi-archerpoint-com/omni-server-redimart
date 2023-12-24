@@ -73,12 +73,6 @@ namespace LSOmni.Service
         MemberContact ContactCreate2(MemberContact contact, bool doLogin);
         #endregion
 
-        #region Altria Phase II - Altria Offer Retrieval
-        [OperationContract]
-        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        void RetrievePersonalizedOfferForCardId(string cardId);
-        #endregion
-
         #region Discount, Offers and GiftCards
 
         /// <summary>

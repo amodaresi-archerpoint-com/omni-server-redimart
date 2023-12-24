@@ -64,6 +64,11 @@ namespace LSOmni.BLL.Loyalty
                 if (ret[2].ToUpper().Equals(Constants.REPLY_ACCEPTED)) eaivValue = "2";
                 if (ret[2].ToUpper().Equals(Constants.REPLY_DENIED)) eaivValue = "3";
                 BOCustom.SetMemberAttributes(cardId, tobaccoValue, cigValue, cigarValue, dipValue, onpValue, snusValue, eaivValue, stat);
+
+                if (ret[2].ToUpper().Equals(Constants.REPLY_ACCEPTED))
+                {
+                    BOCustom.RetrievePersonalizedOfferForCardId(cardId, stat);
+                }
             }
             return ret;
         }
@@ -77,6 +82,11 @@ namespace LSOmni.BLL.Loyalty
                 if (ret[2].ToUpper().Equals(Constants.REPLY_ACCEPTED)) eaivValue = "2";
                 if (ret[2].ToUpper().Equals(Constants.REPLY_DENIED)) eaivValue = "3";
                 BOCustom.SetMemberAttributes(cardId, null, null, null, null, null, null, eaivValue, stat);
+
+                if (ret[2].ToUpper().Equals(Constants.REPLY_ACCEPTED))
+                {
+                    BOCustom.RetrievePersonalizedOfferForCardId(cardId, stat);
+                }
             }
             return ret;
         }
@@ -142,13 +152,6 @@ namespace LSOmni.BLL.Loyalty
         public new void SecurityCheck()
         {
             base.SecurityCheck();
-        }
-        #endregion
-
-        #region Altria Phase II - Altria Offer Retrieval
-        public void RetrievePersonalizedOfferForCardId(string cardId, Statistics stat)
-        {
-            BOCustom.RetrievePersonalizedOfferForCardId(cardId, stat);
         }
         #endregion
     }
