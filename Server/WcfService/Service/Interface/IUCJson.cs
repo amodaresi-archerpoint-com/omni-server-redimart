@@ -67,6 +67,12 @@ namespace LSOmni.Service
         List<string> GetAgeCheckerStatus(string cardId, string UUID);
         #endregion
 
+        #region Altria Phase II - Login For Existing Cardholders
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
+        MemberContact ContactCreate2(MemberContact contact, bool doLogin);
+        #endregion
+
         #region Discount, Offers and GiftCards
 
         /// <summary>
@@ -1116,10 +1122,6 @@ namespace LSOmni.Service
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         MemberContact ContactCreate(MemberContact contact, bool doLogin);
-
-        [OperationContract]
-        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        MemberContact ContactCreate2(MemberContact contact, bool doLogin);
 
         /// <summary>
         /// Update Member Contact

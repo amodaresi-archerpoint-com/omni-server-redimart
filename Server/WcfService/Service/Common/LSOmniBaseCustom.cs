@@ -151,6 +151,7 @@ namespace LSOmni.Service
 
         }
         #endregion
+        
         #region Phase II - Login for existing members
         public virtual MemberContact ContactCreate2(MemberContact contact, bool doLogin)
         {
