@@ -132,7 +132,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
             logger.Debug(config.LSKey.Key, "AltriaLogEntryCreate Request - " + xmlRequest);
             string xmlResponse = RunOperation(xmlRequest);
             logger.Debug(config.LSKey.Key, "AltriaLogEntryCreate Response - " + xmlResponse);
-            HandleResponseCode(ref xmlResponse, new string[] { "1010" }); //1010 means no altria data. offer is not from altria. it is fine to error here.
+            HandleResponseCode(ref xmlResponse, new string[] { "1010", "1012" }); //1010 means no altria data. 1012 no altria offer id. it is fine to error here.
             //}
         }
 
