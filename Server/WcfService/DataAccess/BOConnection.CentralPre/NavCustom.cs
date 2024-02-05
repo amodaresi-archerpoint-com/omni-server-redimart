@@ -11,7 +11,7 @@ using LSRetail.Omni.Domain.DataModel.Base;
 using System.Collections.Generic;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Members;
-using System.Threading.Tasks;
+using LSRetail.Omni.Domain.DataModel.Loyalty.Setup;
 
 namespace LSOmni.DataAccess.BOConnection.CentralPre
 {
@@ -389,6 +389,13 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
         public void RetrievePersonalizedOfferForCardId(string cardId, Statistics stat)
         {
             LSCentralWSBase.RetrievePersonalizedOfferForCardId(cardId, stat);
+        }
+        #endregion
+
+        #region Altria Phase III - Remember Attributes
+        public virtual List<Profile> ProfilesByCardIdGet(string cardId, Statistics stat)
+        {
+            return LSCentralWSBase.GetMemberAttributesByCardId(cardId, stat);
         }
         #endregion
     }

@@ -31,6 +31,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
         
         private System.Threading.SendOrPostCallback GetDirectMarketingInfoOperationCompleted;
         
+        private System.Threading.SendOrPostCallback GetMobileProfilesByCardIdOperationCompleted;
+        
         private System.Threading.SendOrPostCallback MemberContactCreateOperationCompleted;
         
         private System.Threading.SendOrPostCallback RetrievePersonalizedOfferOperationCompleted;
@@ -79,6 +81,9 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
         public event GetDirectMarketingInfoCompletedEventHandler GetDirectMarketingInfoCompleted;
         
         /// <remarks/>
+        public event GetMobileProfilesByCardIdCompletedEventHandler GetMobileProfilesByCardIdCompleted;
+        
+        /// <remarks/>
         public event MemberContactCreateCompletedEventHandler MemberContactCreateCompleted;
         
         /// <remarks/>
@@ -125,6 +130,43 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
             if ((this.GetDirectMarketingInfoCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.GetDirectMarketingInfoCompleted(this, new GetDirectMarketingInfoCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2:GetMobileProfilesByCardId", RequestNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2", ResponseElementName="GetMobileProfilesByCardId_Result", ResponseNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public void GetMobileProfilesByCardId(ref string responseCode, ref string errorText, string cardID, ref RootGetMemberAttributes memberAttributesXML) {
+            object[] results = this.Invoke("GetMobileProfilesByCardId", new object[] {
+                        responseCode,
+                        errorText,
+                        cardID,
+                        memberAttributesXML});
+            responseCode = ((string)(results[0]));
+            errorText = ((string)(results[1]));
+            memberAttributesXML = ((RootGetMemberAttributes)(results[2]));
+        }
+        
+        /// <remarks/>
+        public void GetMobileProfilesByCardIdAsync(string responseCode, string errorText, string cardID, RootGetMemberAttributes memberAttributesXML) {
+            this.GetMobileProfilesByCardIdAsync(responseCode, errorText, cardID, memberAttributesXML, null);
+        }
+        
+        /// <remarks/>
+        public void GetMobileProfilesByCardIdAsync(string responseCode, string errorText, string cardID, RootGetMemberAttributes memberAttributesXML, object userState) {
+            if ((this.GetMobileProfilesByCardIdOperationCompleted == null)) {
+                this.GetMobileProfilesByCardIdOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetMobileProfilesByCardIdOperationCompleted);
+            }
+            this.InvokeAsync("GetMobileProfilesByCardId", new object[] {
+                        responseCode,
+                        errorText,
+                        cardID,
+                        memberAttributesXML}, this.GetMobileProfilesByCardIdOperationCompleted, userState);
+        }
+        
+        private void OnGetMobileProfilesByCardIdOperationCompleted(object arg) {
+            if ((this.GetMobileProfilesByCardIdCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.GetMobileProfilesByCardIdCompleted(this, new GetMobileProfilesByCardIdCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -1037,6 +1079,134 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55003")]
+    public partial class MemberAttributeList {
+        
+        private string typeField;
+        
+        private string codeField;
+        
+        private string descriptionField;
+        
+        private string valueField;
+        
+        private string actionTypeField;
+        
+        private string limitationTypeField;
+        
+        private string attributeTypeField;
+        
+        /// <remarks/>
+        public string Type {
+            get {
+                return this.typeField;
+            }
+            set {
+                this.typeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Code {
+            get {
+                return this.codeField;
+            }
+            set {
+                this.codeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Description {
+            get {
+                return this.descriptionField;
+            }
+            set {
+                this.descriptionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string Value {
+            get {
+                return this.valueField;
+            }
+            set {
+                this.valueField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string ActionType {
+            get {
+                return this.actionTypeField;
+            }
+            set {
+                this.actionTypeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string LimitationType {
+            get {
+                return this.limitationTypeField;
+            }
+            set {
+                this.limitationTypeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string AttributeType {
+            get {
+                return this.attributeTypeField;
+            }
+            set {
+                this.attributeTypeField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4161.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55003")]
+    public partial class RootGetMemberAttributes {
+        
+        private MemberAttributeList[] memberAttributeListField;
+        
+        private string[] textField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("MemberAttributeList")]
+        public MemberAttributeList[] MemberAttributeList {
+            get {
+                return this.memberAttributeListField;
+            }
+            set {
+                this.memberAttributeListField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlTextAttribute()]
+        public string[] Text {
+            get {
+                return this.textField;
+            }
+            set {
+                this.textField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.8.4161.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="urn:microsoft-dynamics-nav/xmlports/x55000")]
     public partial class PublishedOfferLine {
         
@@ -1649,6 +1819,48 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((RootGetDirectMarketingInfo)(this.results[2]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4161.0")]
+    public delegate void GetMobileProfilesByCardIdCompletedEventHandler(object sender, GetMobileProfilesByCardIdCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4161.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class GetMobileProfilesByCardIdCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal GetMobileProfilesByCardIdCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public string responseCode {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+        
+        /// <remarks/>
+        public string errorText {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[1]));
+            }
+        }
+        
+        /// <remarks/>
+        public RootGetMemberAttributes memberAttributesXML {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((RootGetMemberAttributes)(this.results[2]));
             }
         }
     }

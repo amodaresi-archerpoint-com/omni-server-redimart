@@ -154,6 +154,14 @@ namespace LSOmni.BLL.Loyalty
             base.SecurityCheck();
         }
         #endregion
+
+        #region Altria Phase III - Remember Attributes
+        public virtual List<Profile> ProfilesByCardIdGet(string cardId, Statistics stat)
+        {
+            return BOCustom.ProfilesByCardIdGet(cardId, stat);
+        }
+        #endregion
+
     }
 }
 

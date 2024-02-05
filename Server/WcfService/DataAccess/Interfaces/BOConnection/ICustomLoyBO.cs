@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using LSOmni.Common.Util;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Members;
+using LSRetail.Omni.Domain.DataModel.Loyalty.Setup;
 
 namespace LSOmni.DataAccess.Interface.BOConnection
 {
@@ -33,6 +33,10 @@ namespace LSOmni.DataAccess.Interface.BOConnection
 
         #region Altria Phase II - Altria Offer Retrieval
         void RetrievePersonalizedOfferForCardId(string cardId, Statistics stat);
+        #endregion
+
+        #region Altria Phase III - Remember Attributes
+        List<Profile> ProfilesByCardIdGet(string cardId, Statistics stat);
         #endregion
     }
 }

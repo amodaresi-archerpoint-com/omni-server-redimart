@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
-
 using LSOmni.BLL;
 using LSOmni.BLL.Loyalty;
 using LSOmni.Common.Util;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Members;
+using LSRetail.Omni.Domain.DataModel.Loyalty.Setup;
 
 namespace LSOmni.Service
 {
@@ -193,5 +191,35 @@ namespace LSOmni.Service
         }
 
         #endregion
+
+        #region Altria Phase III - Remember Attributes
+        public virtual List<Profile> ProfilesByCardIdGet(string cardId)
+        {
+            if (cardId == null)
+                cardId = string.Empty;
+
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+
+            try
+            {
+                logger.Debug(config.LSKey.Key, "ProfilesByCardIdGet was called");
+                logger.Debug(config.LSKey.Key, "cardId:{0} ", cardId);
+
+                CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
+                List<Profile> list = customLoyBll.ProfilesByCardIdGet(cardId, stat);
+                return list;
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "cardId:{0}", cardId);
+                return null; //never gets here
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
+        }
+        #endregion
+
     }
 }

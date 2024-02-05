@@ -97,6 +97,25 @@
       </complexType>
       <element name="RootGetDirectMarketingInfo" type="tns:RootGetDirectMarketingInfo" />
     </schema>
+    <schema xmlns:tns="urn:microsoft-dynamics-nav/xmlports/x55003" elementFormDefault="qualified" targetNamespace="urn:microsoft-dynamics-nav/xmlports/x55003" xmlns="http://www.w3.org/2001/XMLSchema">
+      <complexType name="MemberAttributeList">
+        <sequence>
+          <element minOccurs="1" maxOccurs="1" name="Type" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="Code" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="Description" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="Value" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="ActionType" type="string" />
+          <element minOccurs="1" maxOccurs="1" name="LimitationType" type="string" />
+          <element minOccurs="0" maxOccurs="1" name="AttributeType" type="string" />
+        </sequence>
+      </complexType>
+      <complexType name="RootGetMemberAttributes" mixed="true">
+        <sequence>
+          <element minOccurs="0" maxOccurs="unbounded" name="MemberAttributeList" type="tns:MemberAttributeList" />
+        </sequence>
+      </complexType>
+      <element name="RootGetMemberAttributes" type="tns:RootGetMemberAttributes" />
+    </schema>
     <schema xmlns:tns="urn:microsoft-dynamics-nav/xmlports/x55002" elementFormDefault="qualified" targetNamespace="urn:microsoft-dynamics-nav/xmlports/x55002" xmlns="http://www.w3.org/2001/XMLSchema">
       <complexType name="ContactCreateParameters">
         <sequence>
@@ -181,6 +200,25 @@
           </sequence>
         </complexType>
       </element>
+      <element name="GetMobileProfilesByCardId">
+        <complexType>
+          <sequence>
+            <element minOccurs="1" maxOccurs="1" name="responseCode" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="errorText" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="cardID" type="string" />
+            <element xmlns:q3="urn:microsoft-dynamics-nav/xmlports/x55003" minOccurs="1" maxOccurs="1" name="memberAttributesXML" type="q3:RootGetMemberAttributes" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetMobileProfilesByCardId_Result">
+        <complexType>
+          <sequence>
+            <element minOccurs="1" maxOccurs="1" name="responseCode" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="errorText" type="string" />
+            <element xmlns:q4="urn:microsoft-dynamics-nav/xmlports/x55003" minOccurs="1" maxOccurs="1" name="memberAttributesXML" type="q4:RootGetMemberAttributes" />
+          </sequence>
+        </complexType>
+      </element>
       <element name="MemberContactCreate">
         <complexType>
           <sequence>
@@ -192,7 +230,7 @@
             <element minOccurs="1" maxOccurs="1" name="contactID" type="string" />
             <element minOccurs="1" maxOccurs="1" name="cardID" type="string" />
             <element minOccurs="1" maxOccurs="1" name="totalRemainingPoints" type="decimal" />
-            <element xmlns:q3="urn:microsoft-dynamics-nav/xmlports/x55002" minOccurs="1" maxOccurs="1" name="memberContactCreateXML" type="q3:RootMemberContactCreate" />
+            <element xmlns:q5="urn:microsoft-dynamics-nav/xmlports/x55002" minOccurs="1" maxOccurs="1" name="memberContactCreateXML" type="q5:RootMemberContactCreate" />
           </sequence>
         </complexType>
       </element>
@@ -207,7 +245,7 @@
             <element minOccurs="1" maxOccurs="1" name="contactID" type="string" />
             <element minOccurs="1" maxOccurs="1" name="cardID" type="string" />
             <element minOccurs="1" maxOccurs="1" name="totalRemainingPoints" type="decimal" />
-            <element xmlns:q4="urn:microsoft-dynamics-nav/xmlports/x55002" minOccurs="1" maxOccurs="1" name="memberContactCreateXML" type="q4:RootMemberContactCreate" />
+            <element xmlns:q6="urn:microsoft-dynamics-nav/xmlports/x55002" minOccurs="1" maxOccurs="1" name="memberContactCreateXML" type="q6:RootMemberContactCreate" />
           </sequence>
         </complexType>
       </element>
@@ -234,7 +272,7 @@
             <element minOccurs="1" maxOccurs="1" name="responseCode" type="string" />
             <element minOccurs="1" maxOccurs="1" name="errorText" type="string" />
             <element minOccurs="1" maxOccurs="1" name="cardId" type="string" />
-            <element xmlns:q5="urn:microsoft-dynamics-nav/xmlports/x55001" minOccurs="1" maxOccurs="1" name="setMemberAttributesXML" type="q5:RootSetMemberAttributes" />
+            <element xmlns:q7="urn:microsoft-dynamics-nav/xmlports/x55001" minOccurs="1" maxOccurs="1" name="setMemberAttributesXML" type="q7:RootSetMemberAttributes" />
           </sequence>
         </complexType>
       </element>
@@ -243,7 +281,7 @@
           <sequence>
             <element minOccurs="1" maxOccurs="1" name="responseCode" type="string" />
             <element minOccurs="1" maxOccurs="1" name="errorText" type="string" />
-            <element xmlns:q6="urn:microsoft-dynamics-nav/xmlports/x55001" minOccurs="1" maxOccurs="1" name="setMemberAttributesXML" type="q6:RootSetMemberAttributes" />
+            <element xmlns:q8="urn:microsoft-dynamics-nav/xmlports/x55001" minOccurs="1" maxOccurs="1" name="setMemberAttributesXML" type="q8:RootSetMemberAttributes" />
           </sequence>
         </complexType>
       </element>
@@ -254,6 +292,12 @@
   </message>
   <message name="GetDirectMarketingInfo_Result">
     <part name="parameters" element="tns:GetDirectMarketingInfo_Result" />
+  </message>
+  <message name="GetMobileProfilesByCardId">
+    <part name="parameters" element="tns:GetMobileProfilesByCardId" />
+  </message>
+  <message name="GetMobileProfilesByCardId_Result">
+    <part name="parameters" element="tns:GetMobileProfilesByCardId_Result" />
   </message>
   <message name="MemberContactCreate">
     <part name="parameters" element="tns:MemberContactCreate" />
@@ -278,6 +322,10 @@
       <input name="GetDirectMarketingInfo" message="tns:GetDirectMarketingInfo" />
       <output name="GetDirectMarketingInfo_Result" message="tns:GetDirectMarketingInfo_Result" />
     </operation>
+    <operation name="GetMobileProfilesByCardId">
+      <input name="GetMobileProfilesByCardId" message="tns:GetMobileProfilesByCardId" />
+      <output name="GetMobileProfilesByCardId_Result" message="tns:GetMobileProfilesByCardId_Result" />
+    </operation>
     <operation name="MemberContactCreate">
       <input name="MemberContactCreate" message="tns:MemberContactCreate" />
       <output name="MemberContactCreate_Result" message="tns:MemberContactCreate_Result" />
@@ -299,6 +347,15 @@
         <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
       </input>
       <output name="GetDirectMarketingInfo_Result">
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </output>
+    </operation>
+    <operation name="GetMobileProfilesByCardId">
+      <operation soapAction="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2:GetMobileProfilesByCardId" style="document" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      <input name="GetMobileProfilesByCardId">
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </input>
+      <output name="GetMobileProfilesByCardId_Result">
         <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
       </output>
     </operation>

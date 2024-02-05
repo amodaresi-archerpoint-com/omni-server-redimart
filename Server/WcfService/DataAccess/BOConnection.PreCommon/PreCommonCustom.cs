@@ -3,19 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
 using System.Net.Http;
-using System.Security.Policy;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using LSOmni.Common.Util;
 using LSOmni.DataAccess.BOConnection.PreCommon.Mapping;
 using LSRetail.Omni.Domain.DataModel.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Members;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Setup;
-using System.ComponentModel;
-using System.Threading;
-using System.Net;
-using System.Collections;
 
 namespace LSOmni.DataAccess.BOConnection.PreCommon
 {
@@ -384,5 +378,35 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             logger.StatisticEndSub(ref stat, index);
         }
         #endregion
+
+        #region Altria Phase III - Remember attributes
+        public List<Profile> GetMemberAttributesByCardId(string cardId, Statistics stat)
+        {
+            logger.StatisticStartSub(true, ref stat, out int index);
+
+            centralWS2 = new OmniWrapper2.OmniWrapper2();
+            string url = config.SettingsGetByKey(ConfigKey.BOUrl);
+            centralWS2.Url = url.Replace("RetailWebServices", "OmniWrapper2");
+            centralWS2.Timeout = config.SettingsIntGetByKey(ConfigKey.BOTimeout) * 1000;  //millisecs,  60 seconds
+            centralWS2.PreAuthenticate = true;
+            centralWS2.AllowAutoRedirect = true;
+            centralWS2.Credentials = new System.Net.NetworkCredential(
+                                    config.Settings.FirstOrDefault(x => x.Key == ConfigKey.BOUser.ToString()).Value,
+                                    config.Settings.FirstOrDefault(x => x.Key == ConfigKey.BOPassword.ToString()).Value);
+
+            string respCode = string.Empty;
+            string errorText = string.Empty;
+            ContactMapping map = new ContactMapping(config.IsJson, LSCVersion);
+            OmniWrapper2.RootGetMemberAttributes root = new OmniWrapper2.RootGetMemberAttributes();
+
+            logger.Debug(config.LSKey.Key, "GetMemberAttributesByCardId - CardId: {0}", cardId);
+            centralWS2.GetMobileProfilesByCardId(ref respCode, ref errorText, XMLHelper.GetString(cardId), ref root);
+            HandleWS2ResponseCode("GetMemberAttributesByCardId", respCode, errorText, ref stat, index);
+            logger.Debug(config.LSKey.Key, "GetMemberAttributesByCardId Response - " + Serialization.ToXml(root, true));
+            List<Profile> data = map.MapFromRootToGetMemberAttributesByCardId(root);
+            logger.StatisticEndSub(ref stat, index);
+            return data;
+        }
+        #endregion
     }
-}
+    }

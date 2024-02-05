@@ -555,6 +555,9 @@
     <None Include="Web References\OmniWrapper2\RootGetDirectMarketingInfo.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
+    <None Include="Web References\OmniWrapper2\RootGetMemberAttributes.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
     <None Include="Web References\OmniWrapper2\RootMemberContactCreate.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>

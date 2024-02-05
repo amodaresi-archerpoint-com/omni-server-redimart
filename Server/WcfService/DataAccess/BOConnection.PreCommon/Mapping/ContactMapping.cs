@@ -831,5 +831,39 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
         }
 
         #endregion
+
+        #region Altria Phase III - Remember Attributes
+        public List<Profile> MapFromRootToGetMemberAttributesByCardId(OmniWrapper2.RootGetMemberAttributes root)
+        {
+            List<Profile> list = new List<Profile>();
+            if (root.MemberAttributeList == null)
+                return list;
+
+            foreach(OmniWrapper2.MemberAttributeList attr in root.MemberAttributeList)
+            {
+                //skip if not attribute (type)
+                //skip if not text or boolean (attributetype)
+                //skip if the key and value of the attribute is same, it is a published offer, not a normal memeber attribute.
+                //Thus it should not be included - anmo 12/1/2023 Phase II
+                if (attr.Type != "0" || (attr.AttributeType != "0" && attr.AttributeType != "4")
+                    || (attr.AttributeType == "0" && attr.Code.ToUpper().Equals(attr.Value.ToUpper()))) //anmo
+                    continue;
+
+                Profile pro = new Profile()
+                {
+                    Id = attr.Code,
+                    Description = attr.Description,
+                    DataType = (ProfileDataType)Convert.ToInt32(attr.AttributeType)
+                };
+                if (pro.DataType == ProfileDataType.Text)
+                    pro.TextValue = attr.Value;
+                else
+                    pro.ContactValue = (attr.Value.ToUpper().Equals("YES"));
+
+                list.Add(pro);
+            }
+            return list;
+        }
+        #endregion
+        }
     }
-}
