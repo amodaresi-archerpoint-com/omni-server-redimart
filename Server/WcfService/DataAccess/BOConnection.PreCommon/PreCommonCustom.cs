@@ -83,7 +83,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 ResultsErrorMsg = string.Empty,
                 ResultsStatus = string.Empty,
                 ResultsUploadType = string.Empty,
-                ResultsUUID = string.Empty;
+                ResultsUUID = string.Empty,
+                ResultsBuyer = string.Empty;
             Boolean ResultsBlocked = false;
 
             logger.StatisticStartSub(true, ref stat, out int index);
@@ -103,11 +104,17 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 phone = phoneNumber,
                 email = emailAddress
             };
+            var obj4 = new
+            {
+                phone = phoneNumber,
+                email = emailAddress
+            };
             var obj2 = new
             {
                 min_age = OptionsMinAge,
                 customer_ip = OptionsCustIP,
-                contact_customer = true
+                contact_customer = true,
+                metadata = obj4
             };
             var obj3 = new
             {
@@ -130,7 +137,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 ref ResultsStatus,
                 ref ResultsUploadType,
                 ref ResultsUUID,
-                ref ResultsBlocked);
+                ref ResultsBlocked,
+                ref ResultsBuyer);
             logger.Debug(config.LSKey.Key, "StatusCode: {0}", response.StatusCode.ToString());
             logger.Debug(config.LSKey.Key, "ResultsErrorCode: {0}", ResultsErrorCode);
             logger.Debug(config.LSKey.Key, "ResultsErrorMsg: {0}", ResultsErrorMsg);
@@ -138,7 +146,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             logger.Debug(config.LSKey.Key, "ResultsUploadType: {0}", ResultsUploadType);
             logger.Debug(config.LSKey.Key, "ResultsUUID: {0}", ResultsUUID);
             logger.Debug(config.LSKey.Key, "ResultsBlocked: {0}", ResultsBlocked);
-            List <string> data = new List<string> { ResultsUUID, response.StatusCode.ToString(), ResultsStatus, ResultsErrorCode, ResultsErrorMsg };
+            List <string> data = new List<string> { ResultsUUID, response.StatusCode.ToString(), ResultsStatus, ResultsErrorCode, ResultsErrorMsg};
             logger.StatisticEndSub(ref stat, index);
             return data;
         }
@@ -149,8 +157,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 ResultsErrorMsg = string.Empty,
                 ResultsStatus = string.Empty,
                 ResultsUploadType = string.Empty,
-                ResultsUUID = string.Empty;
+                ResultsUUID = string.Empty,
+                ResultsBuyer = string.Empty;
             Boolean ResultsBlocked = false;
+            string APISecret = "w8zMYJXeDOz4ky8Q";
 
             if (UUID == string.Empty)
             {
@@ -160,6 +170,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             logger.Debug(config.LSKey.Key, "AgeVerifyCheck(): begin");
             logger.Debug(config.LSKey.Key, "https://api.agechecker.net/v1/status/{0}", UUID);
             HttpClient request = new HttpClient();
+            request.DefaultRequestHeaders.Add("X-AgeChecker-Secret", APISecret);
             var response = request.GetAsync("https://api.agechecker.net/v1/status/" + UUID).Result;
             string responseText = response.Content.ReadAsStringAsync().Result;
             logger.Debug(config.LSKey.Key, "AgeVerifyGetValues: resultText: {0}", responseText);
@@ -170,7 +181,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 ref ResultsStatus,
                 ref ResultsUploadType,
                 ref ResultsUUID,
-                ref ResultsBlocked);
+                ref ResultsBlocked,
+                ref ResultsBuyer);
             logger.Debug(config.LSKey.Key, "AgeVerifyGetValues: ResultsErrorCode: {0}", ResultsErrorCode);
             logger.Debug(config.LSKey.Key, "AgeVerifyGetValues: ResultsErrorMsg: {0}", ResultsErrorMsg);
             logger.Debug(config.LSKey.Key, "AgeVerifyGetValues: ResultsStatus: {0}", ResultsStatus);
@@ -179,7 +191,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             logger.Debug(config.LSKey.Key, "AgeVerifyGetValues: ResultsBlocked: {0}", ResultsBlocked);
             logger.Debug(config.LSKey.Key, "AgeVerifyGetValues: result.StatusCode.ToString(): {0}", response.StatusCode.ToString());
             logger.Debug(config.LSKey.Key, "AgeVerifyCheckResultAsync(): end");
-            List<string> data = new List<string> { ResultsUUID, response.StatusCode.ToString(), ResultsStatus, ResultsErrorCode, ResultsErrorMsg };
+            List<string> data = new List<string> { ResultsUUID, response.StatusCode.ToString(), ResultsStatus, ResultsErrorCode, ResultsErrorMsg , ResultsBuyer};
             logger.StatisticEndSub(ref stat, index);
             return data;
         }
@@ -191,7 +203,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             ref string ResultsStatus,
             ref string ResultsUploadType,
             ref string ResultsUUID,
-            ref Boolean ResultsBlocked)
+            ref Boolean ResultsBlocked,
+            ref string ResultsBuyer)
         {
             if (JsonResponseText == string.Empty)
             {
@@ -248,7 +261,46 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 {
                     ResultsUUID = string.Empty;
                 }
-            }
+                try
+                {
+                    if ((!string.IsNullOrEmpty(ResultsStatus)) && (ResultsStatus.Equals("accepted")))
+                    {
+                        JsonNode VerificationNode = AgeCheckerResponse["verification"];
+                        JsonNode BuyerNode = VerificationNode["buyer"];
+                        ResultsBuyer += (string) BuyerNode["first_name"];
+                        ResultsBuyer += ';';
+                        ResultsBuyer += (string) BuyerNode["last_name"];
+                        ResultsBuyer += ';';
+                        ResultsBuyer += (string) BuyerNode["address"];
+                        ResultsBuyer += ';';
+                        ResultsBuyer += (string) BuyerNode["city"];
+                        ResultsBuyer += ';';
+                        ResultsBuyer += (string) BuyerNode["zip"];
+                        ResultsBuyer += ';';
+                        ResultsBuyer += (string) BuyerNode["state"];
+                        ResultsBuyer += ';';
+                        ResultsBuyer += (string) BuyerNode["country"];
+                        ResultsBuyer += ';';
+                        ResultsBuyer += (string) BuyerNode["dob_day"];
+                        ResultsBuyer += ';';
+                        ResultsBuyer += (string) BuyerNode["dob_month"];
+                        ResultsBuyer += ';';
+                        ResultsBuyer += (string) BuyerNode["dob_year"];
+                        ResultsBuyer += ';';
+                        JsonNode MetadataNode = AgeCheckerResponse["metadata"];
+                        ResultsBuyer += (string) MetadataNode["email"];
+                        ResultsBuyer += ';';
+                        if (MetadataNode.AsObject().ContainsKey("phone"))
+                        {
+                            ResultsBuyer += (string) MetadataNode["phone"];
+                        }
+                    }
+                }
+                catch
+                {
+                    ResultsBuyer = string.Empty;
+                }
+            }            
             catch (Exception e)
             {
                 ResultsErrorMsg = "Unable to parse Json response: " + e.Message;
