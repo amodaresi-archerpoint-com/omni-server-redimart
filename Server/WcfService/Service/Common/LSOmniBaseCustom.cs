@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using LSOmni.BLL;
 using LSOmni.BLL.Loyalty;
 using LSOmni.Common.Util;
+using LSRetail.Omni.Domain.DataModel.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Members;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Setup;
@@ -63,6 +64,7 @@ namespace LSOmni.Service
             }
         }
         #endregion
+
         #region Phase II - Age checker
         public virtual List<string> GetAgeCheckerReply(string cardId, string firstName, string lastName, DateTime dobDT, string phoneNo, string address, string city, string state, string zip, string email, string tobaccoValue, string cigValue, string cigarValue,
                                                                     string dipValue, string onpValue, string snusValue)
@@ -106,7 +108,52 @@ namespace LSOmni.Service
                 logger.Debug(config.LSKey.Key, "cardId:{0} firstName:{1} lastName:{2} dobDT:{3} phoneNo:{4} address:{5} city:{6} state:{7} zip:{8} email:{9} tobaccoValue:{10} cigValue:{11} cigarValue:{12} dipValue:{13} onpValue:{14} snusValue:{15}",
                     cardId, firstName, lastName, dobDT.ToString(), phoneNo, address, city, state, zip, email, tobaccoValue, cigValue, cigarValue, dipValue, onpValue, snusValue);
                 CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
+                ContactBLL contactBLL = new ContactBLL(config, clientTimeOutInSeconds);
                 List<string> list = customLoyBll.GetAgeCheckerReply(cardId, firstName, lastName, dobDT, phoneNo, address, city, state, zip, email, tobaccoValue, cigValue, cigarValue, dipValue, onpValue, snusValue, stat);
+                logger.Debug(config.LSKey.Key, "GetAgeCheckerReply received results {0} {1} {2} {3} {4}", list[0], list[1], list[2], list[3], list[4]);
+                if ( (!string.IsNullOrEmpty(list[2]) && ((string)list[2]).ToUpper().Equals(Constants.REPLY_ACCEPTED) ) )
+                {
+                    logger.Debug(config.LSKey.Key, "GetAgeCheckerReply is saving contact data");
+                    MemberContact buyerContact = customLoyBll.ContactGetByCardId(cardId, stat);
+                    string origBuyerEmail = buyerContact.Email;
+                    buyerContact.FirstName = firstName;
+                    buyerContact.LastName = lastName; 
+                    Address addressObject = new Address
+                    {
+                        Id = "home",
+                        Type = AddressType.Residential,
+                        Address1 = address,
+                        City = city,
+                        PostCode = zip,
+                        StateProvinceRegion = state,
+                        Country = "US"
+                    };
+                    if ( !string.IsNullOrEmpty(phoneNo) )
+                    {
+                        addressObject.PhoneNumber = phoneNo;
+                    }
+                    buyerContact.Addresses = new List<Address>();
+                    buyerContact.Addresses.Add(addressObject);
+                    buyerContact.BirthDay = dobDT;
+                    buyerContact.AlternateId = list[0];
+                    buyerContact.Profiles.Clear(); //we don't want to update the member attributes any further
+                    if (Validation.IsValidEmail(email))
+                    {
+                        buyerContact.Email = email;
+                    }
+                    try
+                    {
+                        contactBLL.ContactUpdate(buyerContact, false, stat);
+                    }
+                    catch (LSOmniServiceException lsose)
+                    {
+                        logger.Debug(config.LSKey.Key, "GetAgeCheckerReply encountered error while saving contact: {0} {1}", lsose.Message);
+                        buyerContact.Email = origBuyerEmail;
+                        contactBLL.ContactUpdate(buyerContact, false, stat);
+                    }
+                    customLoyBll.RetrievePersonalizedOfferForCardId(cardId, stat);
+                } else
+                    logger.Debug(config.LSKey.Key, "GetAgeCheckerReply did NOT save contact date");
                 return list;
             }
             catch (Exception ex)
@@ -135,6 +182,55 @@ namespace LSOmni.Service
                 logger.Debug(config.LSKey.Key, "cardId:{0} UUID:{1}", cardId, UUID);
                 CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
                 List<string> list = customLoyBll.GetAgeCheckerStatus(cardId, UUID, stat);
+                ContactBLL contactBLL = new ContactBLL(config, clientTimeOutInSeconds);
+                logger.Debug(config.LSKey.Key, "GetAgeCheckerReply received results {0} {1} {2} {3} {4} {5}", list[0], list[1], list[2], list[3], list[4], list[5]);
+                if (!string.IsNullOrEmpty(list[5]))
+                {
+                    logger.Debug(config.LSKey.Key, "GetAgeCheckerReply is saving contact data");
+                    string[] buyerFields = list[5].Split(';');
+                    MemberContact buyerContact = contactBLL.ContactGetByCardId(cardId, 0, stat);
+                    string origBuyerEmail = buyerContact.Email;
+                    buyerContact.FirstName = buyerFields[0];
+                    buyerContact.LastName = buyerFields[1];
+                    Address addressObject = new Address
+                    {
+                        Id = "home",
+                        Type = AddressType.Residential,
+                        Address1 = buyerFields[2],
+                        City = buyerFields[3],
+                        PostCode = buyerFields[4],
+                        StateProvinceRegion = buyerFields[5],
+                        Country = buyerFields[6]
+                    };
+                    if (!string.IsNullOrEmpty(buyerFields[11]))
+                    {
+                        addressObject.PhoneNumber = buyerFields[11];
+                    }
+                    buyerContact.Addresses = new List<Address>();
+                    buyerContact.Addresses.Add(addressObject);
+                    int.TryParse(buyerFields[7], out int dayOfBirth);
+                    int.TryParse(buyerFields[8], out int monthOfBirth);
+                    int.TryParse(buyerFields[9], out int yearOfBirth);
+                    buyerContact.BirthDay = new DateTime(yearOfBirth, monthOfBirth, dayOfBirth);
+                    if (!string.IsNullOrEmpty(buyerFields[10])) {
+                        buyerContact.Email = buyerFields[10];
+                    }
+                    buyerContact.AlternateId = list[0];
+                    buyerContact.Profiles.Clear(); //we don't want to update the member attributes any further
+                    try
+                    {
+                        contactBLL.ContactUpdate(buyerContact, false, stat);
+                    }
+                    catch (LSOmniServiceException lsose)
+                    {
+                        logger.Debug(config.LSKey.Key, "GetAgeCheckerStatus encountered error while saving contact: {0} {1}", lsose.Message);
+                        buyerContact.Email = origBuyerEmail;
+                        contactBLL.ContactUpdate(buyerContact, false, stat);
+                    }
+                    customLoyBll.RetrievePersonalizedOfferForCardId(cardId, stat);
+                }
+                else
+                    logger.Debug(config.LSKey.Key, "GetAgeCheckerReply did NOT save contact date");
                 return list;
             }
             catch (Exception ex)

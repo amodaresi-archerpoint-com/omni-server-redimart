@@ -58,17 +58,22 @@ namespace LSOmni.BLL.Loyalty
                                                                     string dipValue, string onpValue, string snusValue, Statistics stat)
         {
             List<string> ret = BOCustom.GetAgeCheckerReply(cardId, firstName, lastName, dobDT, phoneNo, address, city, state, zip, email, stat);
-            string eaivValue = "1";
+            string eaivValue = Constants.REDI_PENDING;
             if (ret[1].ToUpper().Equals(Constants.STATUS_OK))
             {
-                if (ret[2].ToUpper().Equals(Constants.REPLY_ACCEPTED)) eaivValue = "2";
-                if (ret[2].ToUpper().Equals(Constants.REPLY_DENIED)) eaivValue = "3";
-                BOCustom.SetMemberAttributes(cardId, tobaccoValue, cigValue, cigarValue, dipValue, onpValue, snusValue, eaivValue, stat);
+                if (ret[2].ToUpper().Equals(Constants.REPLY_ACCEPTED)) eaivValue = Constants.REDI_ACCEPTED;
+                if (ret[2].ToUpper().Equals(Constants.REPLY_DENIED)) eaivValue = Constants.REDI_DENIED;
 
-                if (ret[2].ToUpper().Equals(Constants.REPLY_ACCEPTED))
-                {
-                    BOCustom.RetrievePersonalizedOfferForCardId(cardId, stat);
-                }
+                Dictionary<string, string> myDictionary = new Dictionary<string, string>();
+                if (!string.IsNullOrEmpty(tobaccoValue)) { myDictionary.Add(Constants.CAT_TOBACCO, tobaccoValue); }
+                if (!string.IsNullOrEmpty(cigValue)) { myDictionary.Add(Constants.AD_CONSENT_CIGARETTE, cigValue); }
+                if (!string.IsNullOrEmpty(cigarValue)) { myDictionary.Add(Constants.AD_CONSENT_CIGAR, cigarValue); }
+                if (!string.IsNullOrEmpty(dipValue)) { myDictionary.Add(Constants.AD_CONSENT_DIP, dipValue); }
+                if (!string.IsNullOrEmpty(onpValue)) { myDictionary.Add(Constants.AD_CONSENT_ONP, onpValue); }
+                if (!string.IsNullOrEmpty(snusValue)) { myDictionary.Add(Constants.AD_CONSENT_SNUS, snusValue); }
+                if (!string.IsNullOrEmpty(eaivValue)) { myDictionary.Add(Constants.AGE_VERIFIED, eaivValue); }
+
+                BOCustom.SetMemberAttributes(cardId, myDictionary, stat);
             }
             return ret;
         }
@@ -76,19 +81,23 @@ namespace LSOmni.BLL.Loyalty
         public virtual List<string> GetAgeCheckerStatus(string cardId, string UUID, Statistics stat)
         {
             List<string> ret = BOCustom.GetAgeCheckerStatus(stat, UUID);
-            string eaivValue = "1";
+            string eaivValue = Constants.REDI_PENDING;
             if (ret[1].ToUpper().Equals(Constants.STATUS_OK))
             {
-                if (ret[2].ToUpper().Equals(Constants.REPLY_ACCEPTED)) eaivValue = "2";
-                if (ret[2].ToUpper().Equals(Constants.REPLY_DENIED)) eaivValue = "3";
-                BOCustom.SetMemberAttributes(cardId, null, null, null, null, null, null, eaivValue, stat);
+                if (ret[2].ToUpper().Equals(Constants.REPLY_ACCEPTED)) eaivValue = Constants.REDI_ACCEPTED;
+                if (ret[2].ToUpper().Equals(Constants.REPLY_DENIED)) eaivValue = Constants.REDI_DENIED;
 
-                if (ret[2].ToUpper().Equals(Constants.REPLY_ACCEPTED))
-                {
-                    BOCustom.RetrievePersonalizedOfferForCardId(cardId, stat);
-                }
+                Dictionary<string, string> myDictionary = new Dictionary<string, string>();
+                if (!string.IsNullOrEmpty(eaivValue)) { myDictionary.Add(Constants.AGE_VERIFIED, eaivValue); }
+
+                BOCustom.SetMemberAttributes(cardId, myDictionary, stat);
             }
             return ret;
+        }
+
+        public virtual void RetrievePersonalizedOfferForCardId(string cardId, Statistics stat)
+        {
+            BOCustom.RetrievePersonalizedOfferForCardId(cardId, stat);
         }
         #endregion
 
@@ -162,6 +171,12 @@ namespace LSOmni.BLL.Loyalty
         }
         #endregion
 
+        #region Altria Phase III - save contact info
+        public virtual MemberContact ContactGetByCardId(string cardId, Statistics stat)
+        {
+            return BOCustom.ContactGetByCardId(cardId, stat);
+        }
+        #endregion
     }
 }
 
