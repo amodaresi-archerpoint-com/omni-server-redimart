@@ -365,19 +365,6 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
         #endregion AgeChecker
 
         #region Altria Phase II - Member Attributes
-        //public virtual void SetMemberAttributes(string cardId, string tobaccoValue, string cigValue, string cigarValue, string dipValue, string onpValue, string snusValue, string eaivValue, Statistics stat)
-        //{
-        //    Dictionary<string, string> myDictionary = new Dictionary<string, string>();
-        //    if (tobaccoValue != null) { myDictionary.Add(Constants.CAT_TOBACCO, tobaccoValue); }
-        //    if (cigValue != null) { myDictionary.Add(Constants.AD_CONSENT_CIGARETTE, cigValue); }
-        //    if (cigarValue != null) { myDictionary.Add(Constants.AD_CONSENT_CIGAR, cigarValue); }
-        //    if (dipValue != null) { myDictionary.Add(Constants.AD_CONSENT_DIP, dipValue); }
-        //    if (onpValue != null) { myDictionary.Add(Constants.AD_CONSENT_ONP, onpValue); }
-        //    if (snusValue != null) { myDictionary.Add(Constants.AD_CONSENT_SNUS, snusValue); }
-        //    if (eaivValue != null) { myDictionary.Add(Constants.AGE_VERIFIED, eaivValue); }
-        //    LSCentralWSBase.SetMemberAttributes(cardId, myDictionary, stat);
-        //}
-
         public virtual void SetMemberAttributes(string cardId, Dictionary<string, string> pDictionary, Statistics stat)
         {
             LSCentralWSBase.SetMemberAttributes(cardId, pDictionary, stat);

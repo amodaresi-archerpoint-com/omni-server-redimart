@@ -25,7 +25,6 @@ namespace LSOmni.DataAccess.Interface.BOConnection
 
         #region Altria Phase II - Member Attributes
         void SetMemberAttributes(string cardId, Dictionary<string, string> pDictionary, Statistics stat);
-        //void SetMemberAttributes(string cardId, string tobaccoValue, string cigValue, string cigarValue, string dipValue, string onpValue, string snusValue, string eaivValue, Statistics stat);
         #endregion
 
         #region Altria Phase II - Login for existing members
