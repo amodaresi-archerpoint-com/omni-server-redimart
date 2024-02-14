@@ -111,13 +111,15 @@ namespace LSOmni.Service
                 ContactBLL contactBLL = new ContactBLL(config, clientTimeOutInSeconds);
                 List<string> list = customLoyBll.GetAgeCheckerReply(cardId, firstName, lastName, dobDT, phoneNo, address, city, state, zip, email, tobaccoValue, cigValue, cigarValue, dipValue, onpValue, snusValue, stat);
                 logger.Debug(config.LSKey.Key, "GetAgeCheckerReply received results {0} {1} {2} {3} {4}", list[0], list[1], list[2], list[3], list[4]);
-                if ( (!string.IsNullOrEmpty(list[2]) && ((string)list[2]).ToUpper().Equals(Constants.REPLY_ACCEPTED) ) )
+                logger.Debug(config.LSKey.Key, "GetAgeCheckerReply is saving contact data");
+                MemberContact buyerContact = customLoyBll.ContactGetByCardId(cardId, stat);
+                string origBuyerEmail = buyerContact.Email;
+                buyerContact.AlternateId = list[0];
+                buyerContact.Profiles.Clear(); //we don't want to update the member attributes any further
+                if ((!string.IsNullOrEmpty(list[2]) && ((string)list[2]).ToUpper().Equals(Constants.REPLY_ACCEPTED)))
                 {
-                    logger.Debug(config.LSKey.Key, "GetAgeCheckerReply is saving contact data");
-                    MemberContact buyerContact = customLoyBll.ContactGetByCardId(cardId, stat);
-                    string origBuyerEmail = buyerContact.Email;
                     buyerContact.FirstName = firstName;
-                    buyerContact.LastName = lastName; 
+                    buyerContact.LastName = lastName;
                     Address addressObject = new Address
                     {
                         Id = "home",
@@ -128,32 +130,31 @@ namespace LSOmni.Service
                         StateProvinceRegion = state,
                         Country = "US"
                     };
-                    if ( !string.IsNullOrEmpty(phoneNo) )
+                    if (!string.IsNullOrEmpty(phoneNo))
                     {
                         addressObject.PhoneNumber = phoneNo;
                     }
                     buyerContact.Addresses = new List<Address>();
                     buyerContact.Addresses.Add(addressObject);
                     buyerContact.BirthDay = dobDT;
-                    buyerContact.AlternateId = list[0];
-                    buyerContact.Profiles.Clear(); //we don't want to update the member attributes any further
                     if (Validation.IsValidEmail(email))
                     {
                         buyerContact.Email = email;
                     }
-                    try
-                    {
-                        contactBLL.ContactUpdate(buyerContact, false, stat);
-                    }
-                    catch (LSOmniServiceException lsose)
-                    {
-                        logger.Debug(config.LSKey.Key, "GetAgeCheckerReply encountered error while saving contact: {0} {1}", lsose.Message);
-                        buyerContact.Email = origBuyerEmail;
-                        contactBLL.ContactUpdate(buyerContact, false, stat);
-                    }
-                    customLoyBll.RetrievePersonalizedOfferForCardId(cardId, stat);
-                } else
-                    logger.Debug(config.LSKey.Key, "GetAgeCheckerReply did NOT save contact date");
+                } 
+                try
+                {
+                    logger.Debug(config.LSKey.Key, "GetAgeCheckerReply is saving contact data");
+                    contactBLL.ContactUpdate(buyerContact, false, stat);
+                }
+                catch (LSOmniServiceException lsose)
+                {
+                    logger.Debug(config.LSKey.Key, "GetAgeCheckerReply encountered error while saving contact: {0}", lsose.Message);
+                    buyerContact.Email = origBuyerEmail;
+                    logger.Debug(config.LSKey.Key, "GetAgeCheckerReply is trying again to save contact data");
+                    contactBLL.ContactUpdate(buyerContact, false, stat);
+                }
+                customLoyBll.RetrievePersonalizedOfferForCardId(cardId, stat);
                 return list;
             }
             catch (Exception ex)
@@ -183,13 +184,14 @@ namespace LSOmni.Service
                 CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
                 List<string> list = customLoyBll.GetAgeCheckerStatus(cardId, UUID, stat);
                 ContactBLL contactBLL = new ContactBLL(config, clientTimeOutInSeconds);
-                logger.Debug(config.LSKey.Key, "GetAgeCheckerReply received results {0} {1} {2} {3} {4} {5}", list[0], list[1], list[2], list[3], list[4], list[5]);
+                logger.Debug(config.LSKey.Key, "GetAgeCheckerStatus received results {0} {1} {2} {3} {4} {5}", list[0], list[1], list[2], list[3], list[4], list[5]);
+
                 if (!string.IsNullOrEmpty(list[5]))
                 {
-                    logger.Debug(config.LSKey.Key, "GetAgeCheckerReply is saving contact data");
-                    string[] buyerFields = list[5].Split(';');
-                    MemberContact buyerContact = contactBLL.ContactGetByCardId(cardId, 0, stat);
+                    logger.Debug(config.LSKey.Key, "GetAgeCheckerStatus is saving contact data");
+                    MemberContact buyerContact = customLoyBll.ContactGetByCardId(cardId, stat);
                     string origBuyerEmail = buyerContact.Email;
+                    string[] buyerFields = list[5].Split(';');
                     buyerContact.FirstName = buyerFields[0];
                     buyerContact.LastName = buyerFields[1];
                     Address addressObject = new Address
@@ -215,7 +217,6 @@ namespace LSOmni.Service
                     if (!string.IsNullOrEmpty(buyerFields[10])) {
                         buyerContact.Email = buyerFields[10];
                     }
-                    buyerContact.AlternateId = list[0];
                     buyerContact.Profiles.Clear(); //we don't want to update the member attributes any further
                     try
                     {
@@ -317,5 +318,32 @@ namespace LSOmni.Service
         }
         #endregion
 
+        #region Altria Phase III - save contact info
+        public virtual MemberContact ContactGetByCardId2(string cardId)
+        {
+            if (cardId == null)
+                cardId = string.Empty;
+
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+            try
+            {
+                logger.Debug(config.LSKey.Key, "LSOmniBaseCustom ContactGetByCardId was called");
+                logger.Debug(config.LSKey.Key, "cardId:{0} ", cardId);
+
+                CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
+                return customLoyBll.ContactGetByCardId(cardId, stat);
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "cardId:{0}", cardId);
+                return null; //never gets here
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
+            
+        }
+        #endregion
     }
 }

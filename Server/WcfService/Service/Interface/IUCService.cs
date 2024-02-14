@@ -69,6 +69,11 @@ namespace LSOmni.Service
         List<Profile> ProfilesByCardIdGet(string cardId);
         #endregion
 
+        #region Altria Phase III - save contact data
+        [OperationContract]
+        MemberContact ContactGetByCardId2(string cardId);
+        #endregion
+
         #region Discount, Offers and GiftCards
 
         /// <summary>

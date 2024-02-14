@@ -86,6 +86,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                         case 5: rec.MiddleName = col.FieldValue; break;
                         case 6: rec.LastName = col.FieldValue; break;
                         case 7: rec.Gender = (Gender)ConvertTo.SafeInt(col.FieldValue); break;
+                        case 8: rec.AlternateId = col.FieldValue; break; //anmo
                         case 9: rec.Email = col.FieldValue; break;
                         case 10: rec.BirthDay = ConvertTo.SafeDateTime(col.FieldValue); break;
                         case 11: rec.MaritalStatus = (MaritalStatus)ConvertTo.SafeInt(col.FieldValue); break;
