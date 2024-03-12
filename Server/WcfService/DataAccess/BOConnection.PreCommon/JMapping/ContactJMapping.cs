@@ -46,8 +46,11 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                 }
                 cont.UserName = LoadOneValue(result.GetDataSet(99009049), "Card No.", cont.Cards.FirstOrDefault().Id, "Login ID");
                 cont.Account = accounts.Find(x => x.Id == cont.Account.Id);
-                cont.Account.Scheme = schemes.Find(x => x.Id == cont.Account.SchemeCode);
-                cont.Account.Scheme.Club = clubs.Find(x => x.Id == cont.Account.Scheme.ClubCode);
+                if (!string.IsNullOrEmpty(cont.Account.SchemeCode)) //anmo
+                {
+                    cont.Account.Scheme = schemes.Find(x => x.Id == cont.Account.SchemeCode);
+                    cont.Account.Scheme.Club = clubs.Find(x => x.Id == cont.Account.Scheme.ClubCode);
+                }
                 cont.Profiles = profiles.FindAll(x => x.AccountNo == cont.Account.Id && x.ContactNo == cont.Id);
 
                 string key = "LSC Member Account: " + cont.Account.Id;

@@ -853,8 +853,12 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 string ret = SendToOData("GetMemberContactInfo_GetMemberContactInfo", data);
                 ContactJMapping cmap = new ContactJMapping(config.IsJson);
                 List<MemberContact> list = cmap.GetMemberContact(ret);
+                contact = list.FirstOrDefault(); //anmo
+                Card myCard = contact.Cards.Find(x => x.Id == card); //anmo
+                if (myCard != null) //anmo
+                    contact.UserName = myCard.LoginId; //anmo
                 logger.StatisticEndSub(ref stat, index);
-                return list.FirstOrDefault();
+                return contact; //anmo
             }
 
             LSCentral.RootGetMemberContact rootContact = new LSCentral.RootGetMemberContact();
