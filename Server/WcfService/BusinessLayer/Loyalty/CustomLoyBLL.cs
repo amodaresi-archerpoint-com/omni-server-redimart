@@ -123,8 +123,13 @@ namespace LSOmni.BLL.Loyalty
                 throw new LSOmniException(StatusCode.EmailInvalid, "Validation of email failed");
 
             //check if user exist before calling NAV
-            if (config.SettingsBoolGetByKey(ConfigKey.Allow_Dublicate_Email) == false && BOLoyConnection.ContactGet(ContactSearchType.Email, contact.Email, stat) != null)
-                throw new LSOmniServiceException(StatusCode.EmailExists, "Email already exists: " + contact.UserName);
+            if (config.SettingsBoolGetByKey(ConfigKey.Allow_Dublicate_Email) == false)
+            {
+                MemberContact contactFromDB = BOLoyConnection.ContactGet(ContactSearchType.Email, contact.Email, stat);
+                if (contactFromDB != null)
+                    if (contactFromDB.Cards.Find(x => x.Id == contact.UserName) == null)
+                        throw new LSOmniServiceException(StatusCode.EmailExists, "Email already exists: " + contact.UserName);
+            }
 
             if (string.IsNullOrEmpty(contact.AuthenticationId) == false)
             {
