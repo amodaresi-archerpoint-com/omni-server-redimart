@@ -107,7 +107,11 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
 
             foreach (ReplODataRecord rec in dynDataSet.DataSetRows)
             {
-                ReplODataField fld = rec.Fields.Find(f => f.FieldIndex == lfld.FieldIndex && f.FieldValue == lookupValue);
+                ReplODataField fld = rec.Fields.Find(f => f.FieldIndex == lfld.FieldIndex && f.FieldValue == lookupValue.ToLower());  //anmo
+                if (fld == null)                                                                                                      //anmo
+                {
+                    fld = rec.Fields.Find(f => f.FieldIndex == lfld.FieldIndex && f.FieldValue == lookupValue.ToUpper());             //anmo
+                }
                 if (fld != null)
                 {
                     ReplODataField res = rec.Fields.Find(f => f.FieldIndex == rfld.FieldIndex);

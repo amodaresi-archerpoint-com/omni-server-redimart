@@ -37,6 +37,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
         
         private System.Threading.SendOrPostCallback RetrievePersonalizedOfferOperationCompleted;
         
+        private System.Threading.SendOrPostCallback SetTermsPolicyAcceptanceOperationCompleted;
+        
         private System.Threading.SendOrPostCallback UpdateMemberAttributesOperationCompleted;
         
         private bool useDefaultCredentialsSetExplicitly;
@@ -88,6 +90,9 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
         
         /// <remarks/>
         public event RetrievePersonalizedOfferCompletedEventHandler RetrievePersonalizedOfferCompleted;
+        
+        /// <remarks/>
+        public event SetTermsPolicyAcceptanceCompletedEventHandler SetTermsPolicyAcceptanceCompleted;
         
         /// <remarks/>
         public event UpdateMemberAttributesCompletedEventHandler UpdateMemberAttributesCompleted;
@@ -254,6 +259,46 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
             if ((this.RetrievePersonalizedOfferCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.RetrievePersonalizedOfferCompleted(this, new RetrievePersonalizedOfferCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2:SetTermsPolicyAcceptance", RequestNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2", ResponseElementName="SetTermsPolicyAcceptance_Result", ResponseNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public void SetTermsPolicyAcceptance(string loginID, string deviceID, string termsCondVersion, string privacyPolicyVersion, ref string responseCode, ref string errorText) {
+            object[] results = this.Invoke("SetTermsPolicyAcceptance", new object[] {
+                        loginID,
+                        deviceID,
+                        termsCondVersion,
+                        privacyPolicyVersion,
+                        responseCode,
+                        errorText});
+            responseCode = ((string)(results[0]));
+            errorText = ((string)(results[1]));
+        }
+        
+        /// <remarks/>
+        public void SetTermsPolicyAcceptanceAsync(string loginID, string deviceID, string termsCondVersion, string privacyPolicyVersion, string responseCode, string errorText) {
+            this.SetTermsPolicyAcceptanceAsync(loginID, deviceID, termsCondVersion, privacyPolicyVersion, responseCode, errorText, null);
+        }
+        
+        /// <remarks/>
+        public void SetTermsPolicyAcceptanceAsync(string loginID, string deviceID, string termsCondVersion, string privacyPolicyVersion, string responseCode, string errorText, object userState) {
+            if ((this.SetTermsPolicyAcceptanceOperationCompleted == null)) {
+                this.SetTermsPolicyAcceptanceOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSetTermsPolicyAcceptanceOperationCompleted);
+            }
+            this.InvokeAsync("SetTermsPolicyAcceptance", new object[] {
+                        loginID,
+                        deviceID,
+                        termsCondVersion,
+                        privacyPolicyVersion,
+                        responseCode,
+                        errorText}, this.SetTermsPolicyAcceptanceOperationCompleted, userState);
+        }
+        
+        private void OnSetTermsPolicyAcceptanceOperationCompleted(object arg) {
+            if ((this.SetTermsPolicyAcceptanceCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.SetTermsPolicyAcceptanceCompleted(this, new SetTermsPolicyAcceptanceCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -1968,6 +2013,40 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
         private object[] results;
         
         internal RetrievePersonalizedOfferCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public string responseCode {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+        
+        /// <remarks/>
+        public string errorText {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[1]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4161.0")]
+    public delegate void SetTermsPolicyAcceptanceCompletedEventHandler(object sender, SetTermsPolicyAcceptanceCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4161.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class SetTermsPolicyAcceptanceCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal SetTermsPolicyAcceptanceCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
                 base(exception, cancelled, userState) {
             this.results = results;
         }

@@ -10,6 +10,7 @@ using LSRetail.Omni.Domain.DataModel.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Members;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Setup;
+using System.Web.UI.WebControls;
 
 namespace LSOmni.DataAccess.BOConnection.PreCommon
 {
@@ -460,5 +461,35 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             return data;
         }
         #endregion
+
+        #region Altria Phase III - Log terms acceptance 
+        public bool LogTermsPolicyAcceptance(string loginID, string deviceID, string termsCondVersion, string privacyPolicyVersion, Statistics stat)
+        {
+            logger.StatisticStartSub(true, ref stat, out int index);
+
+            centralWS2 = new OmniWrapper2.OmniWrapper2();
+            string url = config.SettingsGetByKey(ConfigKey.BOUrl);
+            centralWS2.Url = url.Replace("RetailWebServices", "OmniWrapper2");
+            centralWS2.Timeout = config.SettingsIntGetByKey(ConfigKey.BOTimeout) * 1000;  //millisecs,  60 seconds
+            centralWS2.PreAuthenticate = true;
+            centralWS2.AllowAutoRedirect = true;
+            centralWS2.Credentials = new System.Net.NetworkCredential(
+                                    config.Settings.FirstOrDefault(x => x.Key == ConfigKey.BOUser.ToString()).Value,
+                                    config.Settings.FirstOrDefault(x => x.Key == ConfigKey.BOPassword.ToString()).Value);
+
+            string respCode = string.Empty;
+            string errorText = string.Empty;
+            //ContactMapping map = new ContactMapping(config.IsJson, LSCVersion);
+            //OmniWrapper2.RootGetMemberAttributes root = new OmniWrapper2.RootGetMemberAttributes();
+
+            logger.Debug(config.LSKey.Key, "LogTermsPolicyAcceptance - loginID: {0}", loginID);
+            centralWS2.SetTermsPolicyAcceptance(loginID, deviceID, termsCondVersion, privacyPolicyVersion, ref respCode, ref errorText);
+            HandleWS2ResponseCode("LogTermsPolicyAcceptance", respCode, errorText, ref stat, index);
+            logger.Debug(config.LSKey.Key, "LogTermsPolicyAcceptance Response - " + respCode + " " + errorText);
+            //List<Profile> data = map.MapFromRootToGetMemberAttributesByCardId(root);
+            logger.StatisticEndSub(ref stat, index);
+            return true;
+        }
+        #endregion
     }
-    }
+}

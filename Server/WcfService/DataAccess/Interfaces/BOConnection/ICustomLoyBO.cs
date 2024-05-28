@@ -42,5 +42,9 @@ namespace LSOmni.DataAccess.Interface.BOConnection
         #region Altria Phase III - save contact info
         MemberContact ContactGetByCardId(string cardId, Statistics stat);
         #endregion
+
+        #region Altria Phase III - Log terms acceptance 
+        bool LogTermsPolicyAcceptance(string loginID, string deviceID, string termsCondVersion, string privacyPolicyVersion, Statistics stat);
+        #endregion
     }
 }

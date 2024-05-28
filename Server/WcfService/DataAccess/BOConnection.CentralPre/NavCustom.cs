@@ -398,5 +398,12 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
             return LSCentralWSBase.ContactGet(string.Empty, string.Empty, cardId, string.Empty, string.Empty, stat);
         }
         #endregion
+
+        #region Altria Phase III - Log terms acceptance
+        public virtual bool LogTermsPolicyAcceptance(string loginID, string deviceID, string termsCondVersion, string privacyPolicyVersion, Statistics stat)
+        {
+            return LSCentralWSBase.LogTermsPolicyAcceptance(loginID, deviceID, termsCondVersion, privacyPolicyVersion, stat);
+        }
+        #endregion
     }
 }

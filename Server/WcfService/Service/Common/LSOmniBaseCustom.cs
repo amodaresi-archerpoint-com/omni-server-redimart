@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using LSOmni.BLL;
 using LSOmni.BLL.Loyalty;
 using LSOmni.Common.Util;
@@ -343,6 +344,38 @@ namespace LSOmni.Service
                 logger.StatisticEndMain(stat);
             }
             
+        }
+        #endregion
+
+        #region Altria Phase III - Log terms acceptance 
+        public virtual bool LogTermsPolicyAcceptance(string loginID, string deviceID, string termsCondVersion, string privacyPolicyVersion)
+        {
+            if (loginID == null)
+                loginID = string.Empty;
+            if (deviceID == null)
+                deviceID = string.Empty;
+            if (termsCondVersion == null)
+                termsCondVersion = string.Empty;
+            if (privacyPolicyVersion == null)
+                privacyPolicyVersion = string.Empty;
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+            try
+            {
+                logger.Debug(config.LSKey.Key, "LogTermsPolicyAcceptance was called");
+                logger.Debug(config.LSKey.Key, "loginID:{0} deviceID:{1} termsCondVersion:{2} privacyPolicyVersion:{3}", loginID, deviceID, termsCondVersion, privacyPolicyVersion);
+                CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
+                return customLoyBll.LogTermsPolicyAcceptance(loginID, deviceID, termsCondVersion, privacyPolicyVersion, stat);
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "loginID:{0} deviceID:{1} termsCondVersion:{2} privacyPolicyVersion:{3}",
+                    loginID, deviceID, termsCondVersion, privacyPolicyVersion);
+                return false; //never gets here
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
         }
         #endregion
     }
