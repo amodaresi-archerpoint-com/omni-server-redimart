@@ -266,6 +266,26 @@
           </sequence>
         </complexType>
       </element>
+      <element name="SetTermsPolicyAcceptance">
+        <complexType>
+          <sequence>
+            <element minOccurs="1" maxOccurs="1" name="loginID" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="deviceID" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="termsCondVersion" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="privacyPolicyVersion" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="responseCode" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="errorText" type="string" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="SetTermsPolicyAcceptance_Result">
+        <complexType>
+          <sequence>
+            <element minOccurs="1" maxOccurs="1" name="responseCode" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="errorText" type="string" />
+          </sequence>
+        </complexType>
+      </element>
       <element name="UpdateMemberAttributes">
         <complexType>
           <sequence>
@@ -311,6 +331,12 @@
   <message name="RetrievePersonalizedOffer_Result">
     <part name="parameters" element="tns:RetrievePersonalizedOffer_Result" />
   </message>
+  <message name="SetTermsPolicyAcceptance">
+    <part name="parameters" element="tns:SetTermsPolicyAcceptance" />
+  </message>
+  <message name="SetTermsPolicyAcceptance_Result">
+    <part name="parameters" element="tns:SetTermsPolicyAcceptance_Result" />
+  </message>
   <message name="UpdateMemberAttributes">
     <part name="parameters" element="tns:UpdateMemberAttributes" />
   </message>
@@ -333,6 +359,10 @@
     <operation name="RetrievePersonalizedOffer">
       <input name="RetrievePersonalizedOffer" message="tns:RetrievePersonalizedOffer" />
       <output name="RetrievePersonalizedOffer_Result" message="tns:RetrievePersonalizedOffer_Result" />
+    </operation>
+    <operation name="SetTermsPolicyAcceptance">
+      <input name="SetTermsPolicyAcceptance" message="tns:SetTermsPolicyAcceptance" />
+      <output name="SetTermsPolicyAcceptance_Result" message="tns:SetTermsPolicyAcceptance_Result" />
     </operation>
     <operation name="UpdateMemberAttributes">
       <input name="UpdateMemberAttributes" message="tns:UpdateMemberAttributes" />
@@ -377,6 +407,15 @@
         <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
       </output>
     </operation>
+    <operation name="SetTermsPolicyAcceptance">
+      <operation soapAction="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2:SetTermsPolicyAcceptance" style="document" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      <input name="SetTermsPolicyAcceptance">
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </input>
+      <output name="SetTermsPolicyAcceptance_Result">
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </output>
+    </operation>
     <operation name="UpdateMemberAttributes">
       <operation soapAction="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2:UpdateMemberAttributes" style="document" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
       <input name="UpdateMemberAttributes">
@@ -389,7 +428,7 @@
   </binding>
   <service name="OmniWrapper2">
     <port name="OmniWrapper2_Port" binding="tns:OmniWrapper2_Binding">
-      <address location="http://localhost:7147/LS22-2-W1_ws/WS/CRONUS%20-%20LS%20Central/Codeunit/OmniWrapper2" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      <address location="http://localhost:7147/LS22-2-W1_ws/WS/ReplaceWithAPercentEncodedCompanyName/Codeunit/OmniWrapper2" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
     </port>
   </service>
 </definitions>

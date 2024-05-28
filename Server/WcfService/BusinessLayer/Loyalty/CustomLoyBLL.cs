@@ -160,7 +160,7 @@ namespace LSOmni.BLL.Loyalty
         }
         private string GetDefaultDeviceId(string userName)
         {
-            return ("WEB-" + userName);
+            return ("WEB-" + userName.ToUpper());  //anmo
         }
 
         public new void SecurityCheck()
@@ -180,6 +180,13 @@ namespace LSOmni.BLL.Loyalty
         public virtual MemberContact ContactGetByCardId(string cardId, Statistics stat)
         {
             return BOCustom.ContactGetByCardId(cardId, stat);
+        }
+        #endregion
+
+        #region Altria Phase III - Log terms acceptance 
+        public virtual bool LogTermsPolicyAcceptance(string loginID, string deviceID, string termsCondVersion, string privacyPolicyVersion, Statistics stat)
+        {
+            return BOCustom.LogTermsPolicyAcceptance(loginID, deviceID, termsCondVersion, privacyPolicyVersion, stat);
         }
         #endregion
     }

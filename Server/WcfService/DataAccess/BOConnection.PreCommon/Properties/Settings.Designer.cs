@@ -92,8 +92,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:7147/LS22-2-W1_ws/WS/CRONUS%20-%20LS%20Central/Codeunit/OmniWrap" +
-            "per2")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:7147/LS22-2-W1_ws/WS/ReplaceWithAPercentEncodedCompanyName/Codeu" +
+            "nit/OmniWrapper2")]
         public string LSOmni_DataAccess_BOConnection_PreCommon_OmniWrapper2_OmniWrapper2 {
             get {
                 return ((string)(this["LSOmni_DataAccess_BOConnection_PreCommon_OmniWrapper2_OmniWrapper2"]));

@@ -85,6 +85,12 @@ namespace LSOmni.Service
         MemberContact ContactGetByCardId2(string cardId);
         #endregion
 
+        #region Altria Phase III - Log terms acceptance 
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
+        bool LogTermsPolicyAcceptance(string loginID, string deviceID, string termsCondVersion, string privacyPolicyVersion);
+        #endregion
+
         #region Discount, Offers and GiftCards
 
         /// <summary>
