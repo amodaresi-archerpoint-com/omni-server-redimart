@@ -79,6 +79,11 @@ namespace LSOmni.Service
         bool LogTermsPolicyAcceptance(string loginID, string deviceID, string termsCondVersion, string privacyPolicyVersion);
         #endregion
 
+        #region Altria Phase IV - Minimum Version
+        [OperationContract]
+        int GetMinimumRequiredBuildNr();
+        #endregion
+
         #region Discount, Offers and GiftCards
 
         /// <summary>

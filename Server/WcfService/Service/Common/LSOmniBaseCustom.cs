@@ -378,5 +378,12 @@ namespace LSOmni.Service
             }
         }
         #endregion
+
+        #region Altria Phase IV - Minimum Version
+        public virtual int GetMinimumRequiredBuildNr()
+        {
+            return Constants.MIN_REQ_BUILD;
+        }
+        #endregion
     }
 }
