@@ -385,5 +385,47 @@ namespace LSOmni.Service
             return Constants.MIN_REQ_BUILD;
         }
         #endregion
+
+        #region Altria Phase IV - Reset Consent
+        public virtual int SaveConsent(string cardId, string tobaccoValue, string cigValue, string cigarValue,
+                                                                    string dipValue, string onpValue, string snusValue)
+        {
+            if (cardId == null)
+                cardId = string.Empty;
+            if (tobaccoValue == null)
+                tobaccoValue = string.Empty;
+            if (cigValue == null)
+                cigValue = string.Empty;
+            if (cigarValue == null)
+                cigarValue = string.Empty;
+            if (dipValue == null)
+                dipValue = string.Empty;
+            if (onpValue == null)
+                onpValue = string.Empty;
+            if (snusValue == null)
+                snusValue = string.Empty;
+
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+
+            try
+            {
+                logger.Debug(config.LSKey.Key, "cardId:{0} tobaccoValue:{1} cigValue:{2} cigarValue:{3} dipValue:{4} onpValue:{5} snusValue:{6}",
+                    cardId, tobaccoValue, cigValue, cigarValue, dipValue, onpValue, snusValue);
+                CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
+                int returnValue = customLoyBll.SaveConsent(cardId, tobaccoValue, cigValue, cigarValue, dipValue, onpValue, snusValue, stat);
+                logger.Debug(config.LSKey.Key, "SaveConsent received return value {0}", returnValue);
+                return returnValue;
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "cardId:{0}", cardId);
+                return -1; //never gets here
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
+        }
+        #endregion
     }
 }

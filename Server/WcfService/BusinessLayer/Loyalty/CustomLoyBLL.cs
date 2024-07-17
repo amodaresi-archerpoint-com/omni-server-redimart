@@ -189,6 +189,23 @@ namespace LSOmni.BLL.Loyalty
             return BOCustom.LogTermsPolicyAcceptance(loginID, deviceID, termsCondVersion, privacyPolicyVersion, stat);
         }
         #endregion
+
+        #region Altria Phase IV - Reset consent
+        public virtual int SaveConsent(string cardId, string tobaccoValue, string cigValue, string cigarValue,
+                                                                    string dipValue, string onpValue, string snusValue, Statistics stat)
+        {
+            Dictionary<string, string> myDictionary = new Dictionary<string, string>();
+            if (!string.IsNullOrEmpty(tobaccoValue)) { myDictionary.Add(Constants.CAT_TOBACCO, tobaccoValue); }
+            if (!string.IsNullOrEmpty(cigValue)) { myDictionary.Add(Constants.AD_CONSENT_CIGARETTE, cigValue); }
+            if (!string.IsNullOrEmpty(cigarValue)) { myDictionary.Add(Constants.AD_CONSENT_CIGAR, cigarValue); }
+            if (!string.IsNullOrEmpty(dipValue)) { myDictionary.Add(Constants.AD_CONSENT_DIP, dipValue); }
+            if (!string.IsNullOrEmpty(onpValue)) { myDictionary.Add(Constants.AD_CONSENT_ONP, onpValue); }
+            if (!string.IsNullOrEmpty(snusValue)) { myDictionary.Add(Constants.AD_CONSENT_SNUS, snusValue); }
+
+            BOCustom.SetMemberAttributes(cardId, myDictionary, stat);
+            return 0;
+        }
+        #endregion
     }
 }
 

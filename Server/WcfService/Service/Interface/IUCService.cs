@@ -84,6 +84,11 @@ namespace LSOmni.Service
         int GetMinimumRequiredBuildNr();
         #endregion
 
+        #region Altria Phase IV - Reset Consent
+        [OperationContract]
+        int SaveConsent(string cardId, string tobaccoValue, string cigValue, string cigarValue,
+                                                                    string dipValue, string onpValue, string snusValue);
+        #endregion
         #region Discount, Offers and GiftCards
 
         /// <summary>
