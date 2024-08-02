@@ -212,7 +212,8 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon.Mapping
                     City = header.City,
                     Country = header.CountryRegionCode,
                     PostCode = header.PostCode,
-                    StateProvinceRegion = header.County,
+                    County = header.County,
+                    StateProvinceRegion = header.TerritoryCode,
                     PhoneNumber = header.PhoneNo,
                     CellPhoneNumber = header.MobilePhoneNo
                 },
@@ -227,7 +228,7 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon.Mapping
                     City = header.ShiptoCity,
                     Country = header.ShiptoCountryRegionCode,
                     PostCode = header.ShiptoPostCode,
-                    StateProvinceRegion = header.ShiptoCounty,
+                    County = header.ShiptoCounty,
                     PhoneNumber = header.ShiptoPhoneNo
                 }
             };
@@ -302,6 +303,7 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon.Mapping
                     {
                         LineNumber = line.LineNo,
                         Amount = (line.FinalisedAmount > 0) ? line.FinalisedAmount : line.PreApprovedAmount,
+                        AmountLCY = (line.FinalisedAmountLCY > 0) ? line.FinalisedAmountLCY : line.PreApprovedAmountLCY,
                         CurrencyCode = line.CurrencyCode,
                         TenderType = line.TenderType
                     };
@@ -346,7 +348,8 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon.Mapping
                     City = header.City,
                     Country = header.CountryRegionCode,
                     PostCode = header.PostCode,
-                    StateProvinceRegion = header.County,
+                    County = header.County,
+                    StateProvinceRegion = header.TerritoryCode,
                     PhoneNumber = header.PhoneNo,
                     CellPhoneNumber = header.MobilePhoneNo
                 },
@@ -362,7 +365,7 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon.Mapping
                     City = header.ShiptoCity,
                     Country = header.ShiptoCountryRegionCode,
                     PostCode = header.ShiptoPostCode,
-                    StateProvinceRegion = header.ShiptoCounty,
+                    County = header.ShiptoCounty,
                     PhoneNumber = header.ShiptoPhoneNo
                 }
             };
@@ -501,6 +504,9 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon.Mapping
         {
             NavWS.RootCustomerOrderCreateV2 root = new NavWS.RootCustomerOrderCreateV2();
 
+            if (order.OrderType == OrderType.Sale)
+                order.ShipOrder = true;
+
             List<NavWS.CustomerOrderHeaderV21> header = new List<NavWS.CustomerOrderHeaderV21>();
             header.Add(new NavWS.CustomerOrderHeaderV21()
             {
@@ -515,8 +521,9 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon.Mapping
                 Address2 = XMLHelper.GetString(order.ContactAddress.Address2),
                 HouseApartmentNo = XMLHelper.GetString(order.ContactAddress.HouseNo),
                 City = XMLHelper.GetString(order.ContactAddress.City),
-                County = XMLHelper.GetString(order.ContactAddress.StateProvinceRegion),
+                County = XMLHelper.GetString(order.ContactAddress.County),
                 PostCode = XMLHelper.GetString(order.ContactAddress.PostCode),
+                TerritoryCode = XMLHelper.GetString(order.ContactAddress.StateProvinceRegion),
                 CountryRegionCode = XMLHelper.GetString(order.ContactAddress.Country),
                 PhoneNo = XMLHelper.GetString(order.ContactAddress.PhoneNumber),
                 MobilePhoneNo = XMLHelper.GetString(order.ContactAddress.CellPhoneNumber),
@@ -527,17 +534,16 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon.Mapping
                 ShipToAddress2 = XMLHelper.GetString(order.ShipToAddress.Address2),
                 ShipToHouseApartmentNo = XMLHelper.GetString(order.ShipToAddress.HouseNo),
                 ShipToCity = XMLHelper.GetString(order.ShipToAddress.City),
-                ShipToCounty = XMLHelper.GetString(order.ShipToAddress.StateProvinceRegion),
+                ShipToCounty = XMLHelper.GetString(order.ShipToAddress.County),
                 ShipToPostCode = XMLHelper.GetString(order.ShipToAddress.PostCode),
                 ShipToCountryRegionCode = XMLHelper.GetString(order.ShipToAddress.Country),
                 ShipToPhoneNo = XMLHelper.GetString(order.ShipToAddress.PhoneNumber),
                 ShipToEmail = XMLHelper.GetString(order.ShipToEmail),
                 ClickAndCollectOrder = (order.OrderType == OrderType.ClickAndCollect),
-                ShipOrder = (order.ShippingStatus != ShippingStatus.ShippigNotRequired),
+                ShipOrder = order.ShipOrder,
                 ShippingAgentServiceCode = XMLHelper.GetString(order.ShippingAgentServiceCode),
                 ShippingAgentCode = XMLHelper.GetString(order.ShippingAgentCode),
                 CreatedAtStore = string.Empty,
-                TerritoryCode = string.Empty,
                 SourcingLocation = string.Empty,
                 ReceiptNo = string.Empty,
                 VendorSourcing = string.Empty,
@@ -639,6 +645,9 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon.Mapping
                 order.ContactAddress.PostCode = string.IsNullOrEmpty(order.ContactAddress.PostCode) ? "x" : order.ContactAddress.PostCode;
             }
 
+            if (order.OrderType == OrderType.Sale)
+                order.ShipOrder = true;
+
             List<NavWS.CustomerOrderCreateCOHeaderV4> header = new List<NavWS.CustomerOrderCreateCOHeaderV4>();
             header.Add(new NavWS.CustomerOrderCreateCOHeaderV4()
             {
@@ -653,8 +662,9 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon.Mapping
                 Address2 = XMLHelper.GetString(order.ContactAddress.Address2),
                 HouseApartmentNo = XMLHelper.GetString(order.ContactAddress.HouseNo),
                 City = XMLHelper.GetString(order.ContactAddress.City),
-                County = XMLHelper.GetString(order.ContactAddress.StateProvinceRegion),
+                County = XMLHelper.GetString(order.ContactAddress.County),
                 PostCode = XMLHelper.GetString(order.ContactAddress.PostCode),
+                TerritoryCode = XMLHelper.GetString(order.ContactAddress.StateProvinceRegion),
                 CountryRegionCode = XMLHelper.GetString(order.ContactAddress.Country),
                 PhoneNo = XMLHelper.GetString(order.ContactAddress.PhoneNumber),
                 MobilePhoneNo = XMLHelper.GetString(order.ContactAddress.CellPhoneNumber),
@@ -665,17 +675,16 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon.Mapping
                 ShipToAddress2 = XMLHelper.GetString(order.ShipToAddress.Address2),
                 ShipToHouseApartmentNo = XMLHelper.GetString(order.ShipToAddress.HouseNo),
                 ShipToCity = XMLHelper.GetString(order.ShipToAddress.City),
-                ShipToCounty = XMLHelper.GetString(order.ShipToAddress.StateProvinceRegion),
+                ShipToCounty = XMLHelper.GetString(order.ShipToAddress.County),
                 ShipToPostCode = XMLHelper.GetString(order.ShipToAddress.PostCode),
                 ShipToCountryRegionCode = XMLHelper.GetString(order.ShipToAddress.Country),
                 ShipToPhoneNo = XMLHelper.GetString(order.ShipToAddress.PhoneNumber),
                 ShipToEmail = XMLHelper.GetString(order.ShipToEmail),
                 ClickAndCollectOrder = (order.OrderType == OrderType.ClickAndCollect),
-                ShipOrder = (order.ShippingStatus != ShippingStatus.ShippigNotRequired),
+                ShipOrder = order.ShipOrder,
                 ShippingAgentServiceCode = XMLHelper.GetString(order.ShippingAgentServiceCode),
                 ShippingAgentCode = XMLHelper.GetString(order.ShippingAgentCode),
                 CreatedAtStore = string.Empty,
-                TerritoryCode = string.Empty,
                 InventoryTransfer = string.Empty,
                 SourcingLocation = string.Empty,
                 VendorSourcing = string.Empty
@@ -775,6 +784,9 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon.Mapping
         {
             NavWS.RootCustomerOrderCreateV5 root = new NavWS.RootCustomerOrderCreateV5();
 
+            if (order.OrderType == OrderType.Sale)
+                order.ShipOrder = true;
+
             List<NavWS.CustomerOrderCreateCOHeaderV5> header = new List<NavWS.CustomerOrderCreateCOHeaderV5>();
             NavWS.CustomerOrderCreateCOHeaderV5 hd = new NavWS.CustomerOrderCreateCOHeaderV5()
             {
@@ -788,8 +800,9 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon.Mapping
                 Address2 = XMLHelper.GetString(order.ContactAddress.Address2),
                 HouseApartmentNo = XMLHelper.GetString(order.ContactAddress.HouseNo),
                 City = XMLHelper.GetString(order.ContactAddress.City),
-                County = XMLHelper.GetString(order.ContactAddress.StateProvinceRegion),
+                County = XMLHelper.GetString(order.ContactAddress.County),
                 PostCode = XMLHelper.GetString(order.ContactAddress.PostCode),
+                TerritoryCode = XMLHelper.GetString(order.ContactAddress.StateProvinceRegion),
                 CountryRegionCode = XMLHelper.GetString(order.ContactAddress.Country),
                 PhoneNo = XMLHelper.GetString(order.ContactAddress.PhoneNumber),
                 MobilePhoneNo = XMLHelper.GetString(order.ContactAddress.CellPhoneNumber),
@@ -800,14 +813,13 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon.Mapping
                 ShipToAddress2 = XMLHelper.GetString(order.ShipToAddress.Address2),
                 ShipToHouseApartmentNo = XMLHelper.GetString(order.ShipToAddress.HouseNo),
                 ShipToCity = XMLHelper.GetString(order.ShipToAddress.City),
-                ShipToCounty = XMLHelper.GetString(order.ShipToAddress.StateProvinceRegion),
+                ShipToCounty = XMLHelper.GetString(order.ShipToAddress.County),
                 ShipToPostCode = XMLHelper.GetString(order.ShipToAddress.PostCode),
                 ShipToCountryRegionCode = XMLHelper.GetString(order.ShipToAddress.Country),
                 ShipToPhoneNo = XMLHelper.GetString(order.ShipToAddress.PhoneNumber),
                 ShipToEmail = XMLHelper.GetString(order.ShipToEmail),
-                ShipOrder = (order.ShippingStatus != ShippingStatus.ShippigNotRequired && order.ShippingStatus != 0),
+                ShipOrder = order.ShipOrder,
                 CreatedAtStore = order.StoreId,
-                TerritoryCode = string.Empty
             };
             header.Add(hd);
 
@@ -934,7 +946,7 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon.Mapping
                 Address2 = XMLHelper.GetString(order.ContactAddress.Address2),
                 HouseApartmentNo = XMLHelper.GetString(order.ContactAddress.HouseNo),
                 City = XMLHelper.GetString(order.ContactAddress.City),
-                County = XMLHelper.GetString(order.ContactAddress.StateProvinceRegion),
+                County = XMLHelper.GetString(order.ContactAddress.County),
                 PostCode = XMLHelper.GetString(order.ContactAddress.PostCode),
                 CountryRegionCode = XMLHelper.GetString(order.ContactAddress.Country),
                 PhoneNo = XMLHelper.GetString(order.ContactAddress.PhoneNumber),
@@ -946,7 +958,7 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon.Mapping
                 ShipToAddress2 = XMLHelper.GetString(order.ShipToAddress.Address2),
                 ShipToHouseApartmentNo = XMLHelper.GetString(order.ShipToAddress.HouseNo),
                 ShipToCity = XMLHelper.GetString(order.ShipToAddress.City),
-                ShipToCounty = XMLHelper.GetString(order.ShipToAddress.StateProvinceRegion),
+                ShipToCounty = XMLHelper.GetString(order.ShipToAddress.County),
                 ShipToPostCode = XMLHelper.GetString(order.ShipToAddress.PostCode),
                 ShipToCountryRegionCode = XMLHelper.GetString(order.ShipToAddress.Country),
                 ShipToPhoneNo = XMLHelper.GetString(order.ShipToAddress.PhoneNumber),

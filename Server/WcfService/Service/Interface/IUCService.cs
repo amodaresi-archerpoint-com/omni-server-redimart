@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 
-using LSRetail.Omni.DiscountEngine.DataModels;
 using LSRetail.Omni.Domain.DataModel.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Replication;
 using LSRetail.Omni.Domain.DataModel.Base.Requests;
@@ -96,7 +95,7 @@ namespace LSOmni.Service
         /// </summary>
         /// <remarks>
         /// LS Nav WS1 : LOAD_MEMBER_DIR_MARK_INFO<p/>
-        /// LS Central WS2 : GetDirectMarketingInfo<p/><p/>
+        /// LS Central WS2 : GetDirectMarketingInfo
         /// </remarks>
         /// <param name="cardId">Member Card Id to look for</param>
         /// <param name="itemId">Only show Offers for this item</param>
@@ -108,7 +107,7 @@ namespace LSOmni.Service
         /// Get related items in a published offer
         /// </summary>
         /// <remarks>
-        /// LS Nav WS1 : LOAD_PUBLISHED_OFFER_ITEMS<p/><p/>
+        /// LS Nav WS1 : LOAD_PUBLISHED_OFFER_ITEMS
         /// </remarks>
         /// <param name="pubOfferId">Published offer id</param>
         /// <param name="numberOfItems">Number of items to return</param>
@@ -120,32 +119,34 @@ namespace LSOmni.Service
         /// Get discounts for items. Send in empty string for loyaltySchemeCode if getting anonymously.
         /// </summary>
         /// <param name="storeId">Store Id</param>
-        /// <param name="itemiIds">List of item ids to check for discounts</param>
+        /// <param name="itemIds">List of item ids to check for discounts</param>
         /// <param name="loyaltySchemeCode">[OPTIONAL] Loyalty scheme code for a user</param>
         /// <returns></returns>
         [OperationContract]
-        List<ProactiveDiscount> DiscountsGet(string storeId, List<string> itemiIds, string loyaltySchemeCode);
+        List<ProactiveDiscount> DiscountsGet(string storeId, List<string> itemIds, string loyaltySchemeCode);
 
         /// <summary>
         /// Get balance of a gift card.
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetDataEntryBalance<p/><p/>
+        /// LS Central WS2 : GetDataEntryBalance
         /// </remarks>
         /// <param name="cardNo">Gift card number</param>
+        /// <param name="pin">Gift card pin number</param>
         /// <param name="entryType">Gift card Entry type. If empty, GiftCard_DataEntryType from TenantConfig is used</param>
         /// <returns></returns>
         [OperationContract]
-        GiftCard GiftCardGetBalance(string cardNo, string entryType);
+        GiftCard GiftCardGetBalance(string cardNo, int pin, string entryType);
 
         /// <summary>
         /// Get activity history for Gift Card
         /// </summary>
         /// <param name="cardNo">Gift card number</param>
+        /// <param name="pin">Gift card pin number</param>
         /// <param name="entryType">Gift card Entry type. If empty, GiftCard_DataEntryType from TenantConfig is used</param>
         /// <returns></returns>
         [OperationContract]
-        List<GiftCardEntry> GiftCardGetHistory(string cardNo, string entryType);
+        List<GiftCardEntry> GiftCardGetHistory(string cardNo, int pin, string entryType);
 
         [OperationContract]
         List<Advertisement> AdvertisementsGetById(string id, string contactId);
@@ -159,7 +160,7 @@ namespace LSOmni.Service
         /// </summary>
         /// <remarks>
         /// LS Nav WS1 : LOAD_MEMBER_DIR_MARK_INFO<p/>
-        /// LS Central WS2 : GetDirectMarketingInfo<p/><p/>
+        /// LS Central WS2 : GetDirectMarketingInfo
         /// </remarks>
         /// <param name="cardId">Card Id</param>
         /// <param name="numberOfNotifications">Number of notifications to return</param>
@@ -215,7 +216,7 @@ namespace LSOmni.Service
         /// For Anonymous User, keep CardId empty and OneListSave will return OneList Id back that should be store with the session for the Anonymous user, 
         /// as Commerce Service for LS Central does not store any information for Anonymous Users.<p/>
         /// Used OneListGetById to get the OneList back.<p/>
-        /// NOTE: If no Name is provided with Onelist, system will look up contact to pull the name, this can slow the process.
+        /// NOTE: If no Name is provided with OneList, system will look up contact to pull the name, this can slow the process.
         /// </remarks>
         /// <example>
         /// This Sample request can be used in SOAP UI application to send request to LS Commerce.<p/>
@@ -375,13 +376,13 @@ namespace LSOmni.Service
         /// <summary>
         /// Add or remove Item in OneList without sending whole list
         /// </summary>
-        /// <param name="onelistId">OneList Id</param>
+        /// <param name="oneListId">OneList Id</param>
         /// <param name="item">OneList Item to add or remove</param>
         /// <param name="remove">true if remove item, else false</param>
         /// <param name="calculate">Recalculate OneList</param>
         /// <returns>Updated OneList</returns>
         [OperationContract]
-        OneList OneListItemModify(string onelistId, OneListItem item, bool remove, bool calculate);
+        OneList OneListItemModify(string oneListId, OneListItem item, bool remove, bool calculate);
 
         /// <summary>
         /// Link or remove a Member to/from existing OneList
@@ -403,7 +404,7 @@ namespace LSOmni.Service
         /// Check the quantity available of items in order for certain store, Use with LS Nav 11.0 and later
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : COQtyAvailabilityV2<p/><p/>
+        /// LS Central WS2 : COQtyAvailabilityV2
         /// </remarks>
         /// <param name="request"></param>
         /// <param name="shippingOrder">true if order is to be shipped, false if click and collect</param>
@@ -415,7 +416,7 @@ namespace LSOmni.Service
         /// Create Customer Order
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CustomerOrderCreateVx<p/><p/>
+        /// LS Central WS2 : CustomerOrderCreateVx
         /// </remarks>
         /// <example>
         /// This Sample request can be used in SOAP UI application to send request to LS Commerce.<p/>
@@ -428,10 +429,9 @@ namespace LSOmni.Service
         ///     <ser:OrderCreate>
         ///        <ser:request>
         ///           <ns:Id></ns:Id>
-        ///            <!--AnonymouseOrder leave empty-->
+        ///            <!--AnonymousOrder leave empty-->
         ///           <ns1:CardId>10021</ns1:CardId>
         ///           <ns1:CollectLocation></ns1:CollectLocation>
-        ///           <ns1:LineItemCount>1</ns1:LineItemCount>
         ///           <!--OrderLines need to have minimum Price and Net Price set for Order to be valid.Price is unit price and will be used when calculate the Line Total Amount -->
         ///           <ns1:OrderDiscountLines>
         ///           </ns1:OrderDiscountLines>
@@ -458,7 +458,7 @@ namespace LSOmni.Service
         ///              <!--Zero or more repetitions:-->
         ///              <ns1:OrderPayment>
         ///                 <ns1:Amount>160.00</ns1:Amount>
-        ///                 <ns1:AuthorisationCode>123456</ns1:AuthorisationCode>
+        ///                 <ns1:AuthorizationCode>123456</ns1:AuthorizationCode>
         ///                 <ns1:CardNumber>45XX..5555</ns1:CardNumber>
         ///                 <ns1:CardType>VISA</ns1:CardType>
         ///                 <ns1:CurrencyCode></ns1:CurrencyCode>
@@ -473,6 +473,7 @@ namespace LSOmni.Service
         ///           </ns1:OrderPayments>
         ///           <ns1:OrderType>Sale</ns1:OrderType>
         ///           <ns1:PaymentStatus>PreApproved</ns1:PaymentStatus>
+        ///           <ns1:ShipOrder>true</ns1:ShipOrder>
         ///            <!--Optional: ShipToAddress can not be null if ClickAndCollectOrder == false-->
         ///           <ns1:ShipToAddress>
         ///              <ns:Address1>Some Address</ns:Address1>
@@ -486,14 +487,12 @@ namespace LSOmni.Service
         ///              <ns:StateProvinceRegion></ns:StateProvinceRegion>
         ///              <ns:Type>Residential</ns:Type>
         ///           </ns1:ShipToAddress>
-        ///           <ns1:ShippingStatus>NotYetShipped</ns1:ShippingStatus>
-        ///           <ns1:SourceType>eCommerce</ns1:SourceType>
         ///           <ns1:StoreId>S0013</ns1:StoreId>
         ///           <ns1:TotalAmount>160</ns1:TotalAmount>
         ///           <ns1:TotalDiscount>0</ns1:TotalDiscount>
         ///           <ns1:TotalNetAmount>128</ns1:TotalNetAmount>
         ///        </ser:request>
-        ///        <ser:returnOrderIdOnly>?</ser:returnOrderIdOnly>
+        ///        <ser:returnOrderIdOnly>true</ser:returnOrderIdOnly>
         ///     </ser:OrderCreate>
         ///  </soapenv:Body>
         /// </soapenv:Envelope>
@@ -508,7 +507,6 @@ namespace LSOmni.Service
         ///        <ser:request>
         ///           <ns1:CardId>10021</ns1:CardId>
         ///           <ns1:CollectLocation>S0001</ns1:CollectLocation>
-        ///           <ns1:LineItemCount>1</ns1:LineItemCount>
         ///           <ns1:OrderDiscountLines>
         ///           </ns1:OrderDiscountLines>
         ///           <ns1:OrderLines>
@@ -532,13 +530,13 @@ namespace LSOmni.Service
         ///           </ns1:OrderLines>
         ///           <ns1:OrderType>ClickAndCollect</ns1:OrderType>
         ///           <ns1:PaymentStatus>PreApproved</ns1:PaymentStatus>
-        ///           <ns1:SourceType>eCommerce</ns1:SourceType>
+        ///           <ns1:ShipOrder>false</ns1:ShipOrder>
         ///           <ns1:StoreId>S0013</ns1:StoreId>
         ///           <ns1:TotalAmount>160</ns1:TotalAmount>
         ///           <ns1:TotalDiscount>0</ns1:TotalDiscount>
         ///           <ns1:TotalNetAmount>128</ns1:TotalNetAmount>
         ///        </ser:request>
-        ///        <ser:returnOrderIdOnly>?</ser:returnOrderIdOnly>
+        ///        <ser:returnOrderIdOnly>false</ser:returnOrderIdOnly>
         ///     </ser:OrderCreate>
         ///  </soapenv:Body>
         /// </soapenv:Envelope>
@@ -552,10 +550,24 @@ namespace LSOmni.Service
         SalesEntry OrderCreate(Order request, bool returnOrderIdOnly);
 
         /// <summary>
+        /// Edit Customer Order
+        /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : CustomerOrderEdit
+        /// </remarks>
+        /// <param name="request">Updated Order object</param>
+        /// <param name="orderId">Order Id to edit</param>
+        /// <param name="editType">Type of Order Edit</param>
+        /// <param name="returnOrderIdOnly"></param>
+        /// <returns></returns>
+        [OperationContract]
+        SalesEntry OrderEdit(Order request, string orderId, OrderEditType editType, bool returnOrderIdOnly);
+
+        /// <summary>
         /// Create a Hospitality Order
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CreateHospOrder<p/><p/>
+        /// LS Central WS2 : CreateHospOrder
         /// </remarks>
         /// <example>
         /// This Sample request can be used in SOAP UI application to send request to LS Commerce.<p/>
@@ -564,175 +576,197 @@ namespace LSOmni.Service
         /// Based on OneListHospCalculate result.
         /// <code language="xml" title="SOAP Sample Request for Delivery order">
         /// <![CDATA[
-        /// <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://lsretail.com/LSOmniService/EComm/2017/Service" xmlns:ns="http://lsretail.com/LSOmniService/Base/2017" xmlns:ns1="http://lsretail.com/LSOmniService/Loy/2020" xmlns:ns2="http://lsretail.com/LSOmniService/Loy/2017">
-        ///   <soapenv:Header/>
-        ///   <soapenv:Body>
-        ///     <ser:OrderHospCreate>
-        ///       <ser:request>
-        ///         <ns1:CardId>10021</ns1:CardId>
-        ///         <ns1:DeliveryType>NoChoice</ns1:DeliveryType>
-        ///         <ns1:Directions/>
-        ///         <ns1:Email>tom @xyz.com</ns1:Email>
-        ///         <ns1:LineItemCount>0</ns1:LineItemCount>
-        ///         <ns1:Name>Tom Tomsson</ns1:Name>
-        ///         <ns1:OrderDiscountLines>
-        ///           <ns2:OrderDiscountLine>
-        ///             <ns2:Description>Deal</ns2:Description>
-        ///             <ns2:DiscountAmount>0.00</ns2:DiscountAmount>
-        ///             <ns2:DiscountPercent>0.00</ns2:DiscountPercent>
-        ///             <ns2:DiscountType>Deal</ns2:DiscountType>
-        ///             <ns2:LineNumber>9750</ns2:LineNumber>
-        ///             <ns2:No>{540B4057-A092-4356-B34D-433CCD3EADAE}</ns2:No>
-        ///             <ns2:OfferNumber>S10025</ns2:OfferNumber>
-        ///             <ns2:OrderId/>
-        ///             <ns2:PeriodicDiscGroup/>
-        ///             <ns2:PeriodicDiscType>Unknown</ns2:PeriodicDiscType>
-        ///           </ns2:OrderDiscountLine>
-        ///           <ns2:OrderDiscountLine>
-        ///             <ns2:Description>Deal</ns2:Description>
-        ///             <ns2:DiscountAmount>0.00</ns2:DiscountAmount>
-        ///             <ns2:DiscountPercent>0.00</ns2:DiscountPercent>
-        ///             <ns2:DiscountType>Deal</ns2:DiscountType>
-        ///             <ns2:LineNumber>10000</ns2:LineNumber>
-        ///             <ns2:No>{540B4057-A092-4356-B34D-433CCD3EADAE}</ns2:No>
-        ///             <ns2:OfferNumber>S10025</ns2:OfferNumber>
-        ///             <ns2:OrderId/>
-        ///             <ns2:PeriodicDiscGroup/>
-        ///             <ns2:PeriodicDiscType>Unknown</ns2:PeriodicDiscType>
-        ///           </ns2:OrderDiscountLine>
-        ///           <ns2:OrderDiscountLine>
-        ///             <ns2:Description>Deal</ns2:Description>
-        ///             <ns2:DiscountAmount>0.00</ns2:DiscountAmount>
-        ///             <ns2:DiscountPercent>0.00</ns2:DiscountPercent>
-        ///             <ns2:DiscountType>Deal</ns2:DiscountType>
-        ///             <ns2:LineNumber>20000</ns2:LineNumber>
-        ///             <ns2:No>{540B4057-A092-4356-B34D-433CCD3EADAE}</ns2:No>
-        ///             <ns2:OfferNumber>S10025</ns2:OfferNumber>
-        ///             <ns2:OrderId/>
-        ///             <ns2:PeriodicDiscGroup/>
-        ///             <ns2:PeriodicDiscType>Unknown</ns2:PeriodicDiscType>
-        ///           </ns2:OrderDiscountLine>
-        ///           <ns2:OrderDiscountLine>
-        ///             <ns2:Description>Deal</ns2:Description>
-        ///             <ns2:DiscountAmount>0.00</ns2:DiscountAmount>
-        ///             <ns2:DiscountPercent>0.00</ns2:DiscountPercent>
-        ///             <ns2:DiscountType>Deal</ns2:DiscountType>
-        ///             <ns2:LineNumber>30000</ns2:LineNumber>
-        ///             <ns2:No>{540B4057-A092-4356-B34D-433CCD3EADAE}</ns2:No>
-        ///             <ns2:OfferNumber>S10025</ns2:OfferNumber>
-        ///             <ns2:OrderId/>
-        ///             <ns2:PeriodicDiscGroup/>
-        ///             <ns2:PeriodicDiscType>Unknown</ns2:PeriodicDiscType>
-        ///           </ns2:OrderDiscountLine>
-        ///         </ns1:OrderDiscountLines>
-        ///         <ns1:OrderLines>
-        ///           <ns1:OrderHospLine>
-        ///             <Id>{540B4057-A092-4356-B34D-433CCD3EADAE}</Id>
-        ///             <ns1:Amount>7.50</ns1:Amount>
-        ///             <ns1:DiscountAmount>0.00</ns1:DiscountAmount>
-        ///             <ns1:DiscountPercent>0.00</ns1:DiscountPercent>
-        ///             <ns1:IsADeal>true</ns1:IsADeal>
-        ///             <ns1:ItemDescription>Cheese Burger Meal</ns1:ItemDescription>
-        ///             <ns1:ItemId>S10025</ns1:ItemId>
-        ///             <ns1:LineNumber>9750</ns1:LineNumber>
-        ///             <ns1:LineType>Item</ns1:LineType>
-        ///             <ns1:NetAmount>6.82</ns1:NetAmount>
-        ///             <ns1:NetPrice>6.82</ns1:NetPrice>
-        ///             <ns1:Price>7.50</ns1:Price>
-        ///             <ns1:PriceModified>false</ns1:PriceModified>
-        ///             <ns1:Quantity>1.00</ns1:Quantity>
-        ///             <ns1:SubLines>
-        ///               <ns1:OrderHospSubLine>
-        ///                 <ns1:Amount>5.32</ns1:Amount>
-        ///                 <ns1:DealCode>S10025</ns1:DealCode>
-        ///                 <ns1:DealLineId>10000</ns1:DealLineId>
-        ///                 <ns1:DealModifierLineId>0</ns1:DealModifierLineId>
-        ///                 <ns1:Description>Cheese Burger</ns1:Description>
-        ///                 <ns1:DiscountAmount>0.00</ns1:DiscountAmount>
-        ///                 <ns1:DiscountPercent>0.00</ns1:DiscountPercent>
-        ///                 <ns1:ItemId>R0024</ns1:ItemId>
-        ///                 <ns1:LineNumber>10000</ns1:LineNumber>
-        ///                 <ns1:ManualDiscountAmount>0.0</ns1:ManualDiscountAmount>
-        ///                 <ns1:ManualDiscountPercent>0.0</ns1:ManualDiscountPercent>
-        ///                 <ns1:ModifierGroupCode/>
-        ///                 <ns1:ModifierSubCode/>
-        ///                 <ns1:NetAmount>4.84</ns1:NetAmount>
-        ///                 <ns1:NetPrice>4.84</ns1:NetPrice>
-        ///                 <ns1:ParentSubLineId>0</ns1:ParentSubLineId>
-        ///                 <ns1:Price>5.32</ns1:Price>
-        ///                 <ns1:PriceReductionOnExclusion>false</ns1:PriceReductionOnExclusion>
-        ///                 <ns1:Quantity>1.00</ns1:Quantity>
-        ///                 <ns1:TAXAmount>0.48</ns1:TAXAmount>
-        ///                 <ns1:Type>Deal</ns1:Type>
-        ///                 <ns1:Uom>PORTION</ns1:Uom>
-        ///               </ns1:OrderHospSubLine>
-        ///               <ns1:OrderHospSubLine>
-        ///                 <ns1:Amount>1.28</ns1:Amount>
-        ///                 <ns1:DealCode>S10025</ns1:DealCode>
-        ///                 <ns1:DealLineId>20000</ns1:DealLineId>
-        ///                 <ns1:DealModifierLineId>70000</ns1:DealModifierLineId>
-        ///                 <ns1:Description>Jalapeno Popper</ns1:Description>
-        ///                 <ns1:DiscountAmount>0.00</ns1:DiscountAmount>
-        ///                 <ns1:DiscountPercent>0.00</ns1:DiscountPercent>
-        ///                 <ns1:ItemId>33430</ns1:ItemId>
-        ///                 <ns1:LineNumber>20000</ns1:LineNumber>
-        ///                 <ns1:ManualDiscountAmount>0.0</ns1:ManualDiscountAmount>
-        ///                 <ns1:ManualDiscountPercent>0.0</ns1:ManualDiscountPercent>
-        ///                 <ns1:ModifierGroupCode/>
-        ///                 <ns1:ModifierSubCode/>
-        ///                 <ns1:NetAmount>1.16</ns1:NetAmount>
-        ///                 <ns1:NetPrice>1.16</ns1:NetPrice>
-        ///                 <ns1:ParentSubLineId>0</ns1:ParentSubLineId>
-        ///                 <ns1:Price>1.28</ns1:Price>
-        ///                 <ns1:PriceReductionOnExclusion>false</ns1:PriceReductionOnExclusion>
-        ///                 <ns1:Quantity>1.00</ns1:Quantity>
-        ///                 <ns1:TAXAmount>0.12</ns1:TAXAmount>
-        ///                 <ns1:Type>Deal</ns1:Type>
-        ///                 <ns1:Uom>PORTION</ns1:Uom>
-        ///               </ns1:OrderHospSubLine>
-        ///               <ns1:OrderHospSubLine>
-        ///                 <ns1:Amount>0.90</ns1:Amount>
-        ///                 <ns1:DealCode>S10025</ns1:DealCode>
-        ///                 <ns1:DealLineId>30000</ns1:DealLineId>
-        ///                 <ns1:DealModifierLineId>70000</ns1:DealModifierLineId>
-        ///                 <ns1:Description>Orange Soda</ns1:Description>
-        ///                 <ns1:DiscountAmount>0.00</ns1:DiscountAmount>
-        ///                 <ns1:DiscountPercent>0.00</ns1:DiscountPercent>
-        ///                 <ns1:ItemId>30520</ns1:ItemId>
-        ///                 <ns1:LineNumber>30000</ns1:LineNumber>
-        ///                 <ns1:ManualDiscountAmount>0.0</ns1:ManualDiscountAmount>
-        ///                 <ns1:ManualDiscountPercent>0.0</ns1:ManualDiscountPercent>
-        ///                 <ns1:ModifierGroupCode/>
-        ///                 <ns1:ModifierSubCode/>
-        ///                 <ns1:NetAmount>0.82</ns1:NetAmount>
-        ///                 <ns1:NetPrice>0.82</ns1:NetPrice>
-        ///                 <ns1:ParentSubLineId>0</ns1:ParentSubLineId>
-        ///                 <ns1:Price>0.90</ns1:Price>
-        ///                 <ns1:PriceReductionOnExclusion>false</ns1:PriceReductionOnExclusion>
-        ///                 <ns1:Quantity>1.00</ns1:Quantity>
-        ///                 <ns1:TAXAmount>0.08</ns1:TAXAmount>
-        ///                 <ns1:Type>Deal</ns1:Type>
-        ///                 <ns1:Uom>REG</ns1:Uom>
-        ///               </ns1:OrderHospSubLine>
-        ///             </ns1:SubLines>
-        ///             <ns1:TaxAmount>0.68</ns1:TaxAmount>
-        ///             <ns1:UomId/>
-        ///             <ns1:VariantDescription/>
-        ///             <ns1:VariantId/>
-        ///           </ns1:OrderHospLine>
-        ///         </ns1:OrderLines>
-        ///         <ns1:OrderPayments/>
-        ///         <ns1:PickupTime>2022-06-10T10:00:00</ns1:PickupTime>
-        ///         <ns1:RestaurantNo>S0017</ns1:RestaurantNo>
-        ///         <ns1:SalesType>TAKEAWAY</ns1:SalesType>
-        ///         <ns1:StoreId>S0017</ns1:StoreId>
-        ///         <ns1:TotalAmount>7.50</ns1:TotalAmount>
-        ///         <ns1:TotalDiscount>0.00</ns1:TotalDiscount>
-        ///         <ns1:TotalNetAmount>6.82</ns1:TotalNetAmount>
-        ///      </ser:request>
-        ///      <ser:returnOrderIdOnly>?</ser:returnOrderIdOnly>
-        ///    </ser:OrderHospCreate>
-        ///  </soapenv:Body>
+        ///<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://lsretail.com/LSOmniService/EComm/2017/Service" xmlns:ns="http://lsretail.com/LSOmniService/Base/2017" xmlns:ns1="http://lsretail.com/LSOmniService/Loy/2020" xmlns:ns2="http://lsretail.com/LSOmniService/Loy/2017">
+        ///    <soapenv:Header/>
+        ///    <soapenv:Body>
+        ///        <ser:OrderHospCreate>
+        ///            <ser:request>
+        ///                <ns1:Address>
+        ///                    <ns:Address1>SomeStreet 4</ns:Address1>
+        ///                    <ns:CellPhoneNumber>555-1234</ns:CellPhoneNumber>
+        ///                    <ns:City>Kopavogur</ns:City>
+        ///                    <ns:Country/>
+        ///                    <ns:PostCode>200</ns:PostCode>
+        ///                    <ns:StateProvinceRegion/>
+        ///                    <ns:Type>Residential</ns:Type>
+        ///                </ns1:Address>
+        ///                <ns1:CardId>10021</ns1:CardId>
+        ///                <ns1:Comment>Im Hungry</ns1:Comment>
+        ///                <ns1:DeliveryType>Home</ns1:DeliveryType>
+        ///                <ns1:Directions>Go around the corner</ns1:Directions>
+        ///                <ns1:Email>tom@xyz.com</ns1:Email>
+        ///                <ns1:Name>Tom Tomsson</ns1:Name>
+        ///                <ns1:OrderDiscountLines>
+        ///                    <ns2:OrderDiscountLine>
+        ///                        <ns2:Description>Deal</ns2:Description>
+        ///                        <ns2:DiscountAmount>0.00</ns2:DiscountAmount>
+        ///                        <ns2:DiscountPercent>0.00</ns2:DiscountPercent>
+        ///                        <ns2:DiscountType>Deal</ns2:DiscountType>
+        ///                        <ns2:LineNumber>9750</ns2:LineNumber>
+        ///                        <ns2:No>{540B4057-A092-4356-B34D-433CCD3EADAE}</ns2:No>
+        ///                        <ns2:OfferNumber>S10025</ns2:OfferNumber>
+        ///                        <ns2:OrderId/>
+        ///                        <ns2:PeriodicDiscGroup/>
+        ///                        <ns2:PeriodicDiscType>Unknown</ns2:PeriodicDiscType>
+        ///                    </ns2:OrderDiscountLine>
+        ///                    <ns2:OrderDiscountLine>
+        ///                        <ns2:Description>Deal</ns2:Description>
+        ///                        <ns2:DiscountAmount>0.00</ns2:DiscountAmount>
+        ///                        <ns2:DiscountPercent>0.00</ns2:DiscountPercent>
+        ///                        <ns2:DiscountType>Deal</ns2:DiscountType>
+        ///                        <ns2:LineNumber>10000</ns2:LineNumber>
+        ///                        <ns2:No>{540B4057-A092-4356-B34D-433CCD3EADAE}</ns2:No>
+        ///                        <ns2:OfferNumber>S10025</ns2:OfferNumber>
+        ///                        <ns2:OrderId/>
+        ///                        <ns2:PeriodicDiscGroup/>
+        ///                        <ns2:PeriodicDiscType>Unknown</ns2:PeriodicDiscType>
+        ///                    </ns2:OrderDiscountLine>
+        ///                    <ns2:OrderDiscountLine>
+        ///                        <ns2:Description>Deal</ns2:Description>
+        ///                        <ns2:DiscountAmount>0.00</ns2:DiscountAmount>
+        ///                        <ns2:DiscountPercent>0.00</ns2:DiscountPercent>
+        ///                        <ns2:DiscountType>Deal</ns2:DiscountType>
+        ///                        <ns2:LineNumber>20000</ns2:LineNumber>
+        ///                        <ns2:No>{540B4057-A092-4356-B34D-433CCD3EADAE}</ns2:No>
+        ///                        <ns2:OfferNumber>S10025</ns2:OfferNumber>
+        ///                        <ns2:OrderId/>
+        ///                        <ns2:PeriodicDiscGroup/>
+        ///                        <ns2:PeriodicDiscType>Unknown</ns2:PeriodicDiscType>
+        ///                    </ns2:OrderDiscountLine>
+        ///                    <ns2:OrderDiscountLine>
+        ///                        <ns2:Description>Deal</ns2:Description>
+        ///                        <ns2:DiscountAmount>0.00</ns2:DiscountAmount>
+        ///                        <ns2:DiscountPercent>0.00</ns2:DiscountPercent>
+        ///                        <ns2:DiscountType>Deal</ns2:DiscountType>
+        ///                        <ns2:LineNumber>30000</ns2:LineNumber>
+        ///                        <ns2:No>{540B4057-A092-4356-B34D-433CCD3EADAE}</ns2:No>
+        ///                        <ns2:OfferNumber>S10025</ns2:OfferNumber>
+        ///                        <ns2:OrderId/>
+        ///                        <ns2:PeriodicDiscGroup/>
+        ///                        <ns2:PeriodicDiscType>Unknown</ns2:PeriodicDiscType>
+        ///                    </ns2:OrderDiscountLine>
+        ///                </ns1:OrderDiscountLines>
+        ///                <ns1:OrderLines>
+        ///                    <ns1:OrderHospLine>
+        ///                        <Id>{540B4057-A092-4356-B34D-433CCD3EADAE}</Id>
+        ///                        <ns1:Amount>7.50</ns1:Amount>
+        ///                        <ns1:DiscountAmount>0.00</ns1:DiscountAmount>
+        ///                        <ns1:DiscountPercent>0.00</ns1:DiscountPercent>
+        ///                        <ns1:IsADeal>true</ns1:IsADeal>
+        ///                        <ns1:ItemDescription>Cheese Burger Meal</ns1:ItemDescription>
+        ///                        <ns1:ItemId>S10025</ns1:ItemId>
+        ///                        <ns1:LineNumber>9750</ns1:LineNumber>
+        ///                        <ns1:LineType>Item</ns1:LineType>
+        ///                        <ns1:NetAmount>6.82</ns1:NetAmount>
+        ///                        <ns1:NetPrice>6.82</ns1:NetPrice>
+        ///                        <ns1:Price>7.50</ns1:Price>
+        ///                        <ns1:PriceModified>false</ns1:PriceModified>
+        ///                        <ns1:Quantity>1.00</ns1:Quantity>
+        ///                        <ns1:SubLines>
+        ///                            <ns1:OrderHospSubLine>
+        ///                                <ns1:Amount>5.32</ns1:Amount>
+        ///                                <ns1:DealCode>S10025</ns1:DealCode>
+        ///                                <ns1:DealLineId>10000</ns1:DealLineId>
+        ///                                <ns1:DealModifierLineId>0</ns1:DealModifierLineId>
+        ///                                <ns1:Description>Cheese Burger</ns1:Description>
+        ///                                <ns1:DiscountAmount>0.00</ns1:DiscountAmount>
+        ///                                <ns1:DiscountPercent>0.00</ns1:DiscountPercent>
+        ///                                <ns1:ItemId>R0024</ns1:ItemId>
+        ///                                <ns1:LineNumber>10000</ns1:LineNumber>
+        ///                                <ns1:ManualDiscountAmount>0.0</ns1:ManualDiscountAmount>
+        ///                                <ns1:ManualDiscountPercent>0.0</ns1:ManualDiscountPercent>
+        ///                                <ns1:ModifierGroupCode/>
+        ///                                <ns1:ModifierSubCode/>
+        ///                                <ns1:NetAmount>4.84</ns1:NetAmount>
+        ///                                <ns1:NetPrice>4.84</ns1:NetPrice>
+        ///                                <ns1:ParentSubLineId>0</ns1:ParentSubLineId>
+        ///                                <ns1:Price>5.32</ns1:Price>
+        ///                                <ns1:PriceReductionOnExclusion>false</ns1:PriceReductionOnExclusion>
+        ///                                <ns1:Quantity>1.00</ns1:Quantity>
+        ///                                <ns1:TAXAmount>0.48</ns1:TAXAmount>
+        ///                                <ns1:Type>Deal</ns1:Type>
+        ///                                <ns1:Uom>PORTION</ns1:Uom>
+        ///                            </ns1:OrderHospSubLine>
+        ///                            <ns1:OrderHospSubLine>
+        ///                                <ns1:Amount>1.28</ns1:Amount>
+        ///                                <ns1:DealCode>S10025</ns1:DealCode>
+        ///                                <ns1:DealLineId>20000</ns1:DealLineId>
+        ///                                <ns1:DealModifierLineId>70000</ns1:DealModifierLineId>
+        ///                                <ns1:Description>Jalapeno Popper</ns1:Description>
+        ///                                <ns1:DiscountAmount>0.00</ns1:DiscountAmount>
+        ///                                <ns1:DiscountPercent>0.00</ns1:DiscountPercent>
+        ///                                <ns1:ItemId>33430</ns1:ItemId>
+        ///                                <ns1:LineNumber>20000</ns1:LineNumber>
+        ///                                <ns1:ManualDiscountAmount>0.0</ns1:ManualDiscountAmount>
+        ///                                <ns1:ManualDiscountPercent>0.0</ns1:ManualDiscountPercent>
+        ///                                <ns1:ModifierGroupCode/>
+        ///                                <ns1:ModifierSubCode/>
+        ///                                <ns1:NetAmount>1.16</ns1:NetAmount>
+        ///                                <ns1:NetPrice>1.16</ns1:NetPrice>
+        ///                                <ns1:ParentSubLineId>0</ns1:ParentSubLineId>
+        ///                                <ns1:Price>1.28</ns1:Price>
+        ///                                <ns1:PriceReductionOnExclusion>false</ns1:PriceReductionOnExclusion>
+        ///                                <ns1:Quantity>1.00</ns1:Quantity>
+        ///                                <ns1:TAXAmount>0.12</ns1:TAXAmount>
+        ///                                <ns1:Type>Deal</ns1:Type>
+        ///                                <ns1:Uom>PORTION</ns1:Uom>
+        ///                            </ns1:OrderHospSubLine>
+        ///                            <ns1:OrderHospSubLine>
+        ///                                <ns1:Amount>0.90</ns1:Amount>
+        ///                                <ns1:DealCode>S10025</ns1:DealCode>
+        ///                                <ns1:DealLineId>30000</ns1:DealLineId>
+        ///                                <ns1:DealModifierLineId>70000</ns1:DealModifierLineId>
+        ///                                <ns1:Description>Orange Soda</ns1:Description>
+        ///                                <ns1:DiscountAmount>0.00</ns1:DiscountAmount>
+        ///                                <ns1:DiscountPercent>0.00</ns1:DiscountPercent>
+        ///                                <ns1:ItemId>30520</ns1:ItemId>
+        ///                                <ns1:LineNumber>30000</ns1:LineNumber>
+        ///                                <ns1:ManualDiscountAmount>0.0</ns1:ManualDiscountAmount>
+        ///                                <ns1:ManualDiscountPercent>0.0</ns1:ManualDiscountPercent>
+        ///                                <ns1:ModifierGroupCode/>
+        ///                                <ns1:ModifierSubCode/>
+        ///                                <ns1:NetAmount>0.82</ns1:NetAmount>
+        ///                                <ns1:NetPrice>0.82</ns1:NetPrice>
+        ///                                <ns1:ParentSubLineId>0</ns1:ParentSubLineId>
+        ///                                <ns1:Price>0.90</ns1:Price>
+        ///                                <ns1:PriceReductionOnExclusion>false</ns1:PriceReductionOnExclusion>
+        ///                                <ns1:Quantity>1.00</ns1:Quantity>
+        ///                                <ns1:TAXAmount>0.08</ns1:TAXAmount>
+        ///                                <ns1:Type>Deal</ns1:Type>
+        ///                                <ns1:Uom>REG</ns1:Uom>
+        ///                            </ns1:OrderHospSubLine>
+        ///                        </ns1:SubLines>
+        ///                        <ns1:TaxAmount>0.68</ns1:TaxAmount>
+        ///                        <ns1:UomId/>
+        ///                        <ns1:VariantDescription/>
+        ///                        <ns1:VariantId/>
+        ///                    </ns1:OrderHospLine>
+        ///                </ns1:OrderLines>
+        ///                <ns1:OrderPayment>
+        ///                    <ns1:Amount>7.50</ns1:Amount>
+        ///                    <ns1:AuthorizationCode>123456</ns1:AuthorizationCode>
+        ///                    <ns1:CardNumber>45XX..5555</ns1:CardNumber>
+        ///                    <ns1:CardType>VISA</ns1:CardType>
+        ///                    <ns1:CurrencyCode/>
+        ///                    <ns1:CurrencyFactor>1</ns1:CurrencyFactor>
+        ///                    <ns1:ExternalReference>My123456</ns1:ExternalReference>
+        ///                    <ns1:LineNumber>1</ns1:LineNumber>
+        ///                    <ns1:PaymentType>PreAuthorization</ns1:PaymentType>
+        ///                    <ns1:PreApprovedValidDate>2030-01-01</ns1:PreApprovedValidDate>
+        ///                    <ns1:TenderType>1</ns1:TenderType>
+        ///                    <ns1:TokenNumber>123456</ns1:TokenNumber>
+        ///                </ns1:OrderPayment>
+        ///                <ns1:PickupTime>2022-06-10T10:00:00</ns1:PickupTime>
+        ///                <ns1:RestaurantNo>S0017</ns1:RestaurantNo>
+        ///                <ns1:SalesType>TAKEAWAY</ns1:SalesType>
+        ///                <ns1:StoreId>S0017</ns1:StoreId>
+        ///                <ns1:TotalAmount>7.50</ns1:TotalAmount>
+        ///                <ns1:TotalDiscount>0.00</ns1:TotalDiscount>
+        ///                <ns1:TotalNetAmount>6.82</ns1:TotalNetAmount>
+        ///            </ser:request>
+        ///            <ser:returnOrderIdOnly>false</ser:returnOrderIdOnly>
+        ///        </ser:OrderHospCreate>
+        ///    </soapenv:Body>
         ///</soapenv:Envelope>
         /// ]]>
         /// </code>
@@ -747,7 +781,7 @@ namespace LSOmni.Service
         /// Cancel hospitality order
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CancelHospOrder<p/><p/>
+        /// LS Central WS2 : CancelHospOrder
         /// </remarks>
         /// <param name="storeId"></param>
         /// <param name="orderId"></param>
@@ -758,7 +792,7 @@ namespace LSOmni.Service
         /// Get Order status for hospitality order
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetHospOrderEstimatedTime and GetKotStatus<p/><p/>
+        /// LS Central WS2 : GetHospOrderEstimatedTime and GetKotStatus
         /// </remarks>
         /// <param name="storeId"></param>
         /// <param name="orderId"></param>
@@ -770,7 +804,7 @@ namespace LSOmni.Service
         /// Check Status of a Customer Order
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CustomerOrderStatus<p/><p/>
+        /// LS Central WS2 : CustomerOrderStatus
         /// </remarks>
         /// <param name="orderId"></param>
         /// <returns></returns>
@@ -781,7 +815,7 @@ namespace LSOmni.Service
         /// Cancel Customer Order with lineNo option to cancel individual lines
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CustomerOrderCancel<p/><p/>
+        /// LS Central WS2 : CustomerOrderCancel
         /// </remarks>
         /// <param name="orderId">Customer Order Id</param>
         /// <param name="storeId">Web Store Id</param>
@@ -792,8 +826,25 @@ namespace LSOmni.Service
         bool OrderCancel(string orderId, string storeId, string userId, List<int> lineNo);
 
         /// <summary>
+        /// Cancel Customer Order with lineNo and quantity to cancel items from individual lines
+        /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : CustomerOrderCancel
+        /// </remarks>
+        /// <param name="orderId">Customer Order Id</param>
+        /// <param name="storeId">Web Store Id</param>
+        /// <param name="userId">User who cancels the order, use Contact ID for logged in user</param>
+        /// <param name="lines">List of Order Lines to cancel from, if empty whole order will be canceled</param>
+        /// <returns></returns>
+        [OperationContract]
+        bool OrderCancelEx(string orderId, string storeId, string userId, List<OrderCancelLine> lines);
+
+        /// <summary>
         /// Get All Sales Entries (Transactions and Orders) by card Id
         /// </summary>
+        /// <remarks>
+        /// LS Central OData: GetMemberContactSalesHistory
+        /// </remarks>
         /// <param name="cardId">Card Id</param>
         /// <param name="maxNumberOfEntries">max number of transactions returned</param>
         /// <returns>List of most recent Transactions for a contact</returns>
@@ -822,6 +873,9 @@ namespace LSOmni.Service
         /// <summary>
         /// Get All Sales Entries (Transactions and Orders) by Card Id and optional filter by Store Id and Registration Date
         /// </summary>
+        /// <remarks>
+        /// LS Central OData: GetMemberContactSalesHistory
+        /// </remarks>
         /// <param name="cardId">Card Id (Required)</param>
         /// <param name="storeId">Filter by Store Id</param>
         /// <param name="date">Filter by Registration Date.  Set Date value to MinValue (0001-01-01) to skip Date Filtering</param>
@@ -853,6 +907,9 @@ namespace LSOmni.Service
         /// <summary>
         /// Get the Sale details (order/transaction)
         /// </summary>
+        /// <remarks>
+        /// LS Central OData: GetSelectedSalesDoc
+        /// </remarks>
         /// <param name="entryId">Sales Entry ID</param>
         /// <param name="type">Document Id type of the Sale entry</param>
         /// <returns>SalesEntry with Lines</returns>
@@ -874,6 +931,14 @@ namespace LSOmni.Service
         /// <returns></returns>
         [OperationContract]
         List<SalesEntry> SalesEntryGetSalesByOrderId(string orderId);
+
+        /// <summary>
+        /// Get Transaction, Sales Invoices and Shipments for Customer order
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        [OperationContract]
+        SalesEntryList SalesEntryGetSalesExtByOrderId(string orderId);
 
         #endregion
 
@@ -1025,7 +1090,7 @@ namespace LSOmni.Service
         /// </code>
         /// </example>
         /// <param name="contact">contact</param>
-        /// <param name="getContact">Return conatact object filled out after Update</param>
+        /// <param name="getContact">Return contact object filled out after Update</param>
         /// <returns>Contact</returns>
         /// <exception cref="LSOmniServiceException">StatusCodes returned:
         /// <list type="bullet">
@@ -1059,13 +1124,13 @@ namespace LSOmni.Service
         MemberContact ContactUpdate(MemberContact contact, bool getContact);
 
         /// <summary>
-        /// Get Member Contact by card Id. This function returns all informations about the Member contact, 
+        /// Get Member Contact by card Id. This function returns all information about the Member contact, 
         /// including Profiles, Offers, Sales history, Onelist baskets and notifications.
         /// To get basic information, use ContactGet.
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetMemberContact2<p/><p/>
-        /// LS Central WS4 : GetMemberContactInfo<p/><p/>
+        /// LS Central WS2 : GetMemberContact2<p/>
+        /// LS Central WS4 : GetMemberContactInfo
         /// </remarks>
         /// <param name="cardId">Card Id</param>
         /// <param name="numberOfTransReturned">Number of Sales History to return, 0 = all</param>
@@ -1097,8 +1162,8 @@ namespace LSOmni.Service
         /// will return any contact that will match the search value.
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetMemberContact2<p/><p/>
-        /// LS Central WS4 : GetMemberContactInfo<p/><p/>
+        /// LS Central WS2 : GetMemberContact2<p/>
+        /// LS Central WS4 : GetMemberContactInfo
         /// </remarks>
         /// <param name="searchType">Field to search by</param>
         /// <param name="search">Search value</param>
@@ -1111,8 +1176,8 @@ namespace LSOmni.Service
         /// Search for Member Contact by different searchType methods.
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetMemberContact2<p/><p/>
-        /// LS Central WS4 : GetMemberContactInfo<p/><p/>
+        /// LS Central WS2 : GetMemberContact2<p/>
+        /// LS Central WS4 : GetMemberContactInfo
         /// </remarks>
         /// <param name="searchType">Field to search by</param>
         /// <param name="search">Search value</param>
@@ -1124,7 +1189,7 @@ namespace LSOmni.Service
         /// Add new card to existing Member Contact
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : MemberCardToContact<p/><p/>
+        /// LS Central WS2 : MemberCardToContact
         /// </remarks>
         /// <param name="contactId"></param>
         /// <param name="cardId"></param>
@@ -1140,13 +1205,13 @@ namespace LSOmni.Service
         /// <param name="cardId"></param>
         /// <returns></returns>
         [OperationContract]
-        bool ConatctBlock(string accountId, string cardId);
+        bool ContactBlock(string accountId, string cardId);
 
         /// <summary>
         /// Get Point balance for Member Card
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetMemberCard<p/><p/>
+        /// LS Central WS2 : GetMemberCard
         /// </remarks>
         /// <param name="cardId"></param>
         /// <returns></returns>
@@ -1160,7 +1225,7 @@ namespace LSOmni.Service
         /// <param name="dateFrom"></param>
         /// <returns></returns>
         [OperationContract]
-        List<PointEntry> CardGetPointEnties(string cardId, DateTime dateFrom);
+        List<PointEntry> CardGetPointEntries(string cardId, DateTime dateFrom);
 
         /// <summary>
         /// Gets Rate value for points (f.ex. 1 point = 0.01 Kr)
@@ -1175,9 +1240,10 @@ namespace LSOmni.Service
 
         /// <summary>
         /// Change password
+        /// <p/>NOTE: Its recommended to use PasswordReset and PasswordChange instead
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : MemberPasswordChange<p/><p/>
+        /// LS Central WS2 : MemberPasswordChange
         /// </remarks>
         /// <param name="userName">user name (LS Central:LoginID)</param>
         /// <param name="newPassword">new password (LS Central:NewPassword)</param>
@@ -1212,10 +1278,12 @@ namespace LSOmni.Service
         /// </list>
         /// </exception>
         [OperationContract]
+        [Obsolete("Its recommended to use PasswordReset and PasswordChange instead")]
         bool ChangePassword(string userName, string newPassword, string oldPassword);
 
         /// <summary>
         /// Request a ResetCode to use in Email to send to Member Contact
+        /// <p/>NOTE: Its recommended to use PasswordReset and PasswordChange instead
         /// </summary>
         /// <remarks>
         /// Settings for this function are found in Commerce Service for LS Central Database - TenantConfig table
@@ -1236,10 +1304,12 @@ namespace LSOmni.Service
         /// </list>
         /// </exception>
         [OperationContract]
+        [Obsolete("Its recommended to use PasswordReset and PasswordChange instead")]
         string ForgotPassword(string userNameOrEmail);
 
         /// <summary>
         /// Send in Reset Password request for Member Contact
+        /// <p/>NOTE: Its recommended to use PasswordReset and PasswordChange instead
         /// </summary>
         /// <remarks>
         /// LS Central WS2 : MemberPasswordReset<p/><p/>
@@ -1275,6 +1345,7 @@ namespace LSOmni.Service
         /// </list>
         /// </exception>
         [OperationContract]
+        [Obsolete("Its recommended to use PasswordReset and PasswordChange instead")]
         bool ResetPassword(string userName, string resetCode, string newPassword);
 
         /// <summary>
@@ -1283,7 +1354,7 @@ namespace LSOmni.Service
         /// If sendEmail is true, send only email address, login is not used in this mode
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : MemberPasswordReset<p/><p/>
+        /// LS Central WS2 : MemberPasswordReset
         /// </remarks>
         /// <param name="userName">Provide Login Id (UserName) to reset existing password</param>
         /// <param name="email">Provide Email to create new login password for new Member Contact</param>
@@ -1323,7 +1394,7 @@ namespace LSOmni.Service
         /// Change Login Id for Member Contact
         /// </summary>
         /// <remarks>
-        /// LS Nav WS1 : MM_LOGIN_CHANGE<p/><p/>
+        /// LS Nav WS1 : MM_LOGIN_CHANGE
         /// </remarks>
         /// <param name="oldUserName">Current Login Id</param>
         /// <param name="newUserName">New Login Id</param>
@@ -1336,7 +1407,7 @@ namespace LSOmni.Service
         /// Login user
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : MemberLogon<p/><p/>
+        /// LS Central WS2 : MemberLogon
         /// </remarks>
         /// <param name="userName">user name</param>
         /// <param name="password">password</param>
@@ -1368,10 +1439,10 @@ namespace LSOmni.Service
         MemberContact Login(string userName, string password, string deviceId);
 
         /// <summary>
-        /// Soical authentication login
+        /// Social authentication login
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : MemberAuthenticatorLogin<p/><p/>
+        /// LS Central WS2 : MemberAuthenticatorLogin
         /// </remarks>
         /// <param name="authenticator"></param>
         /// <param name="authenticationId"></param>
@@ -1386,7 +1457,7 @@ namespace LSOmni.Service
         /// Login user from web page.  This function is light version of Login and returns less data.
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : MemberLogon<p/><p/>
+        /// LS Central WS2 : MemberLogon
         /// </remarks>
         /// <param name="userName">user name</param>
         /// <param name="password">password</param>
@@ -1483,6 +1554,13 @@ namespace LSOmni.Service
         [OperationContract]
         List<HospAvailabilityResponse> CheckAvailability(List<HospAvailabilityRequest> request, string storeId);
 
+        /// <summary>
+        /// Search Items by Description
+        /// </summary>
+        /// <param name="search">Description search</param>
+        /// <param name="maxNumberOfItems"></param>
+        /// <param name="includeDetails"></param>
+        /// <returns></returns>
         [OperationContract]
         List<LoyItem> ItemsSearch(string search, int maxNumberOfItems, bool includeDetails);
 
@@ -1495,6 +1573,15 @@ namespace LSOmni.Service
         [OperationContract]
         LoyItem ItemGetById(string itemId, string storeId);
 
+        /// <summary>
+        /// Look up Item by Barcode
+        /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : GetItemWithBarcode
+        /// </remarks>
+        /// <param name="barcode"></param>
+        /// <param name="storeId"></param>
+        /// <returns></returns>
         [OperationContract]
         LoyItem ItemGetByBarcode(string barcode, string storeId);
 
@@ -1507,6 +1594,16 @@ namespace LSOmni.Service
         [OperationContract]
         ItemCategory ItemCategoriesGetById(string itemCategoryId);
 
+        /// <summary>
+        /// Gets customer specific prices
+        /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : EcomGetCustomerPrice
+        /// </remarks>
+        /// <param name="storeId"></param>
+        /// <param name="cardId"></param>
+        /// <param name="items">list of items to get prices for</param>
+        /// <returns></returns>
         [OperationContract]
         List<ItemCustomerPrice> ItemCustomerPricesGet(string storeId, string cardId, List<ItemCustomerPrice> items);
 
@@ -1514,7 +1611,7 @@ namespace LSOmni.Service
         ProductGroup ProductGroupGetById(string productGroupId, bool includeDetails);
 
         /// <summary>
-        /// Gets Hierarchy setup for a Store with all Leafs and Nodes
+        /// Gets Hierarchy setup for a Store with all Leaves and Nodes
         /// </summary>
         /// <remarks>
         /// LS Central WS2 : GetHierarchy, GetHierarchyNode<p/><p/>
@@ -2333,7 +2430,7 @@ namespace LSOmni.Service
         ReplHierarchyNodeResponse ReplEcommHierarchyNode(ReplRequest replRequest);
 
         /// <summary>
-        /// Replicate Hierarchy Node Leafs
+        /// Replicate Hierarchy Node Leaves
         /// </summary>
         /// <remarks>
         /// LS Central Main Table data: 10000922 - LSC Hierar. Node Link
@@ -2347,12 +2444,12 @@ namespace LSOmni.Service
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
         /// <param name="replRequest">Replication request object</param>
-        /// <returns>Replication result object with List of hierarchy node leafs</returns>
+        /// <returns>Replication result object with List of hierarchy node leaves</returns>
         [OperationContract]
         ReplHierarchyLeafResponse ReplEcommHierarchyLeaf(ReplRequest replRequest);
 
         /// <summary>
-        /// Replicate Hierarchy Hospitality Deal lines for Node Leafs
+        /// Replicate Hierarchy Hospitality Deals for Node Leaf
         /// </summary>
         /// <remarks>
         /// LS Central Main Table data: 99001503 - LSC Offer Line
@@ -2371,7 +2468,7 @@ namespace LSOmni.Service
         ReplHierarchyHospDealResponse ReplEcommHierarchyHospDeal(ReplRequest replRequest);
 
         /// <summary>
-        /// Replicate Hierarchy Hospitality Deal lines for Node Leafs
+        /// Replicate Hierarchy Hospitality Deal lines for Deal
         /// </summary>
         /// <remarks>
         /// LS Central Main Table data: 99001651 - LSC Deal Modifier Item
@@ -2390,7 +2487,7 @@ namespace LSOmni.Service
         ReplHierarchyHospDealLineResponse ReplEcommHierarchyHospDealLine(ReplRequest replRequest);
 
         /// <summary>
-        /// Replicate Hierarchy Hospitality Recipe lines for Node Leafs
+        /// Replicate Hierarchy Hospitality Recipe lines for Node Leaf
         /// </summary>
         /// <remarks>
         /// LS Central Main Table data: 90 - BOM Component
@@ -2409,7 +2506,7 @@ namespace LSOmni.Service
         ReplItemRecipeResponse ReplEcommItemRecipe(ReplRequest replRequest);
 
         /// <summary>
-        /// Replicate Hierarchy Hospitality Modifier lines for Node Leafs
+        /// Replicate Hierarchy Hospitality Modifier lines for Node Leaf
         /// </summary>
         /// <remarks>
         /// LS Central Main Table data: 99001483 - LSC Information Subcode
@@ -2491,6 +2588,24 @@ namespace LSOmni.Service
         /// <returns>Replication result object with List of discounts for items</returns>
         [OperationContract]
         ReplMixMatchResponse ReplEcommMixAndMatch(ReplRequest replRequest);
+
+        /// <summary>
+        /// Replicate Discount Setup from Central<p/>
+        /// Only Multibuy, Discount, Total and Tender discounts are replicated
+        /// </summary>
+        /// <remarks>
+        /// LS Central Main Table data: 99001453 - LSC Periodic Discount
+        /// <p/><p/>
+        /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
+        /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
+        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
+        /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
+        /// </remarks>
+        /// <param name="replRequest">Replication request object</param>
+        /// <returns>Replication result object with List of Periodic Discounts</returns>
+        [OperationContract]
+        ReplDiscountSetupResponse ReplEcommDiscountSetup(ReplRequest replRequest);
 
         /// <summary>
         /// Replicate Validation Periods for Discounts<p/>
@@ -2648,6 +2763,13 @@ namespace LSOmni.Service
 
         #region Search
 
+        /// <summary>
+        /// Search different data based on SearchType value
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <param name="search"></param>
+        /// <param name="searchTypes"></param>
+        /// <returns></returns>
         [OperationContract]
         SearchRs Search(string cardId, string search, SearchType searchTypes);
 
@@ -2657,17 +2779,21 @@ namespace LSOmni.Service
 
         /// <summary>
         /// Checks if LS Recommend is active in Commerce Service for LS Central
+        /// <p/>NOTE: Not supported anymore
         /// </summary>
         /// <returns></returns>
         [OperationContract]
+        [Obsolete("Not supported anymore", true)]
         bool RecommendedActive();
 
         /// <summary>
         /// Get Recommended Items based of list of items
+        /// <p/>NOTE: Not supported anymore
         /// </summary>
         /// <param name="items"></param>
         /// <returns></returns>
         [OperationContract]
+        [Obsolete("Not supported anymore", true)]
         List<RecommendedItem> RecommendedItemsGet(List<string> items);
 
         #endregion
@@ -2753,31 +2879,31 @@ namespace LSOmni.Service
         /// Returns list with the required or optional additional charges for the Activity as applied automatically according to the product
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetAdditionalCharges<p/><p/>
+        /// LS Central WS2 : GetAdditionalCharges
         /// </remarks>
         /// <param name="activityNo"></param>
         /// <returns></returns>
         [OperationContract]
-        AdditionalCharge ActivityAdditionalChargesGet(string activityNo);
+        List<AdditionalCharge> ActivityAdditionalChargesGet(string activityNo);
 
         /// <summary>
         /// Returns list of charges for products
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetProductChargesV2<p/><p/>
+        /// LS Central WS2 : GetProductChargesV2
         /// </remarks>
         /// <param name="locationNo"></param>
         /// <param name="productNo"></param>
         /// <param name="dateOfBooking"></param>
         /// <returns></returns>
         [OperationContract]
-        AdditionalCharge ActivityProductChargesGet(string locationNo, string productNo, DateTime dateOfBooking);
+        List<AdditionalCharge> ActivityProductChargesGet(string locationNo, string productNo, DateTime dateOfBooking);
 
         /// <summary>
         /// Change or insert additional charges to Activity
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : SetAdditionalChargesV2<p/><p/>
+        /// LS Central WS2 : SetAdditionalChargesV3
         /// </remarks>
         /// <example>
         /// This Sample request can be used in SOAP UI application to send request to LS Commerce.<p/>
@@ -2791,13 +2917,18 @@ namespace LSOmni.Service
         ///          <ser:request>
         ///             <ns:ActivityNo>ACT0034</ns:ActivityNo>
         ///             <ns:DiscountPercentage>0.0</ns:DiscountPercentage>
+        ///             <ns:InvoiceReference></ns:InvoiceReference>
         ///             <ns:ItemNo>40020</ns:ItemNo>
         ///             <ns:LineNo>1</ns:LineNo>
+        ///             <ns:Optional></ns:Optional>
+        ///             <ns:OptionalComment></ns:OptionalComment>
+        ///             <ns:ParentLine>0</ns:ParentLine>
         ///             <ns:Price>110.0</ns:Price>
         ///             <ns:ProductType>Item</ns:ProductType>
         ///             <ns:Quantity>1.0</ns:Quantity>
         ///             <ns:TotalAmount>110.0</ns:TotalAmount>
         ///             <ns:UnitOfMeasure></ns:UnitOfMeasure>
+        ///             <ns:VariantCode></ns:VariantCode>
         ///          </ser:request>
         ///       </ser:ActivityAdditionalChargesSet>
         ///    </soapenv:Body>
@@ -2814,7 +2945,7 @@ namespace LSOmni.Service
         /// Returns list of Attributes which are assigned on a given Activity product, reservation or activity entry
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetAttributes<p/><p/>
+        /// LS Central WS2 : GetAttributes
         /// </remarks>
         /// <param name="type"></param>
         /// <param name="linkNo"></param>
@@ -2826,7 +2957,7 @@ namespace LSOmni.Service
         /// Action to set an attribute value on a given reservation or activity.  If attribute does not exist on the entry then its inserted otherwise updated
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : SetAttribute<p/><p/>
+        /// LS Central WS2 : SetAttribute
         /// </remarks>
         /// <param name="type"></param>
         /// <param name="linkNo"></param>
@@ -2840,7 +2971,7 @@ namespace LSOmni.Service
         /// Action to create a Reservation header into the LS Reservation table
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : InsertReservation<p/><p/>
+        /// LS Central WS2 : InsertReservation
         /// </remarks>
         /// <example>
         /// This Sample request can be used in SOAP UI application to send request to LS Commerce.<p/>
@@ -2856,8 +2987,10 @@ namespace LSOmni.Service
         ///            <ns1:ContactNo>MO000008</ns1:ContactNo>
         ///            <ns1:Description></ns1:Description>
         ///            <ns1:Email>tom@xxx.com</ns1:Email>
+        ///            <ns1:EventNo></ns1:EventNo>
         ///            <ns1:Internalstatus>0</ns1:Internalstatus>
         ///            <ns1:Location>CAMBRIDGE</ns1:Location>
+        ///            <ns1:NoOfPerson>1</ns1:NoOfPerson>
         ///            <ns1:ResDateFrom>2019-10-10</ns1:ResDateFrom>
         ///            <ns1:ResDateTo>2019-10-10</ns1:ResDateTo>
         ///            <ns1:ResTimeFrom>13:00:00</ns1:ResTimeFrom>
@@ -2881,7 +3014,7 @@ namespace LSOmni.Service
         /// 
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UpdateReservationStatus<p/><p/>
+        /// LS Central WS2 : UpdateReservationStatus
         /// </remarks>
         /// <param name="reservationNo"></param>
         /// <param name="setStatusCode"></param>
@@ -2893,7 +3026,7 @@ namespace LSOmni.Service
         /// 
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UpdateActivityStatus<p/><p/>
+        /// LS Central WS2 : UpdateActivityStatus
         /// </remarks>
         /// <param name="activityNo"></param>
         /// <param name="setStatusCode"></param>
@@ -2905,7 +3038,7 @@ namespace LSOmni.Service
         /// Action to force update to a reservation header in the LS Reservation table.  Blank fields will be ignored
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UpdateReservation<p/><p/>
+        /// LS Central WS2 : UpdateReservation
         /// </remarks>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -2916,7 +3049,7 @@ namespace LSOmni.Service
         /// Sell Membership (membership type) to Member Contact
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : SellMembership<p/><p/>
+        /// LS Central WS2 : SellMembership
         /// </remarks>
         /// <param name="contactNo">Member Contact</param>
         /// <param name="membersShipType"></param>
@@ -2928,7 +3061,7 @@ namespace LSOmni.Service
         /// Cancels a specific membership and validates if cancellation is in order (i.e. compares to commitment period)
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CancelMembership<p/><p/>
+        /// LS Central WS2 : CancelMembership
         /// </remarks>
         /// <param name="contactNo">Member Contact</param>
         /// <param name="memberShipNo"></param>
@@ -2941,7 +3074,7 @@ namespace LSOmni.Service
         /// Get availability for specific resource, for a specific date and location (all required parameters)
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetResourceAvailability<p/><p/>
+        /// LS Central WS2 : GetResourceAvailability
         /// </remarks>
         /// <param name="locationNo"></param>
         /// <param name="activityDate"></param>
@@ -2956,7 +3089,7 @@ namespace LSOmni.Service
         /// Get availability for all active resource in specific resource group, for a specific date and location (all required parameters)
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetResourceGroupAvailability<p/><p/>
+        /// LS Central WS2 : GetResourceGroupAvailability
         /// </remarks>
         /// <param name="locationNo"></param>
         /// <param name="activityDate"></param>
@@ -2971,7 +3104,7 @@ namespace LSOmni.Service
         /// Check if valid access for either membership or ticketing.  
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CheckAccess<p/><p/>
+        /// LS Central WS2 : CheckAccess
         /// </remarks>
         /// <param name="searchReference">Either TicketBarcode, Member No. or Membership No. LocationNo</param>
         /// <param name="locationNo">Optional Activity Location</param>
@@ -2987,22 +3120,28 @@ namespace LSOmni.Service
         /// Get Availability Token
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetAvailabilityToken<p/><p/>
+        /// LS Central WS2 : GetAvailabilityToken
         /// </remarks>
         /// <param name="locationNo"></param>
         /// <param name="productNo"></param>
-        /// <param name="activiyTime"></param>
+        /// <param name="activityTime"></param>
         /// <param name="optionalResource"></param>
         /// <param name="quantity"></param>
         /// <returns></returns>
         [OperationContract]
-        string ActivityGetAvailabilityToken(string locationNo, string productNo, DateTime activiyTime, string optionalResource, int quantity);
+        string ActivityGetAvailabilityToken(string locationNo, string productNo, DateTime activityTime, string optionalResource, int quantity);
+
+        [OperationContract]
+        bool ActivityExtendToken(string tokenId, int seconds);
+
+        [OperationContract]
+        bool ActivityCancelToken(string tokenId);
 
         /// <summary>
         /// Create Group Reservation
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : InsertGroupReservation<p/><p/>
+        /// LS Central WS2 : InsertGroupReservation
         /// </remarks>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -3013,7 +3152,7 @@ namespace LSOmni.Service
         /// Update Group reservation header.  Blank fields will be ignored
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UpdateGroupReservation<p/><p/>
+        /// LS Central WS2 : UpdateGroupReservation
         /// </remarks>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -3024,7 +3163,7 @@ namespace LSOmni.Service
         /// Confirm Group Activity Booking
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : ActivityConfirmGroup<p/><p/>
+        /// LS Central WS2 : ConfirmGroupActivityV4<p/><p/>
         /// If property [Paid] is set, then returns details for the retail basket.<p/>
         /// [BookingRef] should be assigned to the OrderLine and passed in with Order so retrieved basket payment through Commerce Service for LS Central will update the Activities payment status and assign the sales order document as payment document.<p/> 
         /// If activity type does not require [contactNo] then it is sufficient to provide client name.<p/>
@@ -3040,7 +3179,7 @@ namespace LSOmni.Service
         /// Delete Group Activity
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : DeleteGroupActivity<p/><p/>
+        /// LS Central WS2 : DeleteGroupActivity
         /// </remarks>
         /// <param name="groupNo"></param>
         /// <param name="lineNo"></param>
@@ -3052,7 +3191,7 @@ namespace LSOmni.Service
         /// 
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UpdateGroupHeaderStatus<p/><p/>
+        /// LS Central WS2 : UpdateGroupHeaderStatus
         /// </remarks>
         /// <param name="groupNo"></param>
         /// <param name="statusCode"></param>
@@ -3064,7 +3203,7 @@ namespace LSOmni.Service
         /// 
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : PreSellActivityProduct<p/><p/>
+        /// LS Central WS2 : PreSellActivityProduct
         /// </remarks>
         /// <param name="locationNo"></param>
         /// <param name="productNo"></param>
@@ -3083,7 +3222,7 @@ namespace LSOmni.Service
         /// Returns list of Activity Products
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadActivityProducts<p/><p/>
+        /// LS Central WS2 : UploadActivityProducts
         /// </remarks>
         /// <returns></returns>
         [OperationContract]
@@ -3093,7 +3232,7 @@ namespace LSOmni.Service
         /// Returns list of Activity Types
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadActivityTypes<p/><p/>
+        /// LS Central WS2 : UploadActivityTypes
         /// </remarks>
         /// <returns></returns>
         [OperationContract]
@@ -3103,7 +3242,7 @@ namespace LSOmni.Service
         /// Returns list of Activity Locations
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadActivityLocations<p/><p/>
+        /// LS Central WS2 : UploadActivityLocations
         /// </remarks>
         /// <returns></returns>
         [OperationContract]
@@ -3115,7 +3254,7 @@ namespace LSOmni.Service
         /// <remarks>
         /// LS Central WS2 : <p/>
         /// With [contactNo, activityType] UploadClientBookingsV2<p/>
-        /// With [reservationNo] : UploadReservationActivities<p/><p/>
+        /// With [reservationNo] : UploadReservationActivities
         /// </remarks>
         /// <param name="reservationNo">Look up Activities for a Reservation</param>
         /// <param name="contactNo">Look up Reservations for a Contact</param>
@@ -3128,7 +3267,7 @@ namespace LSOmni.Service
         /// Look up Reservation Headers
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetActReservations<p/><p/>
+        /// LS Central WS2 : GetActReservations
         /// </remarks>
         /// <param name="reservationNo"></param>
         /// <param name="reservationType"></param>
@@ -3143,7 +3282,7 @@ namespace LSOmni.Service
         /// Returns list of Active Promotions (for information purposes only)
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadPromotions<p/><p/>
+        /// LS Central WS2 : UploadPromotions
         /// </remarks>
         /// <returns></returns>
         [OperationContract]
@@ -3153,7 +3292,7 @@ namespace LSOmni.Service
         /// Returns list of Member Contacts issued (sold) allowances
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadPurchasedAllowances<p/><p/>
+        /// LS Central WS2 : UploadPurchasedAllowances
         /// </remarks>
         /// <param name="contactNo">Member Contact</param>
         /// <returns></returns>
@@ -3164,7 +3303,7 @@ namespace LSOmni.Service
         /// Returns list of all entries charged to the Member Contact customer account (A/R). The Account no. is based on the contact business relation settings
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadCustomerEntries<p/><p/>
+        /// LS Central WS2 : UploadCustomerEntries
         /// </remarks>
         /// <param name="contactNo">Member Contact</param>
         /// <param name="customerNo"></param>
@@ -3176,7 +3315,7 @@ namespace LSOmni.Service
         /// Returns list of Membership types (products) which are active and can be sold 
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadMembershipProducts<p/><p/>
+        /// LS Central WS2 : UploadMembershipProducts
         /// </remarks>
         /// <returns></returns>
         [OperationContract]
@@ -3186,7 +3325,7 @@ namespace LSOmni.Service
         /// Returns list of all subscription charges posted towards their membership account. Draft unposted entries are not included
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadMembershipSubscriptionCharges<p/><p/>
+        /// LS Central WS2 : UploadMembershipSubscriptionCharges
         /// </remarks>
         /// <param name="contactNo">Member Contact</param>
         /// <returns></returns>
@@ -3197,7 +3336,7 @@ namespace LSOmni.Service
         /// Returns list of Member Contact visit registrations
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadAdmissionEntries<p/><p/>
+        /// LS Central WS2 : UploadAdmissionEntries
         /// </remarks>
         /// <param name="contactNo">Member Contact</param>
         /// <returns></returns>
@@ -3208,7 +3347,7 @@ namespace LSOmni.Service
         /// Returns list of the Member Contact current active or on hold memberships
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadMembershipEntries<p/><p/>
+        /// LS Central WS2 : UploadMembershipEntries
         /// </remarks>
         /// <param name="contactNo">Member Contact</param>
         /// <returns></returns>
@@ -3219,7 +3358,7 @@ namespace LSOmni.Service
         /// Get list of activities assigned to a resource, required parameters Resource code (number), Date from and to date
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadResourceActivities<p/><p/>
+        /// LS Central WS2 : UploadResourceActivities
         /// </remarks>
         /// <param name="locationNo"></param>
         /// <param name="resourceNo"></param>
@@ -3233,7 +3372,7 @@ namespace LSOmni.Service
         /// Get list of all resources 
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadActivityResources<p/><p/>
+        /// LS Central WS2 : UploadActivityResources
         /// </remarks>
         /// <returns></returns>
         [OperationContract]
@@ -3254,6 +3393,9 @@ namespace LSOmni.Service
         /// <summary>
         /// Gets Profile setup for SPG App
         /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : SPGProfileGet
+        /// </remarks>
         /// <param name="profileId"></param>
         /// <param name="storeNo"></param>
         /// <returns></returns>
@@ -3263,6 +3405,9 @@ namespace LSOmni.Service
         /// <summary>
         /// Check security status of a profile
         /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : SecurityCheckProfile
+        /// </remarks>
         /// <param name="orderNo"></param>
         /// <param name="storeNo"></param>
         /// <returns></returns>
@@ -3280,6 +3425,9 @@ namespace LSOmni.Service
         /// <summary>
         /// Allow app to open Gate when exiting the store
         /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : SPGOpenGate
+        /// </remarks>
         /// <param name="qrCode"></param>
         /// <param name="storeNo"></param>
         /// <param name="devLocation"></param>
@@ -3293,6 +3441,9 @@ namespace LSOmni.Service
         /// <summary>
         /// Add Payment token
         /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : SetTokenEntry, SetMemberCardToken, DeleteMemberCardToken
+        /// </remarks>
         /// <param name="token"></param>
         /// <param name="deleteToken">Delete token, Send token with token and cardId to delete</param>
         /// <returns></returns>
@@ -3302,11 +3453,33 @@ namespace LSOmni.Service
         /// <summary>
         /// Get Payment token
         /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : GetTokenEntry, GetMemberCardToken
+        /// </remarks>
         /// <param name="accountNo"></param>
         /// <param name="hotelToken">Get token for LS Hotels</param>
         /// <returns></returns>
         [OperationContract]
         List<ClientToken> TokenEntryGet(string accountNo, bool hotelToken);
+
+        /// <summary>
+        /// Request to unlock Rod Device
+        /// </summary>
+        /// <param name="storeId"></param>
+        /// <param name="cardId"></param>
+        /// <returns></returns>
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
+        bool SpgUnlockRodDevice(string storeId, string cardId);
+
+        /// <summary>
+        /// Used by Rod Device to check if there is request to unlock a device
+        /// </summary>
+        /// <param name="storeId"></param>
+        /// <returns></returns>
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
+        string SpgUnlockRodDeviceCheck(string storeId);
 
         #endregion
 

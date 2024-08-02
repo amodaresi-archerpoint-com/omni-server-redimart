@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 
-using LSRetail.Omni.DiscountEngine.DataModels;
 using LSRetail.Omni.Domain.DataModel.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Replication;
 using LSRetail.Omni.Domain.DataModel.Base.Requests;
@@ -111,7 +110,7 @@ namespace LSOmni.Service
         /// </summary>
         /// <remarks>
         /// LS Nav WS1 : LOAD_MEMBER_DIR_MARK_INFO<p/>
-        /// LS Central WS2 : GetDirectMarketingInfo<p/><p/>
+        /// LS Central WS2 : GetDirectMarketingInfo
         /// </remarks>
         /// <param name="cardId">Member Card Id to look for</param>
         /// <param name="itemId">Only show Offers for this item</param>
@@ -124,7 +123,7 @@ namespace LSOmni.Service
         /// Get related items in a published offer
         /// </summary>
         /// <remarks>
-        /// LS Nav WS1 : LOAD_PUBLISHED_OFFER_ITEMS<p/><p/>
+        /// LS Nav WS1 : LOAD_PUBLISHED_OFFER_ITEMS
         /// </remarks>
         /// <param name="pubOfferId">Published offer id</param>
         /// <param name="numberOfItems">Number of items to return</param>
@@ -137,35 +136,37 @@ namespace LSOmni.Service
         /// Get discounts for items. Send in empty string for loyaltySchemeCode if getting anonymously.
         /// </summary>
         /// <param name="storeId">Store Id</param>
-        /// <param name="itemiIds">List of item ids to check for discounts</param>
+        /// <param name="itemIds">List of item ids to check for discounts</param>
         /// <param name="loyaltySchemeCode">[OPTIONAL] Loyalty scheme code for a user</param>
         /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        List<ProactiveDiscount> DiscountsGet(string storeId, List<string> itemiIds, string loyaltySchemeCode);
+        List<ProactiveDiscount> DiscountsGet(string storeId, List<string> itemIds, string loyaltySchemeCode);
 
         /// <summary>
         /// Get balance of a gift card.
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetDataEntryBalance<p/><p/>
+        /// LS Central WS2 : GetDataEntryBalance
         /// </remarks>
         /// <param name="cardNo">Gift card number</param>
+        /// <param name="pin">Gift card pin number</param>
         /// <param name="entryType">Gift card Entry type. If empty, GiftCard_DataEntryType from TenantConfig is used</param>
         /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        GiftCard GiftCardGetBalance(string cardNo, string entryType);
+        GiftCard GiftCardGetBalance(string cardNo, int pin, string entryType);
 
         /// <summary>
         /// Get activity history for Gift Card
         /// </summary>
         /// <param name="cardNo">Gift card number</param>
+        /// <param name="pin">Gift card pin number</param>
         /// <param name="entryType">Gift card Entry type. If empty, GiftCard_DataEntryType from TenantConfig is used</param>
         /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        List<GiftCardEntry> GiftCardGetHistory(string cardNo, string entryType);
+        List<GiftCardEntry> GiftCardGetHistory(string cardNo, int pin, string entryType);
 
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
@@ -180,7 +181,7 @@ namespace LSOmni.Service
         /// </summary>
         /// <remarks>
         /// LS Nav WS1 : LOAD_MEMBER_DIR_MARK_INFO<p/>
-        /// LS Central WS2 : GetDirectMarketingInfo<p/><p/>
+        /// LS Central WS2 : GetDirectMarketingInfo
         /// </remarks>
         /// <param name="cardId">Card Id</param>
         /// <param name="numberOfNotifications">Number of notifications to return</param>
@@ -243,7 +244,7 @@ namespace LSOmni.Service
         /// For Anonymous User, keep CardId empty and OneListSave will return OneList Id back that should be store with the session for the Anonymous user, 
         /// as Commerce Service for LS Central does not store any information for Anonymous Users.<p/>
         /// Used OneListGetById to get the OneList back.<p/>
-        /// NOTE: If no Name is provided with Onelist, system will look up contact to pull the name, this can slow the process.
+        /// NOTE: If no Name is provided with OneList, system will look up contact to pull the name, this can slow the process.
         /// </remarks>
         /// <example>
         /// Sample request including minimum data needed to be able to process the request in LS Commerce
@@ -254,7 +255,7 @@ namespace LSOmni.Service
         ///         "CardId": "10021",
         ///         "Items": [{
         ///             "Image": {
-        ///                 "Id": "40020"
+        ///                "Id": "40020"
         ///             },
         ///             "ItemDescription": "Skirt Linda Professional Wear",
         ///             "ItemId": "40020",
@@ -295,7 +296,7 @@ namespace LSOmni.Service
         /// <![CDATA[
         /// {
         ///     "oneList": {
-        /// 		"CardId": "10021",
+        ///         "CardId": "10021",
         ///         "Items": [{
         ///             "Image": {
         ///                 "Id": "40020"
@@ -306,10 +307,10 @@ namespace LSOmni.Service
         ///             "VariantDescription": "YELLOW/38",
         ///             "VariantId": "002"
         ///         }],
-        /// 		"ListType": 0,
-        /// 		"StoreId": "S0001"
-        /// 	},
-        /// 	"calculate": true
+        ///         "ListType": 0,
+        ///         "StoreId": "S0001"
+        ///     },
+        ///     "calculate": true
         /// }
         /// ]]>
         /// </code>
@@ -317,8 +318,8 @@ namespace LSOmni.Service
         /// <code language="xml" title="REST Sample Request">
         /// <![CDATA[
         /// {
-        /// 	"oneList": {
-        /// 		"CardId": "10021",
+        ///     "oneList": {
+        ///         "CardId": "10021",
         ///         "Items": [{
         ///             "Image": {
         ///                 "Id": "40020"
@@ -329,14 +330,14 @@ namespace LSOmni.Service
         ///             "VariantDescription": "YELLOW/38",
         ///             "VariantId": "002"
         ///         }],
-        /// 		"PublishedOffers": [{
-        /// 			"Id": "XMAS",
-        /// 			"Type": "9",
+        ///         "PublishedOffers": [{
+        ///             "Id": "XMAS",
+        ///             "Type": "9",
         ///         }],
-        /// 		"ListType": 0,
-        /// 		"StoreId": "S0001"
-        /// 	},
-        /// 	"calculate": true
+        ///         "ListType": 0,
+        ///         "StoreId": "S0001"
+        ///     },
+        ///     "calculate": true
         /// }
         /// ]]>
         /// </code>
@@ -386,12 +387,10 @@ namespace LSOmni.Service
         ///             "Quantity": 1,
         ///             "Type": 1,
         ///             "Uom": "REG"
-        ///           }
-        ///         ],
+        ///           }],
         ///         "Quantity": 1,
         ///         "UnitOfMeasureId": null
-        ///       }
-        ///     ],
+        ///       }],
         ///     "ListType": 0,
         ///     "SalesType": "TAKEAWAY",
         ///     "StoreId": "S0017"
@@ -416,26 +415,26 @@ namespace LSOmni.Service
         /// {
         ///     "onelistId":"1117AC57-10BD-4F7C-974D-FA19B1B027FB",
         ///     "item": {
-        /// 	    "ItemDescription": "T-shirt Linda Wear",
-        /// 	    "ItemId": "40045",
+        ///         "ItemDescription": "T-shirt Linda Wear",
+        ///         "ItemId": "40045",
         ///         "Quantity": 1,
         ///         "VariantDescription": "BLACK/40",
-        /// 	    "VariantId": "015"
+        ///         "VariantId": "015"
         ///     },
-        /// 	"remove": false,
-        /// 	"calculate": true
+        ///     "remove": false,
+        ///     "calculate": true
         /// }
         /// ]]>
         /// </code>
         /// </example>
-        /// <param name="onelistId">OneList Id</param>
+        /// <param name="oneListId">OneList Id</param>
         /// <param name="item">OneList Item to add or remove</param>
         /// <param name="remove">true if remove item, else false</param>
         /// <param name="calculate">Recalculate OneList</param>
         /// <returns>Updated OneList</returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        OneList OneListItemModify(string onelistId, OneListItem item, bool remove, bool calculate);
+        OneList OneListItemModify(string oneListId, OneListItem item, bool remove, bool calculate);
 
         /// <summary>
         /// Link or remove a Member to/from existing OneList
@@ -458,7 +457,7 @@ namespace LSOmni.Service
         /// Check the quantity available of items in order for certain store, Use with LS Nav 11.0 and later
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : COQtyAvailabilityV2<p/><p/>
+        /// LS Central WS2 : COQtyAvailabilityV2
         /// </remarks>
         /// <param name="request"></param>
         /// <param name="shippingOrder">true if order is to be shipped, false if click and collect</param>
@@ -471,7 +470,7 @@ namespace LSOmni.Service
         /// Create Customer Order
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CustomerOrderCreateVx<p/><p/>
+        /// LS Central WS2 : CustomerOrderCreateVx
         /// </remarks>
         /// <example>
         /// Sample requests including minimum data needed to be able to process the request in LS Commerce<p/>
@@ -479,61 +478,56 @@ namespace LSOmni.Service
         /// <code language="xml" title="REST Sample Request">
         /// <![CDATA[
         /// {
-        /// 	"request": {
-        /// 		"CardId": "10021",
-        /// 		"LineItemCount": "1",
-        /// 		"OrderDiscountLines": [],
-        /// 		"OrderLines": [{
-        /// 			"Amount": "160.0",
-        /// 			"DiscountAmount": "0",
-        /// 			"DiscountPercent": "0",
-        /// 			"ItemId": "40020",
-        /// 			"LineNumber": "1",
-        /// 			"LineType": "0",
-        /// 			"NetAmount": "128.00",
-        /// 			"NetPrice": "64.0",
-        /// 			"Price": "80.0",
-        /// 			"Quantity": "2",
-        /// 			"QuantityOutstanding": "0",
-        /// 			"QuantityToInvoice": "2.0",
-        /// 			"QuantityToShip": "0",
-        /// 			"TaxAmount": "32.0",
-        /// 			"VariantId": "002"
+        ///     "request": {
+        ///         "CardId": "10021",
+        ///         "OrderDiscountLines": [],
+        ///         "OrderLines": [{
+        ///             "Amount": "160.0",
+        ///             "DiscountAmount": "0",
+        ///             "DiscountPercent": "0",
+        ///             "ItemId": "40020",
+        ///             "LineNumber": "1",
+        ///             "LineType": "0",
+        ///             "NetAmount": "128.00",
+        ///             "NetPrice": "64.0",
+        ///             "Price": "80.0",
+        ///             "Quantity": "2",
+        ///             "TaxAmount": "32.0",
+        ///             "VariantId": "002"
         ///         }],
-        /// 		"OrderPayments": [{
-        /// 			"Amount": "160.0",
-        /// 			"AuthorisationCode": "123456",
-        /// 			"CardNumber": "10xx xxxx xxxx 1475",
-        /// 			"CardType": "VISA",
-        /// 			"CurrencyCode": "GBP",
-        /// 			"CurrencyFactor": 1,
-        /// 			"ExternalReference": "MyRef123",
-        /// 			"LineNumber": 1,
-        /// 			"PaymentType": "2",
-        /// 			"PreApprovedValidDate": "\/Date(1892160000000+1000)\/",
-        /// 			"TenderType": "1",
-        /// 			"TokenNumber": "123456"
+        ///         "OrderPayments": [{
+        ///             "Amount": "160.0",
+        ///             "AuthorizationCode": "123456",
+        ///             "CardNumber": "10xx xxxx xxxx 1475",
+        ///             "CardType": "VISA",
+        ///             "CurrencyCode": "GBP",
+        ///             "CurrencyFactor": 1,
+        ///             "ExternalReference": "MyRef123",
+        ///             "LineNumber": 1,
+        ///             "PaymentType": "2",
+        ///             "PreApprovedValidDate": "\/Date(1892160000000+1000)\/",
+        ///             "TenderType": "1",
+        ///             "TokenNumber": "123456"
         ///         }],
-        /// 		"OrderType": "0",
-        /// 		"PaymentStatus": "10",
-        /// 		"ShipToAddress": {
-        /// 			"Address1": "600 Lue Via",
-        /// 			"Address2": "None",
-        /// 			"City": "North Viola",
-        /// 			"Country": "Belgium",
-        /// 			"PhoneNumber": "555-555-5555",
-        /// 			"PostCode": "88391-4289",
-        /// 			"StateProvinceRegion": "None",
-        /// 			"Type": "0"
-        /// 		},
-        /// 		"ShippingStatus": "20",
-        /// 		"SourceType": "2",
-        /// 		"StoreId": "S0013",
-        /// 		"TotalAmount": "160.0",
-        /// 		"TotalDiscount": "0",
-        /// 		"TotalNetAmount": "128.0"
-        /// 	},
-        /// 	"returnOrderIdOnly": 0
+        ///         "OrderType": "0",
+        ///         "PaymentStatus": "10",
+        ///         "ShipOrder": "1",
+        ///         "ShipToAddress": {
+        ///             "Address1": "600 Lue Via",
+        ///             "Address2": "None",
+        ///             "City": "North Viola",
+        ///             "Country": "Belgium",
+        ///             "PhoneNumber": "555-555-5555",
+        ///             "PostCode": "88391-4289",
+        ///             "StateProvinceRegion": "None",
+        ///             "Type": "0"
+        ///         },
+        ///         "StoreId": "S0013",
+        ///         "TotalAmount": "160.0",
+        ///         "TotalDiscount": "0",
+        ///         "TotalNetAmount": "128.0"
+        ///     },
+        ///     "returnOrderIdOnly": 0
         /// }
         /// ]]>
         /// </code>
@@ -541,67 +535,62 @@ namespace LSOmni.Service
         /// <code language="xml" title="REST Sample Request">
         /// <![CDATA[
         /// {
-        /// 	"request": {
-        /// 		"CardId": "10021",
-        /// 		"LineItemCount": "1",
-        /// 		"OrderDiscountLines": [{
-        /// 			"DiscountAmount": "16.0",
-        /// 			"DiscountPercent": "10.0",
-        /// 			"DiscountType": "4",
-        /// 			"LineNumber": "1",
-        /// 			"No": "10000"
+        ///     "request": {
+        ///         "CardId": "10021",
+        ///         "OrderDiscountLines": [{
+        ///             "DiscountAmount": "16.0",
+        ///             "DiscountPercent": "10.0",
+        ///             "DiscountType": "4",
+        ///             "LineNumber": "1",
+        ///             "No": "10000"
         ///         }],
-        /// 		"OrderLines": [{
-        /// 			"Amount": "144.0",
-        /// 			"DiscountAmount": "16.3",
-        /// 			"DiscountPercent": "10.0",
-        /// 			"ItemId": "40020",
-        /// 			"LineNumber": "1",
-        /// 			"LineType": "0",
-        /// 			"NetAmount": "115.20",
-        /// 			"NetPrice": "64.0",
-        /// 			"Price": "80.0",
-        /// 			"Quantity": "2",
-        /// 			"QuantityOutstanding": "0",
-        /// 			"QuantityToInvoice": "2.0",
-        /// 			"QuantityToShip": "0",
-        /// 			"TaxAmount": "28.0",
-        /// 			"VariantId": "002"
+        ///         "OrderLines": [{
+        ///             "Amount": "144.0",
+        ///             "DiscountAmount": "16.3",
+        ///             "DiscountPercent": "10.0",
+        ///             "ItemId": "40020",
+        ///             "LineNumber": "1",
+        ///             "LineType": "0",
+        ///             "NetAmount": "115.20",
+        ///             "NetPrice": "64.0",
+        ///             "Price": "80.0",
+        ///             "Quantity": "2",
+        ///             "TaxAmount": "28.0",
+        ///             "VariantId": "002"
         ///         }],
-        /// 		"OrderPayments": [{
-        /// 			"Amount": "160.0",
-        /// 			"AuthorisationCode": "123456",
-        /// 			"CardNumber": "10xx xxxx xxxx 1475",
-        /// 			"CardType": "VISA",
-        /// 			"CurrencyCode": "GBP",
-        /// 			"CurrencyFactor": 1,
-        /// 			"ExternalReference": "MyRef123",
-        /// 			"LineNumber": 1,
-        /// 			"PaymentType": "2",
-        /// 			"PreApprovedValidDate": "\/Date(1892160000000+1000)\/",
-        /// 			"TenderType": "1",
-        /// 			"TokenNumber": "123456"
+        ///         "OrderPayments": [{
+        ///             "Amount": "160.0",
+        ///             "AuthorizationCode": "123456",
+        ///             "CardNumber": "10xx xxxx xxxx 1475",
+        ///             "CardType": "VISA",
+        ///             "CurrencyCode": "GBP",
+        ///             "CurrencyFactor": 1,
+        ///             "ExternalReference": "MyRef123",
+        ///             "LineNumber": 1,
+        ///             "PaymentType": "2",
+        ///             "PreApprovedValidDate": "\/Date(1892160000000+1000)\/",
+        ///             "TenderType": "1",
+        ///             "TokenNumber": "123456"
         ///         }],
-        /// 		"OrderType": "0",
-        /// 		"PaymentStatus": "10",
-        /// 		"ShipToAddress": {
-        /// 			"Address1": "600 Lue Via",
-        /// 			"Address2": "None",
-        /// 			"City": "North Viola",
-        /// 			"Country": "Belgium",
-        /// 			"PhoneNumber": "555-555-5555",
-        /// 			"PostCode": "88391-4289",
-        /// 			"StateProvinceRegion": "None",
-        /// 			"Type": "0"
-        /// 		},
-        /// 		"ShippingStatus": "20",
-        /// 		"SourceType": "2",
-        /// 		"StoreId": "S0013",
-        /// 		"TotalAmount": "144.0",
-        /// 		"TotalDiscount": "16.0",
-        /// 		"TotalNetAmount": "115.20"
-        /// 	},
-        /// 	"returnOrderIdOnly": 0
+        ///         "OrderType": "0",
+        ///         "PaymentStatus": "10",
+        ///         "ShipOrder": "1",
+        ///         "ShipToAddress": {
+        ///             "Address1": "600 Lue Via",
+        ///             "Address2": "None",
+        ///             "City": "North Viola",
+        ///             "Country": "Belgium",
+        ///             "PhoneNumber": "555-555-5555",
+        ///             "PostCode": "88391-4289",
+        ///             "StateProvinceRegion": "None",
+        ///             "Type": "0"
+        ///         },
+        ///         "StoreId": "S0013",
+        ///         "TotalAmount": "144.0",
+        ///         "TotalDiscount": "16.0",
+        ///         "TotalNetAmount": "115.20"
+        ///     },
+        ///     "returnOrderIdOnly": 0
         /// }
         /// ]]>
         /// </code>
@@ -609,77 +598,73 @@ namespace LSOmni.Service
         /// <code language="xml" title="REST Sample Request">
         /// <![CDATA[
         /// {
-        /// 	"request": {
-        /// 		"CardId": "10021",
-        /// 		"LineItemCount": "1",
-        /// 		"OrderDiscountLines": [],
-        /// 		"OrderLines": [{
-        /// 			"Amount": "160.0",
-        /// 			"DiscountAmount": "0",
-        /// 			"DiscountPercent": "0",
-        /// 			"ItemId": "40020",
-        /// 			"LineNumber": "1",
-        /// 			"LineType": "0",
-        /// 			"NetAmount": "128.00",
-        /// 			"NetPrice": "64.0",
-        /// 			"Price": "80.0",
-        /// 			"Quantity": "2",
-        /// 			"QuantityOutstanding": "0",
-        /// 			"QuantityToInvoice": "2.0",
-        /// 			"QuantityToShip": "0",
-        /// 			"TaxAmount": "32.0",
-        /// 			"VariantId": "002"
+        ///     "request": {
+        ///         "CardId": "10021",
+        ///         "OrderDiscountLines": [],
+        ///         "OrderLines": [{
+        ///             "Amount": "160.0",
+        ///             "DiscountAmount": "0",
+        ///             "DiscountPercent": "0",
+        ///             "ItemId": "40020",
+        ///             "LineNumber": "1",
+        ///             "LineType": "0",
+        ///             "NetAmount": "128.00",
+        ///             "NetPrice": "64.0",
+        ///             "Price": "80.0",
+        ///             "Quantity": "2",
+        ///             "TaxAmount": "32.0",
+        ///             "VariantId": "002"
         ///         }],
-        ///        	"OrderPayments": [{
-        /// 			"Amount": "160.0",
-        /// 			"AuthorisationCode": "123456",
-        /// 			"CardNumber": "10xx xxxx xxxx 1475",
-        /// 			"CardType": "VISA",
-        /// 			"CurrencyCode": "GBP",
-        /// 			"CurrencyFactor": 1,
-        /// 			"ExternalReference": "MyRef123",
-        /// 			"LineNumber": 1,
-        /// 			"PaymentType": "2",
-        /// 			"PreApprovedValidDate": "\/Date(1892160000000+1000)\/",
-        /// 			"TenderType": "1",
-        /// 			"TokenNumber": "123456"
+        ///         "OrderPayments": [{
+        ///             "Amount": "160.0",
+        ///             "AuthorizationCode": "123456",
+        ///             "CardNumber": "10xx xxxx xxxx 1475",
+        ///             "CardType": "VISA",
+        ///             "CurrencyCode": "GBP",
+        ///             "CurrencyFactor": 1,
+        ///             "ExternalReference": "MyRef123",
+        ///             "LineNumber": 1,
+        ///             "PaymentType": "2",
+        ///             "PreApprovedValidDate": "\/Date(1892160000000+1000)\/",
+        ///             "TenderType": "1",
+        ///             "TokenNumber": "123456"
         ///         },
         ///         {
-        ///        		"Amount": "200.0",
-        ///        		"CardNumber": "10021",
-        ///        		"CurrencyCode": "LOY",
-        ///        		"CurrencyFactor": "0.1",
-        ///        		"LineNumber": 2,
-        ///       		"TenderType": "3"
+        ///             "Amount": "200.0",
+        ///             "CardNumber": "10021",
+        ///             "CurrencyCode": "LOY",
+        ///             "CurrencyFactor": "0.1",
+        ///             "LineNumber": 2,
+        ///             "TenderType": "3"
         ///         },
         ///         {
-        ///        		"Amount": "20.0",
-        ///        		"CardNumber": "123456",
-        ///        		"CurrencyCode": "GBP",
-        ///        		"CurrencyFactor": "1.0",
-        ///        		"LineNumber": 3,
-        ///       		"TenderType": "4"
+        ///             "Amount": "20.0",
+        ///             "AuthorizationCode": 9999,
+        ///             "CardNumber": "1000",
+        ///             "CurrencyCode": "GBP",
+        ///             "CurrencyFactor": "1.0",
+        ///             "LineNumber": 3,
+        ///             "TenderType": "4"
         ///         }],
-        /// 		"OrderType": "0",
-        /// 		"PaymentStatus": "10",
-        /// 		"ShipToAddress": {
-        /// 			"Address1": "600 Lue Via",
-        /// 			"Address2": "None",
-        /// 			"City": "North Viola",
-        /// 			"Country": "Belgium",
-        /// 			"PhoneNumber": "555-555-5555",
-        /// 			"PostCode": "88391-4289",
-        /// 			"StateProvinceRegion": "None",
-        /// 			"Type": "0"
-        /// 		},
-        /// 		"ShippingStatus": "20",
-        /// 		"SourceType": "2",
-        /// 		"StoreId": "S0013",
-        /// 		"TotalAmount": "160.0",
-        /// 		"TotalDiscount": "0",
-        /// 		"TotalNetAmount": "128.0"
-        /// 	},
-        /// 	"returnOrderIdOnly": 0
+        ///         "OrderType": "0",
+        ///         "PaymentStatus": "10",
+        ///         "ShipOrder": "1",
+        ///         "ShipToAddress": {
+        ///             "Address1": "600 Lue Via",
+        ///             "Address2": "None",
+        ///             "City": "North Viola",
+        ///             "Country": "Belgium",
+        ///             "PhoneNumber": "555-555-5555",
+        ///             "PostCode": "88391-4289",
+        ///             "StateProvinceRegion": "None",
+        ///             "Type": "0"
+        ///         },
+        ///         "StoreId": "S0013",
+        ///         "TotalAmount": "160.0",
+        ///         "TotalDiscount": "0",
+        ///         "TotalNetAmount": "128.0"
+        ///     },
+        ///     "returnOrderIdOnly": 0
         /// }
         /// ]]>
         /// </code>
@@ -687,42 +672,37 @@ namespace LSOmni.Service
         /// <code language="xml" title="REST Sample Request">
         /// <![CDATA[
         /// {
-        /// 	"request": {
-        /// 		"CardId": "10021",
-        /// 		"CollectLocation": "S0001",
-        /// 		"LineItemCount": "1",
-        /// 		"OrderDiscountLines": [],
-        /// 		"OrderLines": [{
-        /// 			"Amount": "160.0",
-        /// 			"ClickAndCollectLine": "1",
-        /// 			"DiscountAmount": "0",
-        /// 			"DiscountPercent": "0",
-        /// 			"ItemId": "40020",
-        /// 			"LineNumber": "1",
-        /// 			"LineType": "0",
-        /// 			"NetAmount": "128.00",
-        /// 			"NetPrice": "64.0",
-        /// 			"Price": "80.0",
-        /// 			"Quantity": "2",
-        /// 			"QuantityOutstanding": "0",
-        /// 			"QuantityToInvoice": "2.0",
-        /// 			"QuantityToShip": "0",
-        /// 			"StoreId": "S0001",
-        /// 			"TaxAmount": "32.0",
-        /// 			"VariantId": "002"
+        ///     "request": {
+        ///         "CardId": "10021",
+        ///         "CollectLocation": "S0001",
+        ///         "OrderDiscountLines": [],
+        ///         "OrderLines": [{
+        ///             "Amount": "160.0",
+        ///             "ClickAndCollectLine": "1",
+        ///             "DiscountAmount": "0",
+        ///             "DiscountPercent": "0",
+        ///             "ItemId": "40020",
+        ///             "LineNumber": "1",
+        ///             "LineType": "0",
+        ///             "NetAmount": "128.00",
+        ///             "NetPrice": "64.0",
+        ///             "Price": "80.0",
+        ///             "Quantity": "2",
+        ///             "StoreId": "S0001",
+        ///             "TaxAmount": "32.0",
+        ///             "VariantId": "002"
         ///         }],
-        /// 		"OrderPayments": [],
-        /// 		"OrderType": "1",
-        /// 		"PaymentStatus": "0",
-        /// 		"ShipToAddress": {},
-        /// 		"ShippingStatus": "10",
-        /// 		"SourceType": "2",
-        /// 		"StoreId": "S0013",
-        /// 		"TotalAmount": "160.0",
-        /// 		"TotalDiscount": "0",
-        /// 		"TotalNetAmount": "128.0"
-        /// 	},
-        /// 	"returnOrderIdOnly": 0
+        ///         "OrderPayments": [],
+        ///         "OrderType": "1",
+        ///         "PaymentStatus": "0",
+        ///         "ShipOrder": "0",
+        ///         "ShipToAddress": {},
+        ///         "StoreId": "S0013",
+        ///         "TotalAmount": "160.0",
+        ///         "TotalDiscount": "0",
+        ///         "TotalNetAmount": "128.0"
+        ///     },
+        ///     "returnOrderIdOnly": 0
         /// }
         /// ]]>
         /// </code>
@@ -735,10 +715,25 @@ namespace LSOmni.Service
         SalesEntry OrderCreate(Order request, bool returnOrderIdOnly);
 
         /// <summary>
+        /// Edit Customer Order
+        /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : CustomerOrderEdit
+        /// </remarks>
+        /// <param name="request">Updated Order object</param>
+        /// <param name="orderId">Order Id to edit</param>
+        /// <param name="editType">Type of Order Edit</param>
+        /// <param name="returnOrderIdOnly"></param>
+        /// <returns></returns>
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
+        SalesEntry OrderEdit(Order request, string orderId, OrderEditType editType, bool returnOrderIdOnly);
+
+        /// <summary>
         /// Create a Hospitality Order
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CreateHospOrder<p/><p/>
+        /// LS Central WS2 : CreateHospOrder
         /// </remarks>
         /// <example>
         /// Sample requests including minimum data needed to be able to process the request in LS Commerce<p/>
@@ -746,168 +741,172 @@ namespace LSOmni.Service
         /// Based on OneListHospCalculate result.
         /// <code language="xml" title="REST Sample Request">
         /// <![CDATA[
-        /// {
-        ///   "request": {
-        ///     "Id": "{16A05A22-4D3B-49DA-8895-8C9C7A0091BB}",
-        ///     "BillToName": "",
-        ///     "CardId": "10021",
-        ///     "Comment": "",
-        ///     "DeliveryType": 0,
-        ///     "Directions": "",
-        ///     "Email": "tom@xyz.com",
-        ///     "LineItemCount": 1,
-        ///     "Name": "Tom Tomsson",
-        ///     "OrderDiscountLines": [{
-        ///         "Description": "Deal",
-        ///         "DiscountAmount": 0.00,
-        ///         "DiscountPercent": 0.00,
-        ///         "DiscountType": 6,
-        ///         "LineNumber": 9750,
-        ///         "No": "{16A05A22-4D3B-49DA-8895-8C9C7A0091BB}",
-        ///         "OfferNumber": "S10025",
-        ///         "OrderId": "",
-        ///         "PeriodicDiscGroup": "",
-        ///         "PeriodicDiscType": 0
-        ///       }, {
-        ///         "Description": "Deal",
-        ///         "DiscountAmount": 0.00,
-        ///         "DiscountPercent": 0.00,
-        ///         "DiscountType": 6,
-        ///         "LineNumber": 10000,
-        ///         "No": "{16A05A22-4D3B-49DA-8895-8C9C7A0091BB}",
-        ///         "OfferNumber": "S10025",
-        ///         "OrderId": "",
-        ///         "PeriodicDiscGroup": "",
-        ///         "PeriodicDiscType": 0
-        ///       }, {
-        ///     "Description": "Deal",
-        ///         "DiscountAmount": 0.00,
-        ///         "DiscountPercent": 0.00,
-        ///         "DiscountType": 6,
-        ///         "LineNumber": 20000,
-        ///         "No": "{16A05A22-4D3B-49DA-8895-8C9C7A0091BB}",
-        ///         "OfferNumber": "S10025",
-        ///         "OrderId": "",
-        ///         "PeriodicDiscGroup": "",
-        ///         "PeriodicDiscType": 0
-        ///       }, {
-        ///     "Description": "Deal",
-        ///         "DiscountAmount": 0.00,
-        ///         "DiscountPercent": 0.00,
-        ///         "DiscountType": 6,
-        ///         "LineNumber": 30000,
-        ///         "No": "{16A05A22-4D3B-49DA-8895-8C9C7A0091BB}",
-        ///         "OfferNumber": "S10025",
-        ///         "OrderId": "",
-        ///         "PeriodicDiscGroup": "",
-        ///         "PeriodicDiscType": 0
-        ///       }
-        ///     ],
-        ///     "OrderLines": [{
-        ///         "Id": "{16A05A22-4D3B-49DA-8895-8C9C7A0091BB}",
-        ///         "Amount": 7.50,
-        ///         "DiscountAmount": 0.00,
-        ///         "DiscountPercent": 0.00,
-        ///         "IsADeal": true,
-        ///         "ItemDescription": "Cheese Burger Meal",
-        ///         "ItemId": "S10025",
-        ///         "ItemImageId": null,
-        ///         "LineNumber": 9750,
-        ///         "LineType": 0,
-        ///         "NetAmount": 6.82,
-        ///         "NetPrice": 6.82,
-        ///         "OrderId": "",
-        ///         "Price": 7.50,
-        ///         "PriceModified": false,
-        ///         "Quantity": 1.00,
-        ///         "SubLines": [{
-        ///             "Amount": 5.32,
-        ///             "DealCode": "S10025",
-        ///             "DealLineId": 10000,
-        ///             "DealModifierLineId": 0,
-        ///             "Description": "Cheese Burger",
-        ///             "DiscountAmount": 0.00,
-        ///             "DiscountPercent": 0.00,
-        ///             "ItemId": "R0024",
-        ///             "LineNumber": 10000,
-        ///             "ManualDiscountAmount": 0.0,
-        ///             "ManualDiscountPercent": 0.0,
-        ///             "ModifierGroupCode": "",
-        ///             "ModifierSubCode": "",
-        ///             "NetAmount": 4.84,
-        ///             "NetPrice": 4.84,
-        ///             "ParentSubLineId": 0,
-        ///             "Price": 5.32,
-        ///             "PriceReductionOnExclusion": false,
-        ///             "Quantity": 1.00,
-        ///             "TAXAmount": 0.48,
-        ///             "Type": 1,
-        ///             "Uom": ""
-        ///           }, {
-        ///             "Amount": 1.28,
-        ///             "DealCode": "S10025",
-        ///             "DealLineId": 20000,
-        ///             "DealModifierLineId": 70000,
-        ///             "Description": "Jalapeno Popper",
-        ///             "DiscountAmount": 0.00,
-        ///             "DiscountPercent": 0.00,
-        ///             "ItemId": "33430",
-        ///             "LineNumber": 20000,
-        ///             "ManualDiscountAmount": 0.0,
-        ///             "ManualDiscountPercent": 0.0,
-        ///             "ModifierGroupCode": "",
-        ///             "ModifierSubCode": "",
-        ///             "NetAmount": 1.16,
-        ///             "NetPrice": 1.16,
-        ///             "ParentSubLineId": 0,
-        ///             "Price": 1.28,
-        ///             "PriceReductionOnExclusion": false,
-        ///             "Quantity": 1.00,
-        ///             "TAXAmount": 0.12,
-        ///             "Type": 1,
-        ///             "Uom": ""
-        ///           }, {
-        ///             "Amount": 0.90,
-        ///             "DealCode": "S10025",
-        ///             "DealLineId": 30000,
-        ///             "DealModifierLineId": 70000,
-        ///             "Description": "Orange Soda",
-        ///             "DiscountAmount": 0.00,
-        ///             "DiscountPercent": 0.00,
-        ///             "ItemId": "30520",
-        ///             "LineNumber": 30000,
-        ///             "ManualDiscountAmount": 0.0,
-        ///             "ManualDiscountPercent": 0.0,
-        ///             "ModifierGroupCode": "",
-        ///             "ModifierSubCode": "",
-        ///             "NetAmount": 0.82,
-        ///             "NetPrice": 0.82,
-        ///             "ParentSubLineId": 0,
-        ///             "Price": 0.90,
-        ///             "PriceReductionOnExclusion": false,
-        ///             "Quantity": 1.00,
-        ///             "TAXAmount": 0.08,
-        ///             "Type": 1,
-        ///             "Uom": ""
-        ///           }
-        ///         ],
-        ///         "TaxAmount": 0.68,
-        ///         "UomId": "",
-        ///         "VariantDescription": "",
-        ///         "VariantId": ""
-        ///       }
-        ///     ],
-        ///     "OrderPayments": [],
-        ///     "PickupTime": "\/Date(1654574400000+0800)\/",
-        ///     "RestaurantNo": "S0017",
-        ///     "SalesType": "TAKEAWAY",
-        ///     "StoreId": "S0017",
-        ///     "TotalAmount": 7.50,
-        ///     "TotalDiscount": 0.00,
-        ///     "TotalNetAmount": 6.82
-        ///   },
-        ///   "returnOrderIdOnly": 0
-        /// }
+        ///{
+        ///    "request": {
+        ///        "Address": {
+        ///            "Address1": "Somestreet 109",
+        ///            "CellPhoneNumber": "555-1234",
+        ///            "City": "Kopavogur",
+        ///            "PhoneNumber": "555-3214",
+        ///            "PostCode": "200",
+        ///            "Type": 1
+        ///        },
+        ///        "BillToName": "Tom Tomsson",
+        ///        "CardId": "10021",
+        ///        "Comment": "Make it fast",
+        ///        "DeliveryType": 0,
+        ///        "Directions": "",
+        ///        "Email": "tom@xyz.com",
+        ///        "ExternalId": "MYID123",
+        ///        "Name": "Tom Tomsson",
+        ///        "OrderDiscountLines": [{
+        ///              "Description": "Deal",
+        ///              "DiscountAmount": 0.00,
+        ///              "DiscountPercent": 0.00,
+        ///              "DiscountType": 6,
+        ///              "LineNumber": 9750,
+        ///              "OfferNumber": "S10025",
+        ///              "PeriodicDiscGroup": "",
+        ///              "PeriodicDiscType": 0
+        ///          }, {
+        ///              "Description": "Deal",
+        ///              "DiscountAmount": 0.00,
+        ///              "DiscountPercent": 0.00,
+        ///              "DiscountType": 6,
+        ///              "LineNumber": 10000,
+        ///              "OfferNumber": "S10025",
+        ///              "PeriodicDiscGroup": "",
+        ///              "PeriodicDiscType": 0
+        ///          }, {
+        ///              "Description": "Deal",
+        ///              "DiscountAmount": 0.00,
+        ///              "DiscountPercent": 0.00,
+        ///              "DiscountType": 6,
+        ///              "LineNumber": 20000,
+        ///              "OfferNumber": "S10025",
+        ///              "PeriodicDiscGroup": "",
+        ///              "PeriodicDiscType": 0
+        ///          }, {
+        ///              "Description": "Deal",
+        ///              "DiscountAmount": 0.00,
+        ///              "DiscountPercent": 0.00,
+        ///              "DiscountType": 6,
+        ///              "LineNumber": 30000,
+        ///              "OfferNumber": "S10025",
+        ///              "PeriodicDiscGroup": "",
+        ///              "PeriodicDiscType": 0
+        ///          }],
+        ///        "OrderLines": [{
+        ///            "Amount": 7.50,
+        ///            "DiscountAmount": 0.00,
+        ///            "DiscountPercent": 0.00,
+        ///            "IsADeal": true,
+        ///            "ItemDescription": "Cheese Burger Meal",
+        ///            "ItemId": "S10025",
+        ///            "ItemImageId": null,
+        ///            "LineNumber": 9750,
+        ///            "LineType": 0,
+        ///            "NetAmount": 6.82,
+        ///            "NetPrice": 6.82,
+        ///            "Price": 7.50,
+        ///            "PriceModified": false,
+        ///            "Quantity": 1.00,
+        ///            "SubLines": [{
+        ///                  "Amount": 5.32,
+        ///                 "DealCode": "S10025",
+        ///                 "DealLineId": 10000,
+        ///                 "DealModifierLineId": 0,
+        ///                 "Description": "Cheese Burger",
+        ///                 "DiscountAmount": 0.00,
+        ///                 "DiscountPercent": 0.00,
+        ///                 "ItemId": "R0024",
+        ///                 "LineNumber": 10000,
+        ///                 "ManualDiscountAmount": 0.0,
+        ///                 "ManualDiscountPercent": 0.0,
+        ///                 "ModifierGroupCode": "",
+        ///                 "ModifierSubCode": "",
+        ///                 "NetAmount": 4.84,
+        ///                 "NetPrice": 4.84,
+        ///                 "ParentSubLineId": 0,
+        ///                 "Price": 5.32,
+        ///                 "Quantity": 1.00,
+        ///                 "TAXAmount": 0.48,
+        ///                 "Type": 1,
+        ///                 "Uom": ""
+        ///             }, {
+        ///                 "Amount": 1.28,
+        ///                 "DealCode": "S10025",
+        ///                 "DealLineId": 20000,
+        ///                 "DealModifierLineId": 70000,
+        ///                 "Description": "Jalapeno Popper",
+        ///                 "DiscountAmount": 0.00,
+        ///                 "DiscountPercent": 0.00,
+        ///                 "ItemId": "33430",
+        ///                 "LineNumber": 20000,
+        ///                 "ManualDiscountAmount": 0.0,
+        ///                 "ManualDiscountPercent": 0.0,
+        ///                 "ModifierGroupCode": "",
+        ///                 "ModifierSubCode": "",
+        ///                 "NetAmount": 1.16,
+        ///                 "NetPrice": 1.16,
+        ///                 "ParentSubLineId": 0,
+        ///                 "Price": 1.28,
+        ///                 "Quantity": 1.00,
+        ///                 "TAXAmount": 0.12,
+        ///                 "Type": 1,
+        ///                 "Uom": ""
+        ///             }, {
+        ///                 "Amount": 0.90,
+        ///                 "DealCode": "S10025",
+        ///                 "DealLineId": 30000,
+        ///                 "DealModifierLineId": 70000,
+        ///                 "Description": "Orange Soda",
+        ///                 "DiscountAmount": 0.00,
+        ///                 "DiscountPercent": 0.00,
+        ///                 "ItemId": "30520",
+        ///                 "LineNumber": 30000,
+        ///                 "ManualDiscountAmount": 0.0,
+        ///                 "ManualDiscountPercent": 0.0,
+        ///                 "ModifierGroupCode": "",
+        ///                 "ModifierSubCode": "",
+        ///                 "NetAmount": 0.82,
+        ///                 "NetPrice": 0.82,
+        ///                 "ParentSubLineId": 0,
+        ///                 "Price": 0.90,
+        ///                 "Quantity": 1.00,
+        ///                 "TAXAmount": 0.08,
+        ///                 "Type": 1,
+        ///                 "Uom": ""
+        ///            }]
+        ///            "TaxAmount": 0.68,
+        ///            "UomId": "",
+        ///            "VariantDescription": "",
+        ///            "VariantId": ""
+        ///          }],
+        ///        "OrderPayments": [{
+        ///            "Amount": 7.50,
+        ///            "AuthorizationCode": "123456",
+        ///            "CardNumber": "10xx xxxx xxxx 1475",
+        ///            "CardType": "VISA",
+        ///            "CurrencyCode": "GBP",
+        ///            "CurrencyFactor": 1,
+        ///            "ExternalReference": "MyRef123",
+        ///            "LineNumber": 1,
+        ///            "PaymentType": "2",
+        ///            "PreApprovedValidDate": "\/Date(1704111120000)\/",
+        ///            "TenderType": "1",
+        ///            "TokenNumber": "123456"
+        ///         }],
+        ///        "PickupTime": "\/Date(1704111120000)\/",
+        ///        "RestaurantNo": "S0017",
+        ///        "SalesType": "TAKEAWAY",
+        ///        "StoreId": "S0017",
+        ///        "TotalAmount": 7.50,
+        ///        "TotalDiscount": 0.00,
+        ///        "TotalNetAmount": 6.82
+        ///    },
+        ///    "returnOrderIdOnly": 0
+        ///}
         /// ]]>
         /// </code>
         /// </example>
@@ -922,7 +921,7 @@ namespace LSOmni.Service
         /// Cancel hospitality order
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CancelHospOrder<p/><p/>
+        /// LS Central WS2 : CancelHospOrder
         /// </remarks>
         /// <param name="storeId"></param>
         /// <param name="orderId"></param>
@@ -934,7 +933,7 @@ namespace LSOmni.Service
         /// Get Order status for hospitality order
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetHospOrderEstimatedTime and GetKotStatus<p/><p/>
+        /// LS Central WS2 : GetHospOrderEstimatedTime, GetKotStatus
         /// </remarks>
         /// <param name="storeId"></param>
         /// <param name="orderId"></param>
@@ -947,7 +946,7 @@ namespace LSOmni.Service
         /// Check Status of a Customer Order
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CustomerOrderStatus<p/><p/>
+        /// LS Central WS2 : CustomerOrderStatus
         /// </remarks>
         /// <param name="orderId"></param>
         /// <returns></returns>
@@ -959,20 +958,38 @@ namespace LSOmni.Service
         /// Cancel Customer Order with lineNo option to cancel individual lines
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CustomerOrderCancel<p/><p/>
+        /// LS Central WS2 : CustomerOrderCancel
         /// </remarks>
         /// <param name="orderId">Customer Order Id</param>
         /// <param name="storeId">Web Store Id</param>
         /// <param name="userId">User who cancels the order, use Contact ID for logged in user</param>
-        /// <param name="lineNo">list of Order Line numbers to cancel, if empty whole order will be canceled</param>
+        /// <param name="lineNo">List of Order Line numbers to cancel, if empty whole order will be canceled</param>
         /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         bool OrderCancel(string orderId, string storeId, string userId, List<int> lineNo);
 
         /// <summary>
+        /// Cancel Customer Order with lineNo and quantity to cancel items from individual lines
+        /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : CustomerOrderCancel
+        /// </remarks>
+        /// <param name="orderId">Customer Order Id</param>
+        /// <param name="storeId">Web Store Id</param>
+        /// <param name="userId">User who cancels the order, use Contact ID for logged in user</param>
+        /// <param name="lines">List of Order Lines to cancel from, if empty whole order will be canceled</param>
+        /// <returns></returns>
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
+        bool OrderCancelEx(string orderId, string storeId, string userId, List<OrderCancelLine> lines);
+
+        /// <summary>
         /// Get All Sales Entries (Transactions and Orders) by card Id
         /// </summary>
+        /// <remarks>
+        /// LS Central OData: GetMemberContactSalesHistory
+        /// </remarks>
         /// <param name="cardId">Card Id</param>
         /// <param name="maxNumberOfEntries">max number of transactions returned</param>
         /// <returns>List of most recent Transactions for a contact</returns>
@@ -1002,6 +1019,9 @@ namespace LSOmni.Service
         /// <summary>
         /// Get All Sales Entries (Transactions and Orders) by Card Id and optional filter by Store Id and Registration Date
         /// </summary>
+        /// <remarks>
+        /// LS Central OData: GetMemberContactSalesHistory
+        /// </remarks>
         /// <param name="cardId">Card Id (Required)</param>
         /// <param name="storeId">Filter by Store Id</param>
         /// <param name="date">Filter by Registration Date.  Set Date value to MinValue (0001-01-01) to skip Date Filtering</param>
@@ -1034,6 +1054,9 @@ namespace LSOmni.Service
         /// <summary>
         /// Get the Sale details (order/transaction)
         /// </summary>
+        /// <remarks>
+        /// LS Central OData: GetSelectedSalesDoc
+        /// </remarks>
         /// <param name="entryId">Sales Entry ID</param>
         /// <param name="type">Document Id type of the Sale entry</param>
         /// <returns>SalesEntry with Lines</returns>
@@ -1059,6 +1082,15 @@ namespace LSOmni.Service
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         List<SalesEntry> SalesEntryGetSalesByOrderId(string orderId);
 
+        /// <summary>
+        /// Get Transaction, Sales Invoices and Shipments for Customer order
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
+        SalesEntryList SalesEntryGetSalesExtByOrderId(string orderId);
+
         #endregion
 
         #region Contact
@@ -1080,38 +1112,38 @@ namespace LSOmni.Service
         /// <code language="xml" title="REST Sample Request">
         /// <![CDATA[
         /// {
-        /// 	"contact": {
-        /// 		"Id": "",
-        /// 		"Account": {
-        /// 			"Id": "",
-        /// 			"Scheme": {
-        /// 				"Id": "",
-        /// 				"Club": {
-        /// 					"Id": "CRONUS"
-        /// 				}
-        /// 			}
-        /// 		},
-        /// 		"Addresses": [{
-        /// 			"Address1": "Santa Monica",
+        ///     "contact": {
+        ///         "Id": "",
+        ///         "Account": {
+        ///             "Id": "",
+        ///             "Scheme": {
+        ///                 "Id": "",
+        ///                 "Club": {
+        ///                     "Id": "CRONUS"
+        ///                 }
+        ///             }
+        ///         },
+        ///         "Addresses": [{
+        ///             "Address1": "Santa Monica",
         ///             "CellPhoneNumber": "555-5551",
-        /// 			"City": "Hollywood",
-        /// 			"Country": "US",
+        ///             "City": "Hollywood",
+        ///             "Country": "US",
         ///             "PhoneNumber": "666-6661",
-        /// 			"PostCode": "1001",
-        /// 			"StateProvinceRegion": "",
-        /// 			"Type": "0"
+        ///             "PostCode": "1001",
+        ///             "StateProvinceRegion": "",
+        ///             "Type": "0"
         ///         }],
-        /// 		"Email": "Sarah@Hollywood.com",
-        /// 		"FirstName": "Sarah",
-        /// 		"Gender": "2",
-        /// 		"Initials": "Ms",
-        /// 		"LastName": "Parker",
-        /// 		"MaritalStatus": "0",
-        /// 		"MiddleName": "",
-        /// 		"Name": "Sarah Parker",
-        /// 		"Password": "SxxInTheCity",
-        /// 		"UserName": "sarah"
-        /// 	}
+        ///         "Email": "Sarah@Hollywood.com",
+        ///         "FirstName": "Sarah",
+        ///         "Gender": "2",
+        ///         "Initials": "Ms",
+        ///         "LastName": "Parker",
+        ///         "MaritalStatus": "0",
+        ///         "MiddleName": "",
+        ///         "Name": "Sarah Parker",
+        ///         "Password": "SxxInTheCity",
+        ///         "UserName": "sarah"
+        ///     }
         /// }
         /// ]]>
         /// </code>
@@ -1181,7 +1213,7 @@ namespace LSOmni.Service
         ///       "Type": "0"
         ///     }],
         ///     "Cards": [{
-        ///	      "Id": "10033"
+        ///       "Id": "10033"
         ///     }],
         ///     "Email": "Sarah@Hollywood.com",
         ///     "FirstName": "Sarah",
@@ -1199,7 +1231,7 @@ namespace LSOmni.Service
         /// </code>
         /// </example>
         /// <param name="contact">contact</param>
-        /// <param name="getContact">Return conatact object filled out after Update</param>
+        /// <param name="getContact">Return contact object filled out after Update</param>
         /// <returns>Contact</returns>
         /// <exception cref="LSOmniServiceException">StatusCodes returned:
         /// <list type="bullet">
@@ -1234,13 +1266,13 @@ namespace LSOmni.Service
         MemberContact ContactUpdate(MemberContact contact, bool getContact);
 
         /// <summary>
-        /// Get Member Contact by card Id. This function returns all informations about the Member contact, 
+        /// Get Member Contact by card Id. This function returns all information about the Member contact, 
         /// including Profiles, Offers, Sales history, Onelist baskets and notifications.
         /// To get basic information, use ContactGet.
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetMemberContact2<p/><p/>
-        /// LS Central WS4 : GetMemberContactInfo<p/><p/>
+        /// LS Central WS2 : GetMemberContact2<p/>
+        /// LS Central WS4 : GetMemberContactInfo
         /// </remarks>
         /// <param name="cardId">Card Id</param>
         /// <param name="numberOfTransReturned">Number of Sales History to return, 0 = all</param>
@@ -1273,9 +1305,21 @@ namespace LSOmni.Service
         /// will return any contact that will match the search value.
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetMemberContact2<p/><p/>
-        /// LS Central WS4 : GetMemberContactInfo<p/><p/>
+        /// LS Central WS2 : GetMemberContact2<p/>
+        /// LS Central WS4 : GetMemberContactInfo
         /// </remarks>
+        /// <example>
+        /// Sample request to search by Name
+        /// <code language="xml" title="REST Sample Request">
+        /// <![CDATA[
+        /// {
+        ///    "searchType": 4,
+        ///    "search": "Sarah",
+        ///    "maxNumberOfRowsReturned": 10,
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
         /// <param name="searchType">Field to search by</param>
         /// <param name="search">Search value</param>
         /// <param name="maxNumberOfRowsReturned">Max number of record, if set to 1 the exact search will be performed</param>
@@ -1288,9 +1332,20 @@ namespace LSOmni.Service
         /// Search for Member Contact by different searchType methods.
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetMemberContact2<p/><p/>
-        /// LS Central WS4 : GetMemberContactInfo<p/><p/>
+        /// LS Central WS2 : GetMemberContact2<p/>
+        /// LS Central WS4 : GetMemberContactInfo
         /// </remarks>
+        /// <example>
+        /// Sample request to get Contact by Name
+        /// <code language="xml" title="REST Sample Request">
+        /// <![CDATA[
+        /// {
+        ///    "searchType": 4,
+        ///    "search": "Sarah Parker",
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
         /// <param name="searchType">Field to search by</param>
         /// <param name="search">Search value</param>
         /// <returns></returns>
@@ -1302,7 +1357,7 @@ namespace LSOmni.Service
         /// Add new card to existing Member Contact
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : MemberCardToContact<p/><p/>
+        /// LS Central WS2 : MemberCardToContact
         /// </remarks>
         /// <param name="contactId"></param>
         /// <param name="cardId"></param>
@@ -1320,13 +1375,13 @@ namespace LSOmni.Service
         /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        bool ConatctBlock(string accountId, string cardId);
+        bool ContactBlock(string accountId, string cardId);
 
         /// <summary>
         /// Get Point balance for Member Card
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetMemberCard<p/><p/>
+        /// LS Central WS2 : GetMemberCard
         /// </remarks>
         /// <param name="cardId"></param>
         /// <returns></returns>
@@ -1342,7 +1397,7 @@ namespace LSOmni.Service
         /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        List<PointEntry> CardGetPointEnties(string cardId, DateTime dateFrom);
+        List<PointEntry> CardGetPointEntries(string cardId, DateTime dateFrom);
 
         /// <summary>
         /// Gets Rate value for points (f.ex. 1 point = 0.01 Kr)
@@ -1359,9 +1414,10 @@ namespace LSOmni.Service
 
         /// <summary>
         /// Change password
+        /// <p/>NOTE: Its recommended to use PasswordReset and PasswordChange instead
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : MemberPasswordChange<p/><p/>
+        /// LS Central WS2 : MemberPasswordChange
         /// </remarks>
         /// <param name="userName">user name (LS Central:LoginID)</param>
         /// <param name="newPassword">new password (LS Central:NewPassword)</param>
@@ -1396,11 +1452,13 @@ namespace LSOmni.Service
         /// </list>
         /// </exception>
         [OperationContract]
+        [Obsolete("Its recommended to use PasswordReset and PasswordChange instead")]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         bool ChangePassword(string userName, string newPassword, string oldPassword);
 
         /// <summary>
         /// Request a ResetCode to use in Email to send to Member Contact
+        /// <p/>NOTE: Its recommended to use PasswordReset and PasswordChange instead
         /// </summary>
         /// <remarks>
         /// Settings for this function are found in Commerce Service for LS Central Database - TenantConfig table
@@ -1421,11 +1479,13 @@ namespace LSOmni.Service
         /// </list>
         /// </exception>
         [OperationContract]
+        [Obsolete("Its recommended to use PasswordReset and PasswordChange instead")]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         string ForgotPassword(string userNameOrEmail);
 
         /// <summary>
         /// Send in Reset Password request for Member Contact
+        /// <p/>NOTE: Its recommended to use PasswordReset and PasswordChange instead
         /// </summary>
         /// <remarks>
         /// LS Central WS2 : MemberPasswordReset<p/><p/>
@@ -1461,6 +1521,7 @@ namespace LSOmni.Service
         /// </list>
         /// </exception>
         [OperationContract]
+        [Obsolete("Its recommended to use PasswordReset and PasswordChange instead")]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         bool ResetPassword(string userName, string resetCode, string newPassword);
 
@@ -1470,7 +1531,7 @@ namespace LSOmni.Service
         /// If sendEmail is true, send only email address, login is not used in this mode
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : MemberPasswordReset<p/><p/>
+        /// LS Central WS2 : MemberPasswordReset
         /// </remarks>
         /// <param name="userName">Provide Login Id (UserName) to reset existing password</param>
         /// <param name="email">Provide Email to create new login password for new Member Contact</param>
@@ -1513,7 +1574,7 @@ namespace LSOmni.Service
         /// Change Login Id for Member Contact
         /// </summary>
         /// <remarks>
-        /// LS Nav WS1 : MM_LOGIN_CHANGE<p/><p/>
+        /// LS Nav WS1 : MM_LOGIN_CHANGE
         /// </remarks>
         /// <param name="oldUserName">Current Login Id</param>
         /// <param name="newUserName">New Login Id</param>
@@ -1527,7 +1588,7 @@ namespace LSOmni.Service
         /// Login user
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : MemberLogon<p/><p/>
+        /// LS Central WS2 : MemberLogon
         /// </remarks>
         /// <param name="userName">user name</param>
         /// <param name="password">password</param>
@@ -1560,10 +1621,10 @@ namespace LSOmni.Service
         MemberContact Login(string userName, string password, string deviceId);
 
         /// <summary>
-        /// Soical authentication login
+        /// Social authentication login
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : MemberAuthenticatorLogin<p/><p/>
+        /// LS Central WS2 : MemberAuthenticatorLogin
         /// </remarks>
         /// <param name="authenticator"></param>
         /// <param name="authenticationId"></param>
@@ -1579,7 +1640,7 @@ namespace LSOmni.Service
         /// Login user from web page.  This function is light version of Login and returns less data.
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : MemberLogon<p/><p/>
+        /// LS Central WS2 : MemberLogon
         /// </remarks>
         /// <param name="userName">user name</param>
         /// <param name="password">password</param>
@@ -1653,11 +1714,11 @@ namespace LSOmni.Service
         /// <code language="xml" title="REST Sample Request">
         /// <![CDATA[
         /// {
-        /// 	"items": [{
-        /// 		"ItemId": "40020",
-        /// 		"VariantId": "010"
+        ///     "items": [{
+        ///         "ItemId": "40020",
+        ///         "VariantId": "010"
         ///     }],
-        /// 	"storeId": "S0001"
+        ///     "storeId": "S0001"
         /// }
         /// ]]>
         /// </code>
@@ -1682,13 +1743,13 @@ namespace LSOmni.Service
         /// <code language="xml" title="REST Sample Request">
         /// <![CDATA[
         /// {
-        /// 	"items": [{
-        /// 		"ItemId": "40020",
-        /// 		"VariantId": "010"
+        ///     "items": [{
+        ///         "ItemId": "40020",
+        ///         "VariantId": "010"
         ///     }],
         ///     "locationId": "W0001",
-        /// 	"storeId": "S0001",
-        /// 	"useSourcingLocation": 0
+        ///     "storeId": "S0001",
+        ///     "useSourcingLocation": 0
         /// }
         /// ]]>
         /// </code>
@@ -1712,6 +1773,13 @@ namespace LSOmni.Service
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         List<HospAvailabilityResponse> CheckAvailability(List<HospAvailabilityRequest> request, string storeId);
 
+        /// <summary>
+        /// Search Items by Description
+        /// </summary>
+        /// <param name="search">Description search</param>
+        /// <param name="maxNumberOfItems"></param>
+        /// <param name="includeDetails"></param>
+        /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         List<LoyItem> ItemsSearch(string search, int maxNumberOfItems, bool includeDetails);
@@ -1726,6 +1794,15 @@ namespace LSOmni.Service
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         LoyItem ItemGetById(string itemId, string storeId);
 
+        /// <summary>
+        /// Look up Item by Barcode
+        /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : GetItemWithBarcode
+        /// </remarks>
+        /// <param name="barcode"></param>
+        /// <param name="storeId"></param>
+        /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         LoyItem ItemGetByBarcode(string barcode, string storeId);
@@ -1742,6 +1819,16 @@ namespace LSOmni.Service
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         ItemCategory ItemCategoriesGetById(string itemCategoryId);
 
+        /// <summary>
+        /// Gets customer specific prices
+        /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : EcomGetCustomerPrice
+        /// </remarks>
+        /// <param name="storeId"></param>
+        /// <param name="cardId"></param>
+        /// <param name="items">list of items to get prices for</param>
+        /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         List<ItemCustomerPrice> ItemCustomerPricesGet(string storeId, string cardId, List<ItemCustomerPrice> items);
@@ -1751,7 +1838,7 @@ namespace LSOmni.Service
         ProductGroup ProductGroupGetById(string productGroupId, bool includeDetails);
 
         /// <summary>
-        /// Gets Hierarchy setup for a Store with all Leafs and Nodes
+        /// Gets Hierarchy setup for a Store with all Leaves and Nodes
         /// </summary>
         /// <remarks>
         /// LS Central WS2 : GetHierarchy, GetHierarchyNode<p/><p/>
@@ -1891,6 +1978,18 @@ namespace LSOmni.Service
         /// <remarks>
         /// Data for Store Hours needs to be generated in LS Central by running COMMERCE_XXXX Scheduler Jobs
         /// </remarks>
+        /// <example>
+        /// Sample request to get all Click and Collect Stores
+        /// <code language="xml" title="REST Sample Request">
+        /// <![CDATA[
+        /// {
+        ///    "storeType": 1,
+        ///    "includeDetails": 1,
+        ///    "includeImages": 0
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
         /// <returns>List of stores</returns>
         /// <exception cref="LSOmniServiceException">StatusCodes returned:
         /// <list type="bullet">
@@ -2629,7 +2728,7 @@ namespace LSOmni.Service
         ReplHierarchyNodeResponse ReplEcommHierarchyNode(ReplRequest replRequest);
 
         /// <summary>
-        /// Replicate Hierarchy Node Leafs
+        /// Replicate Hierarchy Node Leaves
         /// </summary>
         /// <remarks>
         /// LS Central Main Table data: 10000922 - LSC Hierar. Node Link
@@ -2643,13 +2742,13 @@ namespace LSOmni.Service
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
         /// <param name="replRequest">Replication request object</param>
-        /// <returns>Replication result object with List of hierarchy node leafs</returns>
+        /// <returns>Replication result object with List of hierarchy node leaves</returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         ReplHierarchyLeafResponse ReplEcommHierarchyLeaf(ReplRequest replRequest);
 
         /// <summary>
-        /// Replicate Hierarchy Hospitality Deal lines for Node Leafs
+        /// Replicate Hierarchy Hospitality Deals for Node Leaf
         /// </summary>
         /// <remarks>
         /// LS Central Main Table data: 99001503 - LSC Offer Line
@@ -2669,7 +2768,7 @@ namespace LSOmni.Service
         ReplHierarchyHospDealResponse ReplEcommHierarchyHospDeal(ReplRequest replRequest);
 
         /// <summary>
-        /// Replicate Hierarchy Hospitality Deal lines for Node Leafs
+        /// Replicate Hierarchy Hospitality Deal lines for Deal
         /// </summary>
         /// <remarks>
         /// LS Central Main Table data: 99001651 - LSC Deal Modifier Item
@@ -2689,7 +2788,7 @@ namespace LSOmni.Service
         ReplHierarchyHospDealLineResponse ReplEcommHierarchyHospDealLine(ReplRequest replRequest);
 
         /// <summary>
-        /// Replicate Hierarchy Hospitality Recipe lines for Node Leafs
+        /// Replicate Hierarchy Hospitality Recipe lines for Node Leaf
         /// </summary>
         /// <remarks>
         /// LS Central Main Table data: 90 - BOM Component
@@ -2709,7 +2808,7 @@ namespace LSOmni.Service
         ReplItemRecipeResponse ReplEcommItemRecipe(ReplRequest replRequest);
 
         /// <summary>
-        /// Replicate Hierarchy Hospitality Modifier lines for Node Leafs
+        /// Replicate Hierarchy Hospitality Modifier lines for Node Leaf
         /// </summary>
         /// <remarks>
         /// LS Central Main Table data: 99001483 - LSC Information Subcode
@@ -2795,6 +2894,25 @@ namespace LSOmni.Service
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         ReplMixMatchResponse ReplEcommMixAndMatch(ReplRequest replRequest);
+
+        /// <summary>
+        /// Replicate Discount Setup from Central<p/>
+        /// Only Multibuy, Discount, Total and Tender discounts are replicated
+        /// </summary>
+        /// <remarks>
+        /// LS Central Main Table data: 99001453 - LSC Periodic Discount
+        /// <p/><p/>
+        /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
+        /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
+        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
+        /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
+        /// </remarks>
+        /// <param name="replRequest">Replication request object</param>
+        /// <returns>Replication result object with List of Periodic Discounts</returns>
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
+        ReplDiscountSetupResponse ReplEcommDiscountSetup(ReplRequest replRequest);
 
         /// <summary>
         /// Replicate Validation Periods for Discounts<p/>
@@ -2960,6 +3078,13 @@ namespace LSOmni.Service
 
         #region Search
 
+        /// <summary>
+        /// Search different data based on SearchType value
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <param name="search"></param>
+        /// <param name="searchTypes"></param>
+        /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         SearchRs Search(string cardId, string search, SearchType searchTypes);
@@ -2970,20 +3095,22 @@ namespace LSOmni.Service
 
         /// <summary>
         /// Checks if LS Recommend is active in Commerce Service for LS Central
+        /// <p/>NOTE: Not supported anymore
         /// </summary>
         /// <returns></returns>
-        [Obsolete("Not available anymore")]
         [OperationContract]
+        [Obsolete("Not supported anymore", true)]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         bool RecommendedActive();
 
         /// <summary>
         /// Get Recommended Items based of list of items
+        /// <p/>NOTE: Not supported anymore
         /// </summary>
         /// <param name="items"></param>
         /// <returns></returns>
-        [Obsolete("Not available anymore")]
         [OperationContract]
+        [Obsolete("Not supported anymore", true)]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         List<RecommendedItem> RecommendedItemsGet(List<string> items);
 
@@ -3009,20 +3136,20 @@ namespace LSOmni.Service
         ///{
         ///   "request": {
         ///      "ActivityTime": "\/Date(1576011600000)\/",
-        ///	     "ContactAccount": "",
+        ///      "ContactAccount": "",
         ///      "ContactName": "Tom",
         ///      "ContactNo": "MO000008",
-        ///	     "Email": "tom@comp.com",
+        ///      "Email": "tom@comp.com",
         ///      "Location": "CAMBRIDGE",
         ///      "NoOfPeople": "1",
-        ///	     "OptionalResource": "",
-        ///	     "OptionalComment": "",
+        ///      "OptionalResource": "",
+        ///      "OptionalComment": "",
         ///      "Paid": "false",
         ///      "ProductNo": "MASSAGE30",
-        ///	     "PromoCode": "",
+        ///      "PromoCode": "",
         ///      "Quantity": "1",
         ///      "ReservationNo": "RES0045",
-        ///	     "Token": "",
+        ///      "Token": "",
         ///   }
         ///}        
         ///]]>
@@ -3088,19 +3215,19 @@ namespace LSOmni.Service
         /// Returns list with the required or optional additional charges for the Activity as applied automatically according to the product
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetAdditionalCharges<p/><p/>
+        /// LS Central WS2 : GetAdditionalCharges
         /// </remarks>
         /// <param name="activityNo"></param>
         /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        AdditionalCharge ActivityAdditionalChargesGet(string activityNo);
+        List<AdditionalCharge> ActivityAdditionalChargesGet(string activityNo);
 
         /// <summary>
         /// Returns list of charges for products
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetProductChargesV2<p/><p/>
+        /// LS Central WS2 : GetProductChargesV2
         /// </remarks>
         /// <param name="locationNo"></param>
         /// <param name="productNo"></param>
@@ -3108,30 +3235,35 @@ namespace LSOmni.Service
         /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        AdditionalCharge ActivityProductChargesGet(string locationNo, string productNo, DateTime dateOfBooking);
+        List<AdditionalCharge> ActivityProductChargesGet(string locationNo, string productNo, DateTime dateOfBooking);
 
         /// <summary>
         /// Change or insert additional charges to Activity
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : SetAdditionalChargesV2<p/><p/>
+        /// LS Central WS2 : SetAdditionalChargesV3
         /// </remarks>
         /// <example>
         /// Sample request including minimum data needed to be able to process the request in LS Commerce
         /// <code language="xml" title="REST Sample Request">
         /// <![CDATA[
         /// {
-        ///	  "request": {
+        ///   "request": {
         ///     "ActivityNo": "ACT0035",
         ///     "DiscountPercentage": "0.0",
+        ///     "InvoiceReference": "",
         ///     "ItemNo": "40020",
-        ///     "LineNo": "1",
-        ///     "Price": "110.0",
+        ///     "LineNo": 1,
+        ///     "Optional": "",
+        ///     "OptionalComment", "",
+        ///     "ParentLine": 0,
+        ///     "Price": 110.0,
         ///     "ProductType": "0",
-        ///     "Quantity": "1",
-        ///     "TotalAmount": "110.0",
-        ///     "UnitOfMeasure": ""
-        ///	  }
+        ///     "Quantity": 1,
+        ///     "TotalAmount": 110.0,
+        ///     "UnitOfMeasure": "",
+        ///     "VariantCode": ""
+        ///   }
         /// }
         /// ]]>
         /// </code>
@@ -3146,7 +3278,7 @@ namespace LSOmni.Service
         /// Returns list of Attributes which are assigned on a given Activity product, reservation or activity entry
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetAttributes<p/><p/>
+        /// LS Central WS2 : GetAttributes
         /// </remarks>
         /// <param name="type"></param>
         /// <param name="linkNo"></param>
@@ -3159,7 +3291,7 @@ namespace LSOmni.Service
         /// Action to set an attribute value on a given reservation or activity.  If attribute does not exist on the entry then its inserted otherwise updated
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : SetAttribute<p/><p/>
+        /// LS Central WS2 : SetAttribute
         /// </remarks>
         /// <param name="type"></param>
         /// <param name="linkNo"></param>
@@ -3174,28 +3306,29 @@ namespace LSOmni.Service
         /// Action to create a Reservation header into the LS Reservation table
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : InsertReservation<p/><p/>
+        /// LS Central WS2 : InsertReservation
         /// </remarks>
         /// <example>
         /// Sample request including minimum data needed to be able to process the request in LS Commerce
         /// <code language="xml" title="REST Sample Request">
         /// <![CDATA[
         /// {
-        ///	  "request": {
-        ///	    "ClientName": "Tom",
-        ///	    "ContactNo": "MO000008",
-        ///	    "Description": "",
-        ///	    "Email": "tom@xxx.com",
-        ///	    "Internalstatus": "0",
-        ///	    "Location": "CAMBRIDGE",
-        ///	    "ResDateFrom": "\/Date(1570737600000)\/",
-        ///	    "ResDateTo": "\/Date(1570741200000)\/",
-        ///	    "ResTimeFrom": "\/Date(1570737600000)\/",
-        ///	    "ResTimeTo": "\/Date(1570741200000)\/",
-        ///	    "ReservationType": "SPA",
-        ///	    "SalesPerson": "AH",
-        ///	    "Status": ""
-        ///	  }
+        ///     "request": {
+        ///        "ClientName": "Tom",
+        ///        "ContactNo": "MO000008",
+        ///        "Description": "",
+        ///        "Email": "tom@xxx.com",
+        ///        "EventNo": "",
+        ///        "Internalstatus": "0",
+        ///        "Location": "CAMBRIDGE",
+        ///        "ResDateFrom": "\/Date(1570737600000)\/",
+        ///        "ResDateTo": "\/Date(1570741200000)\/",
+        ///        "ResTimeFrom": "\/Date(1570737600000)\/",
+        ///        "ResTimeTo": "\/Date(1570741200000)\/",
+        ///        "ReservationType": "SPA",
+        ///        "SalesPerson": "AH",
+        ///        "Status": ""
+        ///     }
         /// }
         /// ]]>
         /// </code>
@@ -3210,7 +3343,7 @@ namespace LSOmni.Service
         /// 
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UpdateReservationStatus<p/><p/>
+        /// LS Central WS2 : UpdateReservationStatus
         /// </remarks>
         /// <param name="reservationNo"></param>
         /// <param name="setStatusCode"></param>
@@ -3223,7 +3356,7 @@ namespace LSOmni.Service
         /// 
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UpdateActivityStatus<p/><p/>
+        /// LS Central WS2 : UpdateActivityStatus
         /// </remarks>
         /// <param name="activityNo"></param>
         /// <param name="setStatusCode"></param>
@@ -3236,7 +3369,7 @@ namespace LSOmni.Service
         /// Action to force update to a reservation header in the LS Reservation table.  Blank fields will be ignored
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UpdateReservation<p/><p/>
+        /// LS Central WS2 : UpdateReservation
         /// </remarks>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -3248,7 +3381,7 @@ namespace LSOmni.Service
         /// Sell Membership (membership type) to Member Contact
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : SellMembership<p/><p/>
+        /// LS Central WS2 : SellMembership
         /// </remarks>
         /// <param name="contactNo">Member Contact</param>
         /// <param name="membersShipType"></param>
@@ -3261,7 +3394,7 @@ namespace LSOmni.Service
         /// Cancels a specific membership and validates if cancellation is in order (i.e. compares to commitment period)
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CancelMembership<p/><p/>
+        /// LS Central WS2 : CancelMembership
         /// </remarks>
         /// <param name="contactNo">Member Contact</param>
         /// <param name="memberShipNo"></param>
@@ -3275,7 +3408,7 @@ namespace LSOmni.Service
         /// Get availability for specific resource, for a specific date and location (all required parameters)
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetResourceAvailability<p/><p/>
+        /// LS Central WS2 : GetResourceAvailability
         /// </remarks>
         /// <param name="locationNo"></param>
         /// <param name="activityDate"></param>
@@ -3291,7 +3424,7 @@ namespace LSOmni.Service
         /// Get availability for all active resource in specific resource group, for a specific date and location (all required parameters)
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetResourceGroupAvailability<p/><p/>
+        /// LS Central WS2 : GetResourceGroupAvailability
         /// </remarks>
         /// <param name="locationNo"></param>
         /// <param name="activityDate"></param>
@@ -3307,7 +3440,7 @@ namespace LSOmni.Service
         /// Check if valid access for either membership or ticketing.  
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CheckAccess<p/><p/>
+        /// LS Central WS2 : CheckAccess
         /// </remarks>
         /// <param name="searchReference">Either TicketBarcode, Member No. or Membership No. LocationNo</param>
         /// <param name="locationNo">Optional Activity Location</param>
@@ -3324,45 +3457,65 @@ namespace LSOmni.Service
         /// Get Availability Token
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetAvailabilityToken<p/><p/>
+        /// LS Central WS2 : GetAvailabilityToken
         /// </remarks>
         /// <param name="locationNo"></param>
         /// <param name="productNo"></param>
-        /// <param name="activiyTime"></param>
+        /// <param name="activityTime"></param>
         /// <param name="optionalResource"></param>
         /// <param name="quantity"></param>
         /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        string ActivityGetAvailabilityToken(string locationNo, string productNo, DateTime activiyTime, string optionalResource, int quantity);
+        string ActivityGetAvailabilityToken(string locationNo, string productNo, DateTime activityTime, string optionalResource, int quantity);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tokenId"></param>
+        /// <param name="seconds"></param>
+        /// <returns></returns>
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
+        bool ActivityExtendToken(string tokenId, int seconds);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tokenId"></param>
+        /// <returns></returns>
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
+        bool ActivityCancelToken(string tokenId);
 
         /// <summary>
         /// Create Group Reservation
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : InsertGroupReservation<p/><p/>
+        /// LS Central WS2 : InsertGroupReservation
         /// </remarks>
         /// <example>
         /// Sample request including minimum data needed to be able to process the request in LS Commerce
         /// <code language="xml" title="REST Sample Request">
         /// <![CDATA[
         /// {
-        ///	  "request": {
-        ///	    "ClientName": "Tom",
-        ///	    "ContactNo": "MO000008",
-        ///	    "Description": "",
-        ///	    "Email": "tom@xxx.com",
-        ///	    "Internalstatus": "0",
-        ///	    "Location": "CAMBRIDGE",
-        ///	    "NoOfPerson": 2,
-        ///	    "ResDateFrom": "\/Date(1570737600000)\/",
-        ///	    "ResDateTo": "\/Date(1570741200000)\/",
-        ///	    "ResTimeFrom": "\/Date(1570737600000)\/",
-        ///	    "ResTimeTo": "\/Date(1570741200000)\/",
-        ///	    "ReservationType": "SPA",
-        ///	    "SalesPerson": "AH",
-        ///	    "Status": ""
-        ///	  }
+        ///      "request": {
+        ///        "ClientName": "Tom",
+        ///        "ContactNo": "MO000008",
+        ///        "Description": "",
+        ///        "Email": "tom@xxx.com",
+        ///        "EventNo": "",
+        ///        "Internalstatus": "0",
+        ///        "Location": "CAMBRIDGE",
+        ///        "NoOfPerson": 2,
+        ///        "ResDateFrom": "\/Date(1570737600000)\/",
+        ///        "ResDateTo": "\/Date(1570741200000)\/",
+        ///        "ResTimeFrom": "\/Date(1570737600000)\/",
+        ///        "ResTimeTo": "\/Date(1570741200000)\/",
+        ///        "ReservationType": "SPA",
+        ///        "SalesPerson": "AH",
+        ///        "Status": ""
+        ///      }
         /// }
         /// ]]>
         /// </code>
@@ -3377,7 +3530,7 @@ namespace LSOmni.Service
         /// Update Group reservation header.  Blank fields will be ignored
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UpdateGroupReservation<p/><p/>
+        /// LS Central WS2 : UpdateGroupReservation
         /// </remarks>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -3389,7 +3542,7 @@ namespace LSOmni.Service
         /// Confirm Group Activity Booking
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : ActivityConfirmGroup<p/><p/>
+        /// LS Central WS2 : ConfirmGroupActivityV4<p/><p/>
         /// If property [Paid] is set, then returns details for the retail basket.<p/>
         /// [BookingRef] should be assigned to the OrderLine and passed in with Order so retrieved basket payment through Commerce Service for LS Central will update the Activities payment status and assign the sales order document as payment document.<p/> 
         /// If activity type does not require [contactNo] then it is sufficient to provide client name.<p/>
@@ -3403,23 +3556,23 @@ namespace LSOmni.Service
         ///{
         ///   "request": {
         ///      "ActivityTime": "\/Date(1576011600000)\/",
-        ///	     "ContactAccount": "",
+        ///      "ContactAccount": "",
         ///      "ContactName": "Tom",
         ///      "ContactNo": "MO000008",
-        ///	     "Email": "tom@comp.com",
-        ///	     "GroupNo": "",
+        ///      "Email": "tom@comp.com",
+        ///      "GroupNo": "",
         ///      "Location": "CAMBRIDGE",
         ///      "NoOfPeople": "1",
-        ///	     "OptionalResource": "",
-        ///	     "OptionalComment": "",
+        ///      "OptionalResource": "",
+        ///      "OptionalComment": "",
         ///      "Paid": "false",
         ///      "ProductNo": "MASSAGE30",
-        ///	     "PromoCode": "",
+        ///      "PromoCode": "",
         ///      "Quantity": "1",
         ///      "ReservationNo": "RES0045",
-        ///	     "SetGroupReservation": "",
-        ///	     "Token": "",
-        ///	     "UnitPrice": 0.0
+        ///      "SetGroupReservation": "",
+        ///      "Token": "",
+        ///      "UnitPrice": 0.0
         ///   }
         ///}        
         /// ]]>
@@ -3435,7 +3588,7 @@ namespace LSOmni.Service
         /// Delete Group Activity
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : DeleteGroupActivity<p/><p/>
+        /// LS Central WS2 : DeleteGroupActivity
         /// </remarks>
         /// <param name="groupNo"></param>
         /// <param name="lineNo"></param>
@@ -3448,7 +3601,7 @@ namespace LSOmni.Service
         /// 
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UpdateGroupHeaderStatus<p/><p/>
+        /// LS Central WS2 : UpdateGroupHeaderStatus
         /// </remarks>
         /// <param name="groupNo"></param>
         /// <param name="statusCode"></param>
@@ -3461,7 +3614,7 @@ namespace LSOmni.Service
         /// 
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : PreSellActivityProduct<p/><p/>
+        /// LS Central WS2 : PreSellActivityProduct
         /// </remarks>
         /// <param name="locationNo"></param>
         /// <param name="productNo"></param>
@@ -3481,7 +3634,7 @@ namespace LSOmni.Service
         /// Returns list of Activity Products
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadActivityProducts<p/><p/>
+        /// LS Central WS2 : UploadActivityProducts
         /// </remarks>
         /// <returns></returns>
         [OperationContract]
@@ -3492,7 +3645,7 @@ namespace LSOmni.Service
         /// Returns list of Activity Types
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadActivityTypes<p/><p/>
+        /// LS Central WS2 : UploadActivityTypes
         /// </remarks>
         /// <returns></returns>
         [OperationContract]
@@ -3503,7 +3656,7 @@ namespace LSOmni.Service
         /// Returns list of Activity Locations
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadActivityLocations<p/><p/>
+        /// LS Central WS2 : UploadActivityLocations
         /// </remarks>
         /// <returns></returns>
         [OperationContract]
@@ -3516,7 +3669,7 @@ namespace LSOmni.Service
         /// <remarks>
         /// LS Central WS2 : <p/>
         /// With [contactNo, activityType] UploadClientBookingsV2<p/>
-        /// With [reservationNo] : UploadReservationActivities<p/><p/>
+        /// With [reservationNo] : UploadReservationActivities
         /// </remarks>
         /// <param name="reservationNo">Look up Activities for a Reservation</param>
         /// <param name="contactNo">Look up Reservations for a Contact</param>
@@ -3530,7 +3683,7 @@ namespace LSOmni.Service
         /// Look up Reservation Headers
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : GetActReservations<p/><p/>
+        /// LS Central WS2 : GetActReservations
         /// </remarks>
         /// <param name="reservationNo"></param>
         /// <param name="reservationType"></param>
@@ -3546,7 +3699,7 @@ namespace LSOmni.Service
         /// Returns list of Active Promotions (for information purposes only)
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadPromotions<p/><p/>
+        /// LS Central WS2 : UploadPromotions
         /// </remarks>
         /// <returns></returns>
         [OperationContract]
@@ -3557,7 +3710,7 @@ namespace LSOmni.Service
         /// Returns list of Member Contacts issued (sold) allowances
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadPurchasedAllowances<p/><p/>
+        /// LS Central WS2 : UploadPurchasedAllowances
         /// </remarks>
         /// <param name="contactNo">Member Contact</param>
         /// <returns></returns>
@@ -3569,7 +3722,7 @@ namespace LSOmni.Service
         /// Returns list of all entries charged to the Member Contact customer account (A/R). The Account no. is based on the contact business relation settings
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadCustomerEntries<p/><p/>
+        /// LS Central WS2 : UploadCustomerEntries
         /// </remarks>
         /// <param name="contactNo">Member Contact</param>
         /// <param name="customerNo"></param>
@@ -3582,7 +3735,7 @@ namespace LSOmni.Service
         /// Returns list of Membership types (products) which are active and can be sold 
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadMembershipProducts<p/><p/>
+        /// LS Central WS2 : UploadMembershipProducts
         /// </remarks>
         /// <returns></returns>
         [OperationContract]
@@ -3593,7 +3746,7 @@ namespace LSOmni.Service
         /// Returns list of all subscription charges posted towards their membership account. Draft unposted entries are not included
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadMembershipSubscriptionCharges<p/><p/>
+        /// LS Central WS2 : UploadMembershipSubscriptionCharges
         /// </remarks>
         /// <param name="contactNo">Member Contact</param>
         /// <returns></returns>
@@ -3605,7 +3758,7 @@ namespace LSOmni.Service
         /// Returns list of Member Contact visit registrations
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadAdmissionEntries<p/><p/>
+        /// LS Central WS2 : UploadAdmissionEntries
         /// </remarks>
         /// <param name="contactNo">Member Contact</param>
         /// <returns></returns>
@@ -3617,7 +3770,7 @@ namespace LSOmni.Service
         /// Returns list of the Member Contact current active or on hold memberships
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadMembershipEntries<p/><p/>
+        /// LS Central WS2 : UploadMembershipEntries
         /// </remarks>
         /// <param name="contactNo">Member Contact</param>
         /// <returns></returns>
@@ -3629,7 +3782,7 @@ namespace LSOmni.Service
         /// Get list of activities assigned to a resource, required parameters Resource code (number), Date from and to date
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadResourceActivities<p/><p/>
+        /// LS Central WS2 : UploadResourceActivities
         /// </remarks>
         /// <param name="locationNo"></param>
         /// <param name="resourceNo"></param>
@@ -3644,7 +3797,7 @@ namespace LSOmni.Service
         /// Get list of all resources 
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : UploadActivityResources<p/><p/>
+        /// LS Central WS2 : UploadActivityResources
         /// </remarks>
         /// <returns></returns>
         [OperationContract]
@@ -3667,6 +3820,9 @@ namespace LSOmni.Service
         /// <summary>
         /// Gets Profile setup for SPG App
         /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : SPGProfileGet
+        /// </remarks>
         /// <param name="profileId"></param>
         /// <param name="storeNo"></param>
         /// <returns></returns>
@@ -3677,6 +3833,9 @@ namespace LSOmni.Service
         /// <summary>
         /// Check security status of a profile
         /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : SecurityCheckProfile
+        /// </remarks>
         /// <param name="orderNo"></param>
         /// <param name="storeNo"></param>
         /// <returns></returns>
@@ -3696,6 +3855,9 @@ namespace LSOmni.Service
         /// <summary>
         /// Allow app to open Gate when exiting the store
         /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : SPGOpenGate
+        /// </remarks>
         /// <param name="qrCode"></param>
         /// <param name="storeNo"></param>
         /// <param name="devLocation"></param>
@@ -3710,6 +3872,9 @@ namespace LSOmni.Service
         /// <summary>
         /// Add Payment token
         /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : SetTokenEntry, SetMemberCardToken, DeleteMemberCardToken
+        /// </remarks>
         /// <param name="token"></param>
         /// <param name="deleteToken">Delete token, Send token with token and cardId to delete</param>
         /// <returns></returns>
@@ -3720,12 +3885,34 @@ namespace LSOmni.Service
         /// <summary>
         /// Get Payment token
         /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : GetTokenEntry, GetMemberCardToken
+        /// </remarks>
         /// <param name="accountNo"></param>
         /// <param name="hotelToken">Get token for LS Hotels</param>
         /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         List<ClientToken> TokenEntryGet(string accountNo, bool hotelToken);
+
+        /// <summary>
+        /// Request to unlock Rod Device
+        /// </summary>
+        /// <param name="storeId"></param>
+        /// <param name="cardId"></param>
+        /// <returns></returns>
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
+        bool SpgUnlockRodDevice(string storeId, string cardId);
+
+        /// <summary>
+        /// Used by Rod Device to check if there is request to unlock a device
+        /// </summary>
+        /// <param name="storeId"></param>
+        /// <returns></returns>
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
+        string SpgUnlockRodDeviceCheck(string storeId);
 
         #endregion
 

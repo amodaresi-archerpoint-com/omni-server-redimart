@@ -32,7 +32,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;WCFSERVER</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WCFSERVER;Swagger4WCF</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\LSOmni.Service.xml </DocumentationFile>
@@ -97,8 +97,8 @@
     <Reference Include="System.Text.Encodings.Web, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Text.Encodings.Web.8.0.0\lib\net462\System.Text.Encodings.Web.dll</HintPath>
     </Reference>
-    <Reference Include="System.Text.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Json.8.0.0\lib\net462\System.Text.Json.dll</HintPath>
+    <Reference Include="System.Text.Json, Version=8.0.0.4, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.8.0.4\lib\net462\System.Text.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
@@ -186,7 +186,6 @@
     <Content Include="AppSettings.config" />
     <Content Include="LSIcon.ico" />
     <Content Include="NLog.config" />
-    <Content Include="Log.config" />
     <None Include="packages.config" />
     <Content Include="UCJson.svc" />
     <Content Include="UCService.svc" />
@@ -200,18 +199,13 @@
     <Content Include="WebBehaviors.config" />
     <Content Include="WebBindings.config" />
     <Content Include="WebServices.config" />
-    <Content Include="WebServices_SSL_NonSSL.config" />
-    <Content Include="WebServices_SSL_Only.config" />
     <Content Include="WebServices_Basic.config" />
+    <Content Include="WebServices_SSL.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Activity\Domain.DataModel.Activity\Domain.DataModel.Activity.csproj">
       <Project>{1AF34587-BDC0-43DF-B407-0A568B4506C3}</Project>
       <Name>Domain.DataModel.Activity</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\Core\Base\DiscountEngine\DiscountEngine.csproj">
-      <Project>{4D540BA5-6854-4324-9D4B-75FA22C5A137}</Project>
-      <Name>DiscountEngine</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Common\Core\Base\Domain.DataModel.Base\Domain.DataModel.Base.csproj">
       <Project>{7bcac03e-3b65-4cf4-9ebb-4ef353276d1c}</Project>

@@ -16,6 +16,7 @@ namespace LSRetail.Omni.Domain.DataModel.ScanPayGo.Setup
         Pos = 1,
         Card = 2,
         Loyalty = 4,
+        CustomerAccount = 8,
     }
 
     public enum ScanPayGoCardPaymentMethod
@@ -38,6 +39,7 @@ namespace LSRetail.Omni.Domain.DataModel.ScanPayGo.Setup
         private string audkenniRedirectUrl;
         private string audkenniMessageToUser;
         private string currencyCode;
+        private string audkenniTextToMakeAHash;
 
         public ScanPayGoCatalogType CatalogType { get; set; }
 
@@ -100,6 +102,12 @@ namespace LSRetail.Omni.Domain.DataModel.ScanPayGo.Setup
         {
             get => audkenniClientID?.Trim();
             set => audkenniClientID = value;
+        }
+
+        public string AudkenniTextToMakeAHash
+        {
+            get => audkenniTextToMakeAHash?.Trim();
+            set => audkenniTextToMakeAHash = value;
         }
 
         public string AudkenniSecret

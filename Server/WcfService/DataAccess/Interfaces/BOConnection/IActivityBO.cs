@@ -12,8 +12,8 @@ namespace LSOmni.DataAccess.Interface.BOConnection
         ActivityResponse ActivityConfirm(ActivityRequest request);
         ActivityResponse ActivityCancel(string activityNo);
         List<AvailabilityResponse> ActivityAvailabilityGet(string locationNo, string productNo, DateTime activityDate, string contactNo, string contactAccount, string optionalResource, string promoCode, string activityNo, int noOfPersons, string guestType);
-        AdditionalCharge ActivityAdditionalChargesGet(string activityNo);
-        AdditionalCharge ActivityProductChargesGet(string locationNo, string productNo, DateTime dateOfBooking);
+        List<AdditionalCharge> ActivityAdditionalChargesGet(string activityNo);
+        List<AdditionalCharge> ActivityProductChargesGet(string locationNo, string productNo, DateTime dateOfBooking);
         bool ActivityAdditionalChargesSet(AdditionalCharge request);
         List<AttributeResponse> ActivityAttributesGet(AttributeType type, string linkNo);
         int ActivityAttributeSet(AttributeType type, string linkNo, string attributeCode, string attributeValue);
@@ -27,6 +27,8 @@ namespace LSOmni.DataAccess.Interface.BOConnection
         List<AvailabilityResponse> ActivityResourceGroupAvailabilityGet(string locationNo, DateTime activityDate, string groupNo, string intervalType, int noOfDays);
         bool ActivityCheckAccess(string searchReference, string locationNo, string gateNo, bool registerAccessEntry, int checkType, out string messageString);
         string ActivityGetAvailabilityToken(string locationNo, string productNo, DateTime activiyTime, string optionalResource, int quantity);
+        bool ActivityExtendToken(string tokenId, int seconds);
+        bool ActivityCancelToken(string tokenId);
         string ActivityInsertGroupReservation(Reservation request);
         string ActivityUpdateGroupReservation(Reservation request);
         ActivityResponse ActivityConfirmGroup(ActivityRequest request);

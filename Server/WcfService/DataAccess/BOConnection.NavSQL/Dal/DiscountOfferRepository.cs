@@ -4,9 +4,6 @@ using System.Data.SqlClient;
 
 using LSOmni.Common.Util;
 using LSRetail.Omni.Domain.DataModel.Base.Replication;
-using LSRetail.Omni.DiscountEngine.DataModels;
-using LSRetail.Omni.DiscountEngine;
-using LSRetail.Omni.DiscountEngine.Repositories;
 using LSRetail.Omni.Domain.DataModel.Base;
 
 namespace LSOmni.DataAccess.BOConnection.NavSQL.Dal
@@ -366,46 +363,9 @@ namespace LSOmni.DataAccess.BOConnection.NavSQL.Dal
             return list;
         }
 
-        public List<ReplDiscount> DiscountGetByStore(string storeid, string itemid)
-        {
-            List<ReplDiscount> list = new List<ReplDiscount>();
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                using (SqlCommand command = connection.CreateCommand())
-                {
-                    command.CommandText = GetSQL(false, 0) + sqlcolumns + sqlfrom + " WHERE mt.[Store No_]=@sid AND mt.[Item No_]=@iid";
-                    command.Parameters.AddWithValue("@sid", storeid);
-                    command.Parameters.AddWithValue("@iid", itemid);
-                    TraceSqlCommand(command);
-                    connection.Open();
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            list.Add(ReaderToDiscount(reader, out string ts));
-                        }
-                        reader.Close();
-                    }
-                    connection.Close();
-                }
-            }
-            return list;
-        }
-
-        public List<ProactiveDiscount> DiscountsGet(string storeId, List<string> itemIds, string loyaltySchemeCode)
-        {
-            DiscountEngine engine;
-            if (NavVersion.Major > 14)
-                engine = new DiscountEngine(new Nav15Repository(navConnectionString));
-            else
-                engine = new DiscountEngine(new NavRepository(navConnectionString));
-
-            return engine.DiscountsGet(storeId, itemIds, loyaltySchemeCode);
-        }
-
         private ReplDiscount ReaderToDiscount(SqlDataReader reader, out string timestamp)
         {
-            timestamp = ByteArrayToString(reader["timestamp"] as byte[]);
+            timestamp = ConvertTo.ByteArrayToString(reader["timestamp"] as byte[]);
 
             ReplDiscount disc = new ReplDiscount(config.IsJson)
             {
@@ -425,7 +385,7 @@ namespace LSOmni.DataAccess.BOConnection.NavSQL.Dal
                 ModifyDate = ConvertTo.SafeJsonDate(SQLHelper.GetDateTime(reader["Last Modify Date"]), config.IsJson),
                 Type = (ReplDiscountType)SQLHelper.GetInt32(reader["Type"]),
                 Description = SQLHelper.GetString(reader["Description"]),
-                ValidationPeriodId = SQLHelper.GetInt32(reader["Validation Period ID"])
+                ValidationPeriodId = SQLHelper.GetString(reader["Validation Period ID"])
             };
 
             string tx1 = SQLHelper.GetString(reader["Pop-up Line 1"]);
@@ -448,7 +408,7 @@ namespace LSOmni.DataAccess.BOConnection.NavSQL.Dal
 
         private ReplDiscount ReaderToMixMatch(SqlDataReader reader, out string timestamp)
         {
-            timestamp = ByteArrayToString(reader["timestamp"] as byte[]);
+            timestamp = ConvertTo.ByteArrayToString(reader["timestamp"] as byte[]);
 
             ReplDiscount disc = new ReplDiscount(config.IsJson)
             {
@@ -464,7 +424,7 @@ namespace LSOmni.DataAccess.BOConnection.NavSQL.Dal
                 ModifyDate = ConvertTo.SafeJsonDate(SQLHelper.GetDateTime(reader["Last Modify Date"]), config.IsJson),
                 Type = (ReplDiscountType)(SQLHelper.GetInt32(reader["Type"])),
                 Description = SQLHelper.GetString(reader["Description"]),
-                ValidationPeriodId = SQLHelper.GetInt32(reader["Validation Period ID"])
+                ValidationPeriodId = SQLHelper.GetString(reader["Validation Period ID"])
             };
 
             string tx1 = SQLHelper.GetString(reader["Pop-up Line 1"]);
@@ -481,7 +441,7 @@ namespace LSOmni.DataAccess.BOConnection.NavSQL.Dal
 
         private ReplDiscountValidation ReaderToDiscountValidation(SqlDataReader reader, out string timestamp)
         {
-            timestamp = ByteArrayToString(reader["timestamp"] as byte[]);
+            timestamp = ConvertTo.ByteArrayToString(reader["timestamp"] as byte[]);
 
             return new ReplDiscountValidation(config.IsJson)
             {
@@ -525,4 +485,3 @@ namespace LSOmni.DataAccess.BOConnection.NavSQL.Dal
         }
     }
 }
- 

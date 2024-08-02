@@ -65,9 +65,11 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Replication
             VendorId = string.Empty;
             VendorItemId = string.Empty;
             SeasonCode = string.Empty;
+            TariffNo = string.Empty;
             ItemCategoryCode = string.Empty;
             ItemFamilyCode = string.Empty;
             ItemTrackingCode = string.Empty;
+            SpecialGroups = string.Empty;
             MustKeyInComment = 0;
             DateBlocked = DateTime.MinValue.ToUniversalTime();
             DateToActivateItem = DateTime.MinValue.ToUniversalTime();
@@ -182,11 +184,15 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Replication
         [DataMember]
         public string SeasonCode { get; set; }
         [DataMember]
+        public string TariffNo { get; set;}
+        [DataMember]
         public string ItemCategoryCode { get; set; }
         [DataMember]
         public string ItemFamilyCode { get; set; }
         [DataMember]
         public string ItemTrackingCode { get; set; }
+        [DataMember]
+        public string SpecialGroups { get; set; }
         [DataMember]
         public decimal UnitsPerParcel { get; set; }
         [DataMember]

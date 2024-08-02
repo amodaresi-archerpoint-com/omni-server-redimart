@@ -151,7 +151,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             return map.MapRootToAvailabilityResponse(root);
         }
 
-        public AdditionalCharge ActivityAdditionalChargesGet(string activityNo)
+        public List<AdditionalCharge> ActivityAdditionalChargesGet(string activityNo)
         {
             logger.Debug(config.LSKey.Key, "GetAdditionalCharges: activityNo:{0}", activityNo);
 
@@ -163,14 +163,14 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             return map.MapRootToAdditionalCharge(root);
         }
 
-        public AdditionalCharge ActivityProductChargesGet(string locationNo, string productNo, DateTime dateOfBooking)
+        public List<AdditionalCharge> ActivityProductChargesGet(string locationNo, string productNo, DateTime dateOfBooking)
         {
             logger.Debug(config.LSKey.Key, "GetProductChargesV2: productNo:{0}", productNo);
 
             LSActivity.ActivityChargeRespond root = new LSActivity.ActivityChargeRespond();
             activityWS.GetProductChargesV2(productNo, locationNo, dateOfBooking, ref root);
 
-            logger.Debug(config.LSKey.Key, "AdditionalChargeResponse - " + Serialization.ToXml(root, true));
+            logger.Debug(config.LSKey.Key, "GetProductChargesV2 - " + Serialization.ToXml(root, true));
             ActivityMapping map = new ActivityMapping(LSCVersion, config.IsJson);
             return map.MapRootToAdditionalCharge(root);
         }
@@ -195,7 +195,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 UnitPrice = unitPrice,
                 ErrorString = errMsg
             };
-            logger.Debug(config.LSKey.Key, "ActivityResponse - " + Serialization.ToXml(resp, true));
+            logger.Debug(config.LSKey.Key, "PreSellActivityProduct - " + Serialization.ToXml(resp, true));
             return resp;
         }
 
@@ -203,11 +203,19 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
         {
             string error = string.Empty;
 
-            logger.Debug(config.LSKey.Key, "SetAdditionalChargesV2 - " + Serialization.ToXml(req, true));
+            logger.Debug(config.LSKey.Key, "SetAdditionalCharges - " + Serialization.ToXml(req, true));
 
             LSActivity.ActivityChargeRespond root = new LSActivity.ActivityChargeRespond();
-            activityWS.SetAdditionalChargesV2(req.ActivityNo, req.LineNo, (int)req.ProductType, req.ItemNo, req.Quantity, req.Price, req.DiscountPercentage, XMLHelper.GetString(req.UnitOfMeasure), ref error);
-            logger.Debug(config.LSKey.Key, "SetAdditionalChargesV2 - " + error);
+            if (LSCVersion >= new Version("24.0"))
+            {
+                activityWS.SetAdditionalChargesV3(req.ActivityNo, req.LineNo, (int)req.ProductType, req.ItemNo, req.Quantity, req.Price, req.DiscountPercentage, XMLHelper.GetString(req.UnitOfMeasure), XMLHelper.GetString(req.VariantCode), req.ParentLine, req.IsAllowance, XMLHelper.GetString(req.OptionalComment), ref error);
+                logger.Debug(config.LSKey.Key, "SetAdditionalChargesV3 - " + error);
+            }
+            else
+            {
+                activityWS.SetAdditionalChargesV2(req.ActivityNo, req.LineNo, (int)req.ProductType, req.ItemNo, req.Quantity, req.Price, req.DiscountPercentage, XMLHelper.GetString(req.UnitOfMeasure), ref error);
+                logger.Debug(config.LSKey.Key, "SetAdditionalChargesV2 - " + error);
+            }
             if (string.IsNullOrEmpty(error) == false)
                 throw new LSOmniServiceException(StatusCode.NavWSError, error);
 
@@ -221,7 +229,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             LSActivity.ActivityAttributeRespond root = new LSActivity.ActivityAttributeRespond();
             activityWS.GetAttributes((int)type, linkNo, ref root);
 
-            logger.Debug(config.LSKey.Key, "AttributeResponse - " + Serialization.ToXml(root, true));
+            logger.Debug(config.LSKey.Key, "GetAttributes - " + Serialization.ToXml(root, true));
             ActivityMapping map = new ActivityMapping(LSCVersion, config.IsJson);
             return map.MapRootToAttributeResponse(root);
         }
@@ -247,14 +255,26 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             string resNo = string.Empty;
 
             logger.Debug(config.LSKey.Key, "InsertReservation - " + Serialization.ToXml(req, true));
-
-            activityWS.InsertReservation(ref resNo, req.ReservationType,
-                                         XMLHelper.GetSQLNAVDate(req.ResDateFrom), XMLHelper.GetSQLNAVTime(req.ResTimeFrom), XMLHelper.GetSQLNAVDate(req.ResDateTo), XMLHelper.GetSQLNAVTime(req.ResTimeTo),
-                                         XMLHelper.GetString(req.CustomerAccount), XMLHelper.GetString(req.Description), XMLHelper.GetString(req.Comment),
-                                         XMLHelper.GetString(req.Reference), XMLHelper.GetString(req.ContactNo), XMLHelper.GetString(req.ContactName), XMLHelper.GetString(req.Email),
-                                         XMLHelper.GetString(req.Location), XMLHelper.GetString(req.SalesPerson), req.Internalstatus, XMLHelper.GetString(req.Status),
-                                         ref error);
-            logger.Debug(config.LSKey.Key, "InsertReservation - " + error);
+            if (LSCVersion >= new Version("24.0"))
+            {
+                activityWS.InsertReservationV2(ref resNo, req.ReservationType,
+                                             XMLHelper.GetSQLNAVDate(req.ResDateFrom), XMLHelper.GetSQLNAVTime(req.ResTimeFrom), XMLHelper.GetSQLNAVDate(req.ResDateTo), XMLHelper.GetSQLNAVTime(req.ResTimeTo),
+                                             XMLHelper.GetString(req.CustomerAccount), XMLHelper.GetString(req.Description), XMLHelper.GetString(req.Comment),
+                                             XMLHelper.GetString(req.Reference), XMLHelper.GetString(req.ContactNo), XMLHelper.GetString(req.ContactName), XMLHelper.GetString(req.Email),
+                                             XMLHelper.GetString(req.Location), XMLHelper.GetString(req.SalesPerson), req.Internalstatus, XMLHelper.GetString(req.Status), XMLHelper.GetString(req.EventNo),
+                                             ref error);
+                logger.Debug(config.LSKey.Key, "InsertReservationV2 - " + error);
+            }
+            else
+            {
+                activityWS.InsertReservation(ref resNo, req.ReservationType,
+                                             XMLHelper.GetSQLNAVDate(req.ResDateFrom), XMLHelper.GetSQLNAVTime(req.ResTimeFrom), XMLHelper.GetSQLNAVDate(req.ResDateTo), XMLHelper.GetSQLNAVTime(req.ResTimeTo),
+                                             XMLHelper.GetString(req.CustomerAccount), XMLHelper.GetString(req.Description), XMLHelper.GetString(req.Comment),
+                                             XMLHelper.GetString(req.Reference), XMLHelper.GetString(req.ContactNo), XMLHelper.GetString(req.ContactName), XMLHelper.GetString(req.Email),
+                                             XMLHelper.GetString(req.Location), XMLHelper.GetString(req.SalesPerson), req.Internalstatus, XMLHelper.GetString(req.Status),
+                                             ref error);
+                logger.Debug(config.LSKey.Key, "InsertReservation - " + error);
+            }
             if (string.IsNullOrEmpty(error) == false)
                 throw new LSOmniServiceException(StatusCode.NavWSError, error);
 
@@ -267,14 +287,26 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             string resNo = string.Empty;
 
             logger.Debug(config.LSKey.Key, "UpdateReservation - " + Serialization.ToXml(req, true));
-
-            activityWS.UpdateReservation(req.Id, req.ReservationType,
-                                         XMLHelper.GetSQLNAVDate(req.ResDateFrom), XMLHelper.GetSQLNAVTime(req.ResTimeFrom), XMLHelper.GetSQLNAVDate(req.ResDateTo), XMLHelper.GetSQLNAVTime(req.ResTimeTo),
-                                         XMLHelper.GetString(req.CustomerAccount), XMLHelper.GetString(req.Description), XMLHelper.GetString(req.Comment),
-                                         XMLHelper.GetString(req.Reference), XMLHelper.GetString(req.ContactNo), XMLHelper.GetString(req.ContactName), XMLHelper.GetString(req.Email),
-                                         XMLHelper.GetString(req.Location), XMLHelper.GetString(req.SalesPerson), req.Internalstatus, XMLHelper.GetString(req.Status),
-                                         ref error);
-            logger.Debug(config.LSKey.Key, "UpdateReservation - " + error);
+            if (LSCVersion >= new Version("24.0"))
+            {
+                activityWS.UpdateReservationV2(req.Id, req.ReservationType,
+                                             XMLHelper.GetSQLNAVDate(req.ResDateFrom), XMLHelper.GetSQLNAVTime(req.ResTimeFrom), XMLHelper.GetSQLNAVDate(req.ResDateTo), XMLHelper.GetSQLNAVTime(req.ResTimeTo),
+                                             XMLHelper.GetString(req.CustomerAccount), XMLHelper.GetString(req.Description), XMLHelper.GetString(req.Comment),
+                                             XMLHelper.GetString(req.Reference), XMLHelper.GetString(req.ContactNo), XMLHelper.GetString(req.ContactName), XMLHelper.GetString(req.Email),
+                                             XMLHelper.GetString(req.Location), XMLHelper.GetString(req.SalesPerson), req.Internalstatus, XMLHelper.GetString(req.Status), XMLHelper.GetString(req.EventNo),
+                                             ref error);
+                logger.Debug(config.LSKey.Key, "UpdateReservationV2 - " + error);
+            }
+            else
+            {
+                activityWS.UpdateReservation(req.Id, req.ReservationType,
+                                             XMLHelper.GetSQLNAVDate(req.ResDateFrom), XMLHelper.GetSQLNAVTime(req.ResTimeFrom), XMLHelper.GetSQLNAVDate(req.ResDateTo), XMLHelper.GetSQLNAVTime(req.ResTimeTo),
+                                             XMLHelper.GetString(req.CustomerAccount), XMLHelper.GetString(req.Description), XMLHelper.GetString(req.Comment),
+                                             XMLHelper.GetString(req.Reference), XMLHelper.GetString(req.ContactNo), XMLHelper.GetString(req.ContactName), XMLHelper.GetString(req.Email),
+                                             XMLHelper.GetString(req.Location), XMLHelper.GetString(req.SalesPerson), req.Internalstatus, XMLHelper.GetString(req.Status),
+                                             ref error);
+                logger.Debug(config.LSKey.Key, "UpdateReservation - " + error);
+            }
             if (string.IsNullOrEmpty(error) == false)
                 throw new LSOmniServiceException(StatusCode.NavWSError, error);
 
@@ -315,7 +347,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
 
             logger.Debug(config.LSKey.Key, "SellMembershipV2: contactNo:{0}, type:{1}", contactNo, type);
             activityWS.SellMembershipV2(contactNo, type, ref no, ref itemNo, ref price, ref qty, ref discount, ref bookRef, ref error);
-            logger.Debug(config.LSKey.Key, "SellMembership - " + error);
+            logger.Debug(config.LSKey.Key, "SellMembershipV2 - " + error);
             if (string.IsNullOrEmpty(error) == false)
                 throw new LSOmniServiceException(StatusCode.NavWSError, error);
 
@@ -352,8 +384,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             string error = string.Empty;
             LSActivity.ActivityAvailabilityResponse root = new LSActivity.ActivityAvailabilityResponse();
             activityWS.GetResourceAvailability(locationNo, activityDate, resourceNo, intervalType, noOfDays, ref error, ref root);
-
-            logger.Debug(config.LSKey.Key, "GetResourceAvailability - " + error);
             if (string.IsNullOrEmpty(error) == false)
                 throw new LSOmniServiceException(StatusCode.NavWSError, error);
 
@@ -370,8 +400,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             string error = string.Empty;
             LSActivity.ActivityAvailabilityResponse root = new LSActivity.ActivityAvailabilityResponse();
             activityWS.GetResourceGroupAvailability(locationNo, activityDate, groupNo, intervalType, noOfDays, ref error, ref root);
-
-            logger.Debug(config.LSKey.Key, "GetResourceGroupAvailability - " + error);
             if (string.IsNullOrEmpty(error) == false)
                 throw new LSOmniServiceException(StatusCode.NavWSError, error);
 
@@ -390,17 +418,29 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             return ret;
         }
 
-        public string ActivityGetAvailabilityToken(string locationNo, string productNo, DateTime activiyTime, string optionalResource, int quantity)
+        public string ActivityGetAvailabilityToken(string locationNo, string productNo, DateTime activityTime, string optionalResource, int quantity)
         {
             string error = string.Empty;
             string token = string.Empty;
 
-            logger.Debug(config.LSKey.Key, $"GetAvailabilityToken: locationNo:{locationNo}, productNo:{productNo}, activiyTime:{activiyTime}, optionalResource:{optionalResource}, quantity:{quantity}");
-            bool ret = activityWS.GetAvailabilityToken(locationNo, productNo, ConvertTo.NavGetDate(activiyTime, false), ConvertTo.NavGetTime(activiyTime, false), optionalResource, quantity, ref token, ref error);
+            logger.Debug(config.LSKey.Key, $"GetAvailabilityToken: locationNo:{locationNo}, productNo:{productNo}, activiyTime:{activityTime}, optionalResource:{optionalResource}, quantity:{quantity}");
+            bool ret = activityWS.GetAvailabilityToken(locationNo, productNo, ConvertTo.NavGetDate(activityTime, false), ConvertTo.NavGetTime(activityTime, false), optionalResource, quantity, ref token, ref error);
             if (string.IsNullOrEmpty(error) == false)
                 throw new LSOmniServiceException(StatusCode.NavWSError, error);
 
             return token;
+        }
+
+        public bool ActivityExtendToken(string tokenId, int seconds)
+        {
+            logger.Debug(config.LSKey.Key, $"ExtendToken: Id:{tokenId}, sec:{seconds}");
+            return activityWS.ExtendToken(tokenId, seconds);
+        }
+
+        public bool ActivityCancelToken(string tokenId)
+        {
+            logger.Debug(config.LSKey.Key, $"CancelToken: Id:{tokenId}");
+            return activityWS.CancelToken(tokenId);
         }
 
         public string ActivityInsertGroupReservation(Reservation req)
@@ -409,14 +449,26 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             string resNo = string.Empty;
 
             logger.Debug(config.LSKey.Key, "InsertGroupReservation - " + Serialization.ToXml(req, true));
-
-            activityWS.InsertGroupReservation(ref resNo, req.ReservationType,
-                                         XMLHelper.GetSQLNAVDate(req.ResDateFrom), XMLHelper.GetSQLNAVTime(req.ResTimeFrom), XMLHelper.GetSQLNAVDate(req.ResDateTo), XMLHelper.GetSQLNAVTime(req.ResTimeTo),
-                                         XMLHelper.GetString(req.CustomerAccount), XMLHelper.GetString(req.Description), XMLHelper.GetString(req.Comment),
-                                         XMLHelper.GetString(req.Reference), XMLHelper.GetString(req.ContactNo), XMLHelper.GetString(req.ContactName), XMLHelper.GetString(req.Email),
-                                         XMLHelper.GetString(req.Location), XMLHelper.GetString(req.SalesPerson), req.Internalstatus, XMLHelper.GetString(req.Status),req.NoOfPerson,
-                                         ref error);
-            logger.Debug(config.LSKey.Key, "InsertGroupReservation - " + error);
+            if (LSCVersion >= new Version("24.0"))
+            {
+                activityWS.InsertGroupReservationV2(ref resNo, req.ReservationType,
+                                             XMLHelper.GetSQLNAVDate(req.ResDateFrom), XMLHelper.GetSQLNAVTime(req.ResTimeFrom), XMLHelper.GetSQLNAVDate(req.ResDateTo), XMLHelper.GetSQLNAVTime(req.ResTimeTo),
+                                             XMLHelper.GetString(req.CustomerAccount), XMLHelper.GetString(req.Description), XMLHelper.GetString(req.Comment),
+                                             XMLHelper.GetString(req.Reference), XMLHelper.GetString(req.ContactNo), XMLHelper.GetString(req.ContactName), XMLHelper.GetString(req.Email),
+                                             XMLHelper.GetString(req.Location), XMLHelper.GetString(req.SalesPerson), req.Internalstatus, XMLHelper.GetString(req.Status), req.NoOfPerson, XMLHelper.GetString(req.EventNo),
+                                             ref error);
+                logger.Debug(config.LSKey.Key, "InsertGroupReservationV2 - " + error);
+            }
+            else
+            {
+                activityWS.InsertGroupReservation(ref resNo, req.ReservationType,
+                                             XMLHelper.GetSQLNAVDate(req.ResDateFrom), XMLHelper.GetSQLNAVTime(req.ResTimeFrom), XMLHelper.GetSQLNAVDate(req.ResDateTo), XMLHelper.GetSQLNAVTime(req.ResTimeTo),
+                                             XMLHelper.GetString(req.CustomerAccount), XMLHelper.GetString(req.Description), XMLHelper.GetString(req.Comment),
+                                             XMLHelper.GetString(req.Reference), XMLHelper.GetString(req.ContactNo), XMLHelper.GetString(req.ContactName), XMLHelper.GetString(req.Email),
+                                             XMLHelper.GetString(req.Location), XMLHelper.GetString(req.SalesPerson), req.Internalstatus, XMLHelper.GetString(req.Status), req.NoOfPerson,
+                                             ref error);
+                logger.Debug(config.LSKey.Key, "InsertGroupReservation - " + error);
+            }
             if (string.IsNullOrEmpty(error) == false)
                 throw new LSOmniServiceException(StatusCode.NavWSError, error);
 
@@ -429,14 +481,26 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             string resNo = string.Empty;
 
             logger.Debug(config.LSKey.Key, "UpdateGroupReservation - " + Serialization.ToXml(req, true));
-
-            activityWS.UpdateGroupReservation(req.Id, req.ReservationType,
-                                         XMLHelper.GetSQLNAVDate(req.ResDateFrom), XMLHelper.GetSQLNAVTime(req.ResTimeFrom), XMLHelper.GetSQLNAVDate(req.ResDateTo), XMLHelper.GetSQLNAVTime(req.ResTimeTo),
-                                         XMLHelper.GetString(req.CustomerAccount), XMLHelper.GetString(req.Description), XMLHelper.GetString(req.Comment),
-                                         XMLHelper.GetString(req.Reference), XMLHelper.GetString(req.ContactNo), XMLHelper.GetString(req.ContactName), XMLHelper.GetString(req.Email),
-                                         XMLHelper.GetString(req.Location), XMLHelper.GetString(req.SalesPerson), req.Internalstatus, XMLHelper.GetString(req.Status),req.NoOfPerson,
-                                         ref error);
-            logger.Debug(config.LSKey.Key, "UpdateGroupReservation - " + error);
+            if (LSCVersion >= new Version("24.0"))
+            {
+                activityWS.UpdateGroupReservationV2(req.Id, req.ReservationType,
+                                             XMLHelper.GetSQLNAVDate(req.ResDateFrom), XMLHelper.GetSQLNAVTime(req.ResTimeFrom), XMLHelper.GetSQLNAVDate(req.ResDateTo), XMLHelper.GetSQLNAVTime(req.ResTimeTo),
+                                             XMLHelper.GetString(req.CustomerAccount), XMLHelper.GetString(req.Description), XMLHelper.GetString(req.Comment),
+                                             XMLHelper.GetString(req.Reference), XMLHelper.GetString(req.ContactNo), XMLHelper.GetString(req.ContactName), XMLHelper.GetString(req.Email),
+                                             XMLHelper.GetString(req.Location), XMLHelper.GetString(req.SalesPerson), req.Internalstatus, XMLHelper.GetString(req.Status), req.NoOfPerson, XMLHelper.GetString(req.EventNo),
+                                             ref error);
+                logger.Debug(config.LSKey.Key, "UpdateGroupReservationV2 - " + error);
+            }
+            else
+            {
+                activityWS.UpdateGroupReservation(req.Id, req.ReservationType,
+                                             XMLHelper.GetSQLNAVDate(req.ResDateFrom), XMLHelper.GetSQLNAVTime(req.ResTimeFrom), XMLHelper.GetSQLNAVDate(req.ResDateTo), XMLHelper.GetSQLNAVTime(req.ResTimeTo),
+                                             XMLHelper.GetString(req.CustomerAccount), XMLHelper.GetString(req.Description), XMLHelper.GetString(req.Comment),
+                                             XMLHelper.GetString(req.Reference), XMLHelper.GetString(req.ContactNo), XMLHelper.GetString(req.ContactName), XMLHelper.GetString(req.Email),
+                                             XMLHelper.GetString(req.Location), XMLHelper.GetString(req.SalesPerson), req.Internalstatus, XMLHelper.GetString(req.Status), req.NoOfPerson,
+                                             ref error);
+                logger.Debug(config.LSKey.Key, "UpdateGroupReservation - " + error);
+            }
             if (string.IsNullOrEmpty(error) == false)
                 throw new LSOmniServiceException(StatusCode.NavWSError, error);
 
@@ -467,32 +531,39 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             decimal discount = 0;
             decimal amount = 0;
             int grLineNo = 0;
+            int confActivities = 0;
             string cur = string.Empty;
-            string bookgRef = string.Empty;
-            string groupCode = string.Empty;
+            string bookingRef = string.Empty;
             string resNo = XMLHelper.GetString(req.ReservationNo);
             string item = string.Empty;
 
-            if (LSCVersion >= new Version("22.3"))
+            if (LSCVersion >= new Version("24.0"))
+            {
+                logger.Debug(config.LSKey.Key, "ConfirmGroupActivityV4 - " + Serialization.ToXml(req, true));
+                activityWS.ConfirmGroupActivityV4(XMLHelper.GetString(req.GroupNo), XMLHelper.GetString(req.Location), XMLHelper.GetString(req.ProductNo), ConvertTo.NavGetDate(req.ActivityTime, false), ConvertTo.NavGetTime(req.ActivityTime, false), XMLHelper.GetString(req.ContactNo), XMLHelper.GetString(req.OptionalResource),
+                                         XMLHelper.GetString(req.OptionalComment), req.Quantity, req.NoOfPeople, req.Paid, XMLHelper.GetString(req.SetGroupReservation), XMLHelper.GetString(req.PromoCode), XMLHelper.GetString(req.ContactName), XMLHelper.GetString(req.Email), req.UnitPrice,
+                                         ref grLineNo, ref actId, ref error, ref price, ref discount, ref amount, ref cur, ref bookingRef, ref resNo, ref item, XMLHelper.GetString(req.ContactAccount), XMLHelper.GetString(req.Token), req.SetGroupHeaderStatus, XMLHelper.GetString(req.GuestType), ref confActivities);
+            }
+            else if (LSCVersion >= new Version("22.3"))
             {
                 logger.Debug(config.LSKey.Key, "ConfirmGroupActivityV3 - " + Serialization.ToXml(req, true));
                 activityWS.ConfirmGroupActivityV3(XMLHelper.GetString(req.GroupNo), XMLHelper.GetString(req.Location), XMLHelper.GetString(req.ProductNo), ConvertTo.NavGetDate(req.ActivityTime, false), ConvertTo.NavGetTime(req.ActivityTime, false), XMLHelper.GetString(req.ContactNo), XMLHelper.GetString(req.OptionalResource),
                                          XMLHelper.GetString(req.OptionalComment), req.Quantity, req.NoOfPeople, req.Paid, XMLHelper.GetString(req.SetGroupReservation), XMLHelper.GetString(req.PromoCode), XMLHelper.GetString(req.ContactName), XMLHelper.GetString(req.Email), req.UnitPrice,
-                                         ref grLineNo, ref actId, ref error, ref price, ref discount, ref amount, ref cur, ref bookgRef, ref resNo, ref item, XMLHelper.GetString(req.ContactAccount), XMLHelper.GetString(req.Token), req.SetGroupHeaderStatus, XMLHelper.GetString(req.GuestType));
+                                         ref grLineNo, ref actId, ref error, ref price, ref discount, ref amount, ref cur, ref bookingRef, ref resNo, ref item, XMLHelper.GetString(req.ContactAccount), XMLHelper.GetString(req.Token), req.SetGroupHeaderStatus, XMLHelper.GetString(req.GuestType));
             }
             else if (LSCVersion >= new Version("20.2"))
             {
                 logger.Debug(config.LSKey.Key, "ConfirmGroupActivityV2 - " + Serialization.ToXml(req, true));
                 activityWS.ConfirmGroupActivityV2(XMLHelper.GetString(req.GroupNo), XMLHelper.GetString(req.Location), XMLHelper.GetString(req.ProductNo), ConvertTo.NavGetDate(req.ActivityTime, false), ConvertTo.NavGetTime(req.ActivityTime, false), XMLHelper.GetString(req.ContactNo), XMLHelper.GetString(req.OptionalResource),
                                          XMLHelper.GetString(req.OptionalComment), req.Quantity, req.NoOfPeople, req.Paid, XMLHelper.GetString(req.SetGroupReservation), XMLHelper.GetString(req.PromoCode), XMLHelper.GetString(req.ContactName), XMLHelper.GetString(req.Email), req.UnitPrice,
-                                         ref grLineNo, ref actId, ref error, ref price, ref discount, ref amount, ref cur, ref bookgRef, ref resNo, ref item, XMLHelper.GetString(req.ContactAccount), XMLHelper.GetString(req.Token), req.SetGroupHeaderStatus);
+                                         ref grLineNo, ref actId, ref error, ref price, ref discount, ref amount, ref cur, ref bookingRef, ref resNo, ref item, XMLHelper.GetString(req.ContactAccount), XMLHelper.GetString(req.Token), req.SetGroupHeaderStatus);
             }
             else
             {
                 logger.Debug(config.LSKey.Key, "ConfirmGroupActivity - " + Serialization.ToXml(req, true));
                 activityWS.ConfirmGroupActivity(XMLHelper.GetString(req.GroupNo), XMLHelper.GetString(req.Location), XMLHelper.GetString(req.ProductNo), ConvertTo.NavGetDate(req.ActivityTime, false), ConvertTo.NavGetTime(req.ActivityTime, false), XMLHelper.GetString(req.ContactNo), XMLHelper.GetString(req.OptionalResource),
                                          XMLHelper.GetString(req.OptionalComment), req.Quantity, req.NoOfPeople, req.Paid, XMLHelper.GetString(req.SetGroupReservation), XMLHelper.GetString(req.PromoCode), XMLHelper.GetString(req.ContactName), XMLHelper.GetString(req.Email), req.UnitPrice,
-                                         ref grLineNo, ref actId, ref error, ref price, ref discount, ref amount, ref cur, ref bookgRef, ref resNo, ref item, XMLHelper.GetString(req.ContactAccount), XMLHelper.GetString(req.Token));
+                                         ref grLineNo, ref actId, ref error, ref price, ref discount, ref amount, ref cur, ref bookingRef, ref resNo, ref item, XMLHelper.GetString(req.ContactAccount), XMLHelper.GetString(req.Token));
             }
 
             if (string.IsNullOrEmpty(error) == false)
@@ -506,10 +577,11 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 LineDiscount = discount,
                 TotalAmount = amount,
                 Currency = cur,
-                BookingRef = bookgRef,
+                BookingRef = bookingRef,
                 ReservationNo = resNo,
                 ItemNo = item,
-                GroupLineNo = grLineNo
+                GroupLineNo = grLineNo,
+                NoOfActivities = confActivities
             };
 
             logger.Debug(config.LSKey.Key, "ActivityResponse - " + Serialization.ToXml(result, true));
@@ -522,11 +594,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 throw new LSOmniException(StatusCode.ObjectMissing, "Group No missing");
 
             string error = string.Empty;
-            bool ret = false;
-
             logger.Debug(config.LSKey.Key, $"DeleteGroupActivity: groupNo:{groupNo} line:{lineNo}");
-
-            ret = activityWS.DeleteGroupActivity(groupNo, lineNo, ref error);
+            bool ret = activityWS.DeleteGroupActivity(groupNo, lineNo, ref error);
             if (string.IsNullOrEmpty(error) == false)
                 throw new LSOmniServiceException(StatusCode.NavWSError, error);
 
@@ -541,7 +610,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
         {
             LSActivity.ActivityUploadProducts root = new LSActivity.ActivityUploadProducts();
             activityWS.UploadActivityProducts(ref root);
-
             logger.Debug(config.LSKey.Key, "UploadActivityProducts Response - " + Serialization.ToXml(root, true));
             ActivityMapping map = new ActivityMapping(LSCVersion, config.IsJson);
             return map.MapRootToActivityProducts(root);
@@ -551,7 +619,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
         {
             LSActivity.ActivityUploadTypes root = new LSActivity.ActivityUploadTypes();
             activityWS.UploadActivityTypes(ref root);
-
             logger.Debug(config.LSKey.Key, "UploadActivityTypes Response - " + Serialization.ToXml(root, true));
             ActivityMapping map = new ActivityMapping(LSCVersion, config.IsJson);
             return map.MapRootToActivityType(root);
@@ -561,7 +628,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
         {
             LSActivity.ActivityUploadLocations root = new LSActivity.ActivityUploadLocations();
             activityWS.UploadActivityLocations(ref root);
-
             logger.Debug(config.LSKey.Key, "UploadActivityLocations Response - " + Serialization.ToXml(root, true));
             ActivityMapping map = new ActivityMapping(LSCVersion, config.IsJson);
             return map.MapRootToActivityLocation(root);

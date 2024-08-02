@@ -11,20 +11,36 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
 
         public void AddFlag(FeatureFlagName flagName, string flagValue)
         {
-            Flags.Add(new FeatureFlag()
+            FeatureFlag flag = Flags.Find(f => f.name == flagName);
+            if (flag == null)
             {
-                name = flagName,
-                value = flagValue
-            });
+                Flags.Add(new FeatureFlag()
+                {
+                    name = flagName,
+                    value = flagValue
+                });
+            }
+            else
+            {
+                flag.value = flagValue;
+            }
         }
 
         public void AddFlag(FeatureFlagName flagName, int flagValue)
         {
-            Flags.Add(new FeatureFlag()
+            FeatureFlag flag = Flags.Find(f => f.name == flagName);
+            if (flag == null)
             {
-                name = flagName,
-                value = flagValue.ToString()
-            });
+                Flags.Add(new FeatureFlag()
+                {
+                    name = flagName,
+                    value = flagValue.ToString()
+                });
+            }
+            else
+            {
+                flag.value = flagValue.ToString();
+            }
         }
 
         public void AddFlag(string flagCode, string flagValue)
@@ -84,6 +100,9 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
                     break;
                 case "ALLOWED PAYMENT WITH LOYALTY":
                     flagName = FeatureFlagName.AllowedPaymentWithLoyalty;
+                    break;
+                case "ALLOWED PAYMENT CUSTOMER ACCOUNT":
+                    flagName = FeatureFlagName.AllowedPaymentToCustomerAccount;
                     break;
                 case "CHECK STATUS TIMER":
                     flagName = FeatureFlagName.CheckStatusTimer;
@@ -161,6 +180,9 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
                 case "AUDKENNI TEST USER CARDID":
                     flagName = FeatureFlagName.AudkenniTestCardId;
                     break;
+                case "AUDKENNI TEXT TO MAKE HASH":
+                    flagName = FeatureFlagName.AudkenniTextToMakeAHash;
+                    break;
                 case "FACEBOOK LOGIN ENABLED":
                     flagName = FeatureFlagName.FacebookLoginEnabled;
                     break;
@@ -204,12 +226,21 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
                     break;
             }
 
-            Flags.Add(new FeatureFlag()
+            FeatureFlag flag = Flags.Find(f => f.name == flagName);
+            if (flag == null)
             {
-                name = flagName,
-                value = flagValue
-            });
+                Flags.Add(new FeatureFlag()
+                {
+                    name = flagName,
+                    value = flagValue
+                });
+            }
+            else
+            {
+                flag.value = flagValue;
+            }
         }
+
 
         public bool GetFlagBool(FeatureFlagName flagName, bool defaultValue)
         {
@@ -316,6 +347,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
         HideShoppingScreen = 223,
         UseOnlineSearch = 224,
         CurrencyCode = 225,
+        AllowedPaymentToCustomerAccount = 226,
 
         //ScanPayGoPaymentFlags
         EnablePlatformPayment = 300,
@@ -338,6 +370,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
         AudkenniTestUserEnabled = 406,
         AudkenniTestUser = 407,
         AudkenniTestCardId = 408,
+        AudkenniTextToMakeAHash= 409,
 
         //Google
         GoogleLoginEnabled = 410,

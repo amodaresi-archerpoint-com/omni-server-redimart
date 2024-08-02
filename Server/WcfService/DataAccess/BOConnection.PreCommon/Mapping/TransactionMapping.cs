@@ -251,7 +251,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
 
         public SalesEntry MapFromRootToRetailTransaction(LSCentral.RootGetTransaction root)
         {
-            LSCentral.TransactionHeader2 header = root.TransactionHeader.FirstOrDefault();
+            LSCentral.TransactionHeader header = root.TransactionHeader.FirstOrDefault();
 
             SalesEntry transaction = new SalesEntry()
             {
@@ -276,7 +276,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
             transaction.DiscountLines = new List<SalesEntryDiscountLine>();
             if (root.TransDiscountEntry != null)
             {
-                foreach (LSCentral.TransDiscountEntry1 mobileTransDisc in root.TransDiscountEntry)
+                foreach (LSCentral.TransDiscountEntry mobileTransDisc in root.TransDiscountEntry)
                 {
                     transaction.DiscountLines.Add(new SalesEntryDiscountLine()
                     {
@@ -292,7 +292,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
             transaction.Lines = new List<SalesEntryLine>();
             if (root.TransSalesEntry != null)
             {
-                foreach (LSCentral.TransSalesEntry1 mobileTransLine in root.TransSalesEntry)
+                foreach (LSCentral.TransSalesEntry mobileTransLine in root.TransSalesEntry)
                 {
                     transaction.Lines.Add(new SalesEntryLine()
                     {
@@ -411,6 +411,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                 MemberCardNo = XMLHelper.GetString(order.CardId),
                 CurrencyFactor = 1,
                 SalesType = order.SalesType,
+                SourceType = "1", //NAV POS = 0, Omni = 1
 
                 TerminalId = string.Empty,
                 StaffId = string.Empty,
@@ -435,9 +436,9 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                 List<LSCentral.FABOrder> faborder = new List<LSCentral.FABOrder>();
                 LSCentral.FABOrder fab = new LSCentral.FABOrder()
                 {
+                    ClientName = XMLHelper.GetString(order.Name),
                     ClientAddress = XMLHelper.GetString(order.Address?.Address1),
                     ClientPhoneNo = XMLHelper.GetString(order.Address?.PhoneNumber),
-                    ClientName = XMLHelper.GetString(order.Name),
                     ClientEmail = XMLHelper.GetString(order.Email),
                     ExternalID = XMLHelper.GetString(order.ExternalId),
                     PickupDate = ConvertTo.NavGetDate(order.PickupTime, true),
@@ -447,7 +448,9 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                     StoreNo = XMLHelper.GetString(order.RestaurantNo),
                     QRMessage = XMLHelper.GetString(order.QRData),
 
+                    OrderProductionTimeInMin = 0,
                     ContactCommentIcon = string.Empty,
+                    ContactComment = false,
                     CreatedOnPOSTermnial = string.Empty,
                     QueueCounter = string.Empty,
                     KitchenStatus = string.Empty,
@@ -456,6 +459,19 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                     StaffID = string.Empty,
                     OrderStatus = string.Empty
                 };
+
+                if (LSCVersion >= new Version("24.0"))
+                {
+                    fab.ClientAddress2 = XMLHelper.GetString(order.Address?.Address2);
+                    fab.ClientStreetNo = XMLHelper.GetString(order.Address?.HouseNo);
+                    fab.ClientCity = XMLHelper.GetString(order.Address?.City);
+                    fab.ClientCountryRegion = XMLHelper.GetString(order.Address?.Country);
+                    fab.ClientPostCode = XMLHelper.GetString(order.Address?.PostCode);
+                    fab.ClientTerritoryCode = XMLHelper.GetString(order.Address?.StateProvinceRegion);
+                    fab.CustomerComment = XMLHelper.GetString(order.Comment);
+                    fab.GrossAmount = order.TotalAmount;
+                }
+
                 faborder.Add(fab);
                 root.FABOrder = faborder.ToArray();
             }
@@ -481,7 +497,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                 AddressType = "0",
                 TotalAmount = order.TotalAmount,
                 Comment = XMLHelper.GetString(order.Comment),
-
+               
                 TenderType = string.Empty,
                 CompanyNo = string.Empty,
                 GridCode = string.Empty,
@@ -536,7 +552,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                 {
                     discLines.Add(new LSCentral.HospTransDiscountLine()
                     {
-                        Id = XMLHelper.GetString(dline.Id),
+                        Id = order.Id,
                         LineNo = XMLHelper.LineNumberToNav(dline.LineNumber),
                         No = discNo++,
                         DiscountType = (int)dline.DiscountType,
@@ -582,6 +598,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                 MemberCardNo = XMLHelper.GetString(request.CardId),
                 CurrencyFactor = 1,
                 SalesType = XMLHelper.GetString(request.SalesType),
+                SourceType = "1", //NAV POS = 0, Omni = 1
 
                 TerminalId = string.Empty,
                 StaffId = string.Empty,
@@ -647,6 +664,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                 SaleIsReturnSale = false,
                 MemberCardNo = XMLHelper.GetString(order.CardId),
                 CurrencyFactor = 1,
+                SourceType = "1", //NAV POS = 0, Omni = 1
 
                 TerminalId = string.Empty,
                 StaffId = string.Empty,
@@ -707,7 +725,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
 
         public RetailTransaction MapFromRootToLoyTransaction(LSCentral.RootGetTransaction root)
         {
-            LSCentral.TransactionHeader2 header = root.TransactionHeader.FirstOrDefault();
+            LSCentral.TransactionHeader header = root.TransactionHeader.FirstOrDefault();
             UnknownCurrency transactionCurrency = new UnknownCurrency(header.TransCurrency);
 
             RetailTransaction transaction = new RetailTransaction()
@@ -723,7 +741,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
 
             if (root.TransSalesEntry != null)
             {
-                foreach (LSCentral.TransSalesEntry1 entry in root.TransSalesEntry)
+                foreach (LSCentral.TransSalesEntry entry in root.TransSalesEntry)
                 {
                     transaction.SaleLines.Add(new SaleLine()
                     {
@@ -740,7 +758,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
             if (root.TransPaymentEntry != null)
             {
                 int lineno = 1;
-                foreach (LSCentral.TransPaymentEntry1 pay in root.TransPaymentEntry)
+                foreach (LSCentral.TransPaymentEntry pay in root.TransPaymentEntry)
                 {
                     Payment payment = new Payment()
                     {
@@ -809,9 +827,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                 TerminalId = shiftRequest.TerminalNo,
                 StaffId = shiftRequest.StaffId,
                 StoreId = shiftRequest.StoreNo,
+                ReceiptNo = shiftRequest.Value,
                 TransactionType = (int)transType,
+                SourceType = "1", //NAV POS = 0, Omni = 1
 
-                ReceiptNo = string.Empty,
                 CurrencyCode = string.Empty,
                 TransDate = DateTime.Now,
                 VATBusPostingGroup = string.Empty,
@@ -993,6 +1012,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                 RefundedFromTransNo = ConvertTo.SafeInt(transaction.RefundedFromTransNo),
                 RefundedReceiptNo = XMLHelper.GetString(transaction.RefundedReceiptNo),
                 SaleIsReturnSale = transaction.IsRefundByReceiptTransaction,
+                SourceType = "1", //NAV POS = 0, Omni = 1
 
                 PriceGroupCode = string.Empty,
                 MemberPriceGroupCode = string.Empty,

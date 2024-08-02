@@ -78,6 +78,8 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Members
         public string BlockedBy { get; set; }
         [DataMember]
         public string BlockedReason { get; set; }
+        [DataMember]
+        public string GuestType { get; set; }
 
         [DataMember]
         public string Name
@@ -355,16 +357,5 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Members
         Divorced = 3,
         [EnumMember]
         Widowed = 4,
-    }
-
-    [DataContract(Namespace = "http://lsretail.com/LSOmniService/POS/2014/10")]
-    public enum SendEmail
-    {
-        [EnumMember]
-        Default = 0,
-        [EnumMember]
-        Yes = 1,
-        [EnumMember]
-        No = 2
     }
 }

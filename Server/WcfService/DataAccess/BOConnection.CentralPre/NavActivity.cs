@@ -31,12 +31,12 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
             return LSCentralWSBase.ActivityAvailabilityGet(locationNo, productNo, activityDate, contactNo, contactAccount, optionalResource, promoCode, activityNo, noOfPersons, guestType);
         }
 
-        public virtual AdditionalCharge ActivityAdditionalChargesGet(string activityNo)
+        public virtual List<AdditionalCharge> ActivityAdditionalChargesGet(string activityNo)
         {
             return LSCentralWSBase.ActivityAdditionalChargesGet(activityNo);
         }
 
-        public virtual AdditionalCharge ActivityProductChargesGet(string locationNo, string productNo, DateTime dateOfBooking)
+        public virtual List<AdditionalCharge> ActivityProductChargesGet(string locationNo, string productNo, DateTime dateOfBooking)
         {
             return LSCentralWSBase.ActivityProductChargesGet(locationNo, productNo, dateOfBooking);
         }
@@ -101,9 +101,19 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
             return LSCentralWSBase.ActivityCheckAccess(searchReference, locationNo, gateNo, registerAccessEntry, checkType, out messageString);
         }
 
-        public virtual string ActivityGetAvailabilityToken(string locationNo, string productNo, DateTime activiyTime, string optionalResource, int quantity)
+        public virtual string ActivityGetAvailabilityToken(string locationNo, string productNo, DateTime activityTime, string optionalResource, int quantity)
         {
-            return LSCentralWSBase.ActivityGetAvailabilityToken(locationNo, productNo, activiyTime, optionalResource, quantity);
+            return LSCentralWSBase.ActivityGetAvailabilityToken(locationNo, productNo, activityTime, optionalResource, quantity);
+        }
+
+        public virtual bool ActivityExtendToken(string tokenId, int seconds)
+        {
+            return LSCentralWSBase.ActivityExtendToken(tokenId, seconds);
+        }
+
+        public virtual bool ActivityCancelToken(string tokenId)
+        {
+            return LSCentralWSBase.ActivityCancelToken(tokenId);
         }
 
         public virtual string ActivityInsertGroupReservation(Reservation request)

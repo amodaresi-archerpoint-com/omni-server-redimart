@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LSOmni.Common.Util;
 using LSOmni.DataAccess.Interface.BOConnection;
-using LSRetail.Omni.DiscountEngine.DataModels;
+//using LSRetail.Omni.DiscountEngine.DataModels;
 using LSRetail.Omni.Domain.DataModel.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Members;

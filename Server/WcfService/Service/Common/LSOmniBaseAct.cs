@@ -72,7 +72,7 @@ namespace LSOmni.Service
             }
         }
 
-        public virtual AdditionalCharge ActivityAdditionalChargesGet(string activityNo)
+        public virtual List<AdditionalCharge> ActivityAdditionalChargesGet(string activityNo)
         {
             Statistics stat = logger.StatisticStartMain(config, serverUri);
 
@@ -92,7 +92,7 @@ namespace LSOmni.Service
             }
         }
 
-        public virtual AdditionalCharge ActivityProductChargesGet(string locationNo, string productNo, DateTime dateOfBooking)
+        public virtual List<AdditionalCharge> ActivityProductChargesGet(string locationNo, string productNo, DateTime dateOfBooking)
         {
             Statistics stat = logger.StatisticStartMain(config, serverUri);
 
@@ -353,19 +353,59 @@ namespace LSOmni.Service
             }
         }
 
-        public virtual string ActivityGetAvailabilityToken(string locationNo, string productNo, DateTime activiyTime, string optionalResource, int quantity)
+        public virtual string ActivityGetAvailabilityToken(string locationNo, string productNo, DateTime activityTime, string optionalResource, int quantity)
         {
             Statistics stat = logger.StatisticStartMain(config, serverUri);
 
             try
             {
                 ActivityBLL bll = new ActivityBLL(config);
-                return bll.ActivityGetAvailabilityToken(locationNo, productNo, activiyTime, optionalResource, quantity);
+                return bll.ActivityGetAvailabilityToken(locationNo, productNo, activityTime, optionalResource, quantity);
             }
             catch (Exception ex)
             {
                 HandleExceptions(ex, "Failed to get ActivityGetAvailabilityToken");
                 return string.Empty; //never gets here
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
+        }
+
+        public virtual bool ActivityExtendToken(string tokenId, int seconds)
+        {
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+
+            try
+            {
+                ActivityBLL bll = new ActivityBLL(config);
+                return bll.ActivityExtendToken(tokenId, seconds);
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "Failed to get ActivityGetAvailabilityToken");
+                return false; //never gets here
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
+        }
+
+        public virtual bool ActivityCancelToken(string tokenId)
+        {
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+
+            try
+            {
+                ActivityBLL bll = new ActivityBLL(config);
+                return bll.ActivityCancelToken(tokenId);
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "Failed to get ActivityGetAvailabilityToken");
+                return false; //never gets here
             }
             finally
             {

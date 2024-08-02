@@ -94,6 +94,9 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
                             int lineno = SQLHelper.GetInt32(reader["Line No_"]);
                             if (lineno == 0)
                             {
+                                if (string.IsNullOrEmpty(status.DocumentNo) == false)
+                                    continue;
+
                                 status.DocumentNo = id;
                                 status.OrderStatus = SQLHelper.GetString(reader["Status Code"]);
                                 status.Description = SQLHelper.GetString(reader["Desc0"]);
@@ -102,13 +105,17 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
                             }
                             else
                             {
+                                OrderLineStatus sline = status.Lines.Find(l => l.LineNumber == lineno);
+                                if (sline != null)
+                                    continue;
+
                                 bool posted = reader["COItem"] == DBNull.Value;
                                 status.Lines.Add(new OrderLineStatus()
                                 {
                                     LineStatus = SQLHelper.GetString(reader["Status Code"]),
                                     ExtCode = (LSCVersion >= new Version("18.2")) ? SQLHelper.GetString(reader["Ext1"]) : string.Empty,
                                     Description = SQLHelper.GetString(reader["Desc1"]),
-                                    LineNumber = SQLHelper.GetInt32(reader["Line No_"]),
+                                    LineNumber = lineno,
                                     ItemId = SQLHelper.GetString(posted ? reader["PCOItem"] : reader["COItem"]),
                                     VariantId = SQLHelper.GetString(posted ? reader["PCOVar"] : reader["COVar"]),
                                     UnitOfMeasureId = SQLHelper.GetString(posted ? reader["PCOUom"] : reader["COUom"]),
@@ -153,7 +160,10 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
                     {
                         while (reader.Read())
                         {
-                            list.Add(ReaderToOrderLine(reader));
+                            SalesEntryLine line = ReaderToOrderLine(reader);
+                            if (LSCVersion >= new Version("23.0"))
+                                line.ExtraInformation = OrderLinesDataEntryGet(id, line.LineNumber, false, stat);
+                            list.Add(line);
                             storeCurCode = SQLHelper.GetString(reader["Currency Code"]);
                         }
                     }
@@ -162,6 +172,40 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
             }
             logger.StatisticEndSub(ref stat, index);
             return list;
+        }
+
+        public string OrderLinesDataEntryGet(string id, int lineNo, bool hintOnly, Statistics stat)
+        {
+            if (string.IsNullOrEmpty(id))
+                return string.Empty;
+
+            logger.StatisticStartSub(false, ref stat, out int index);
+
+            string entryData = string.Empty;
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT [Entry Type],[Entry Code],[PIN] " +
+                                          "FROM [" + navCompanyName + "LSC POS Data Entry$5ecfc871-5d82-43f1-9c54-59685e82318d] " +
+                                          "WHERE [Created by Receipt No_]=@id AND [Created by Line No_]=@line";
+
+                    command.Parameters.AddWithValue("@id", id);
+                    command.Parameters.AddWithValue("@line", lineNo);
+                    TraceSqlCommand(command);
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            entryData = (hintOnly) ? $"Type:{SQLHelper.GetString(reader["Entry Type"])}" : $"Code:{SQLHelper.GetString(reader["Entry Code"])} Type:{SQLHelper.GetString(reader["Entry Type"])} Pin:{SQLHelper.GetInt32(reader["PIN"])}";
+                        }
+                    }
+                }
+                connection.Close();
+            }
+            logger.StatisticEndSub(ref stat, index);
+            return entryData;
         }
 
         public void OrderLinesGetTotals(string orderId, out int itemCount, out decimal qty, out int lineCount, out decimal totalAmount, out decimal totalNetAmount, out decimal totalDiscount)
@@ -217,15 +261,44 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
             }
         }
 
+        public bool CompressCOActive(Statistics stat)
+        {
+            if (LSCVersion < new Version("24.1"))
+                return false;
+
+            logger.StatisticStartSub(false, ref stat, out int index);
+
+            bool isActive = false;
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT [Compressed Lines Active] FROM [" + navCompanyName + "LSC Customer Order Setup$5ecfc871-5d82-43f1-9c54-59685e82318d]";
+                    TraceSqlCommand(command);
+                    connection.Open();
+                    isActive = SQLHelper.GetBool(command.ExecuteScalar());
+                }
+                connection.Close();
+            }
+            logger.Debug(config.LSKey.Key, $"CO Compress Status: {isActive}");
+            logger.StatisticEndSub(ref stat, index);
+            return isActive;
+        }
+
         private List<SalesEntryPayment> OrderPayGet(string id, Statistics stat)
         {
             logger.StatisticStartSub(false, ref stat, out int index);
             List<SalesEntryPayment> list = new List<SalesEntryPayment>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string select = "SELECT ml.[Store No_],ml.[Line No_],ml.[Pre Approved Amount],ml.[Tender Type],ml.[Finalized Amount],ml.[Type]," +
+                string select = "SELECT ml.[Store No_],ml.[Line No_],ml.[Pre Approved Amount],ml.[Pre Approved Amount LCY],ml.[Tender Type],ml.[Finalized Amount],ml.[Type]," +
                                 "ml.[Card Type],ml.[Currency Code],ml.[Currency Factor],ml.[Pre Approved Valid Date]," +
-                                "ml.[Card or Customer No_],ml.[Document ID]";
+                                "ml.[Card or Customer No_],ml.[Document ID],ml.[Token No_],ml.[External Reference]";
+
+                if (LSCVersion >= new Version("19.0"))
+                    select += ",ml.[EFT Authorization Code]";
+                else
+                    select += ",ml.[Authorization Code]";
 
                 using (SqlCommand command = connection.CreateCommand())
                 {
@@ -244,13 +317,22 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
                             SalesEntryPayment pay = new SalesEntryPayment()
                             {
                                 Amount = SQLHelper.GetDecimal(reader, "Pre Approved Amount"),
+                                AmountLCY = SQLHelper.GetDecimal(reader, "Pre Approved Amount LCY"),
                                 LineNumber = SQLHelper.GetInt32(reader["Line No_"]),
                                 Type = (PaymentType)SQLHelper.GetInt32(reader["Type"]),
                                 TenderType = SQLHelper.GetString(reader["Tender Type"]),
                                 CurrencyCode = SQLHelper.GetString(reader["Currency Code"]),
                                 CurrencyFactor = SQLHelper.GetDecimal(reader, "Currency Factor"),
-                                CardNo = SQLHelper.GetString(reader["Card or Customer No_"])
+                                CardType = SQLHelper.GetString(reader["Card Type"]),
+                                CardNo = SQLHelper.GetString(reader["Card or Customer No_"]),
+                                TokenNumber = SQLHelper.GetString(reader["Token No_"]),
+                                ExternalReference = SQLHelper.GetString(reader["External Reference"])
                             };
+
+                            if (LSCVersion >= new Version("19.0"))
+                                pay.AuthorizationCode = SQLHelper.GetString(reader["EFT Authorization Code"]);
+                            else
+                                pay.AuthorizationCode = SQLHelper.GetString(reader["Authorization Code"]);
 
                             decimal amt = SQLHelper.GetDecimal(reader, "Finalized Amount");
                             if (amt > 0)
@@ -346,7 +428,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
                     Address2 = SQLHelper.GetString(reader["Ship-to Address 2"]),
                     HouseNo = SQLHelper.GetString(reader["Ship-to House_Apartment No_"]),
                     City = SQLHelper.GetString(reader["Ship-to City"]),
-                    StateProvinceRegion = SQLHelper.GetString(reader["Ship-to County"]),
+                    County = SQLHelper.GetString(reader["Ship-to County"]),
                     PostCode = SQLHelper.GetString(reader["Ship-to Post Code"]),
                     Country = SQLHelper.GetString(reader["Ship-to Country_Region Code"]),
                     PhoneNumber = SQLHelper.GetString(reader["Ship-to Phone No_"])
@@ -389,46 +471,24 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
                 }
 
                 ImageRepository imgrep = new ImageRepository(config, LSCVersion);
-                List<SalesEntryLine> list = new List<SalesEntryLine>();
                 foreach (SalesEntryLine line in entry.Lines)
                 {
                     if (line.ClickAndCollectLine && entry.ClickAndCollectOrder == false)
                         entry.ClickAndCollectOrder = true;
 
-                    SalesEntryLine exline = list.Find(l => l.Id.Equals(line.Id) && l.ItemId.Equals(line.ItemId) && l.VariantId.Equals(line.VariantId) && l.UomId.Equals(line.UomId));
-                    if (exline == null)
+                    if (string.IsNullOrEmpty(line.VariantId))
                     {
-                        if (string.IsNullOrEmpty(line.VariantId))
-                        {
-                            List<ImageView> img = imgrep.ImageGetByKey("Item", line.ItemId, string.Empty, string.Empty, 1, false);
-                            if (img != null && img.Count > 0)
-                                line.ItemImageId = img[0].Id;
-                        }
-                        else
-                        {
-                            List<ImageView> img = imgrep.ImageGetByKey("Item Variant", line.ItemId, line.VariantId, string.Empty, 1, false);
-                            if (img != null && img.Count > 0)
-                                line.ItemImageId = img[0].Id;
-                        }
-
-                        list.Add(line);
-                        continue;
+                        List<ImageView> img = imgrep.ImageGetByKey("Item", line.ItemId, string.Empty, string.Empty, 1, false);
+                        if (img != null && img.Count > 0)
+                            line.ItemImageId = img[0].Id;
                     }
-
-                    SalesEntryDiscountLine dline = entry.DiscountLines.Find(l => l.LineNumber >= line.LineNumber && l.LineNumber < line.LineNumber + 10000);
-                    if (dline != null)
+                    else
                     {
-                        // update discount line number to match existing record, as we will sum up the orderlines
-                        dline.LineNumber = exline.LineNumber + dline.LineNumber / 100;
+                        List<ImageView> img = imgrep.ImageGetByKey("Item Variant", line.ItemId, line.VariantId, string.Empty, 1, false);
+                        if (img != null && img.Count > 0)
+                            line.ItemImageId = img[0].Id;
                     }
-
-                    exline.Amount += line.Amount;
-                    exline.NetAmount += line.NetAmount;
-                    exline.DiscountAmount += line.DiscountAmount;
-                    exline.TaxAmount += line.TaxAmount;
-                    exline.Quantity += line.Quantity;
                 }
-                entry.Lines = list;
             }
             return entry;
         }
