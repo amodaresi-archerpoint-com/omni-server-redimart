@@ -376,6 +376,11 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
         {
             return LSCentralWSBase.ContactCreate2(contact, stat);
         }
+
+        public virtual MemberContact ContactGetByEmail(string email, Statistics stat)
+        {
+            return LSCentralWSBase.ContactGet(string.Empty, string.Empty, string.Empty, string.Empty, email, stat);
+        }
         #endregion
 
         #region Altria Phase II - Altria Offer Retrieval

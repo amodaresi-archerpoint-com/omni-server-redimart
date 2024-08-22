@@ -870,7 +870,9 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 ContactJMapping cmap = new ContactJMapping(config.IsJson);
                 List<MemberContact> list = cmap.GetMemberContact(ret);
                 contact = list.FirstOrDefault(); //anmo
-                Card myCard = contact.Cards.Find(x => x.Id == card); //anmo
+                Card myCard = null; //anmo
+                if (contact != null)  //anmo
+                    myCard = contact.Cards.Find(x => x.Id == card); //anmo
                 if (myCard != null) //anmo
                     contact.UserName = myCard.LoginId; //anmo
                 logger.StatisticEndSub(ref stat, index);
