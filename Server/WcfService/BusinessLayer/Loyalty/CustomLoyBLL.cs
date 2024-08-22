@@ -125,10 +125,13 @@ namespace LSOmni.BLL.Loyalty
             //check if user exist before calling NAV
             if (config.SettingsBoolGetByKey(ConfigKey.Allow_Dublicate_Email) == false)
             {
-                MemberContact contactFromDB = BOLoyConnection.ContactGet(ContactSearchType.Email, contact.Email, stat);
-                if (contactFromDB != null)
-                    if (contactFromDB.Cards.Find(x => x.Id == contact.UserName) == null)
-                        throw new LSOmniServiceException(StatusCode.EmailExists, "Email already exists: " + contact.UserName);
+                MemberContact contactFromWS = BOCustom.ContactGetByEmail(contact.Email, stat);
+                if (contactFromWS != null)
+                {
+                    if (contactFromWS.Cards.Find(x => x.Id.ToUpper().Equals(contact.UserName.ToUpper())) == null)
+                        throw new LSOmniServiceException(StatusCode.EmailExists, "Email " + contact.Email + " is already used by user: " + contactFromWS.Id + "/" + contactFromWS.UserName);
+
+                }
             }
 
             if (string.IsNullOrEmpty(contact.AuthenticationId) == false)
@@ -166,6 +169,11 @@ namespace LSOmni.BLL.Loyalty
         public new void SecurityCheck()
         {
             base.SecurityCheck();
+        }
+
+        public virtual MemberContact ContactGetByEmail(string cardId, Statistics stat)
+        {
+            return BOCustom.ContactGetByEmail(cardId, stat);
         }
         #endregion
 

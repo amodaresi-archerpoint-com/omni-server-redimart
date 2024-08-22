@@ -198,7 +198,7 @@ namespace LSOmni.Service
                 logger.Error(config.LSKey.Key, ex, navDb);
             }
 
-            string omniVer = string.Format(" CS:{0}", Version());
+            string omniVer = string.Format(" CS:{0}", Version() + "." + Convert.ToString(Constants.CS_BUILD));
 
             //any errors ?
             string msg = "";
