@@ -19,7 +19,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base
         public const string REDI_PENDING = "1";
         public const string REDI_ACCEPTED = "2";
         public const string REDI_DENIED = "3";
-        public const int MIN_REQ_BUILD = 33;
-        public const int CS_BUILD = 35;
+        public const int MIN_REQ_BUILD = 37;
+        public const int CS_BUILD = 37;
     }
 }
