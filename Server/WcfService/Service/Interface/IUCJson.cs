@@ -103,6 +103,12 @@ namespace LSOmni.Service
                                                                     string dipValue, string onpValue, string snusValue);
         #endregion
 
+        #region Phase V - Firebase
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
+        string SendPushNotificationToTopic(string topic, string title, string message);
+        #endregion
+
         #region Discount, Offers and GiftCards
 
         /// <summary>

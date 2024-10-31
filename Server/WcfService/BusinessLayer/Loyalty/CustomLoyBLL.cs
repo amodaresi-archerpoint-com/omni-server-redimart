@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LSOmni.Common.Util;
 using LSOmni.DataAccess.Interface.BOConnection;
+using LSOmni.DataAccess.Firebase;
 //using LSRetail.Omni.DiscountEngine.DataModels;
 using LSRetail.Omni.Domain.DataModel.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
@@ -212,6 +213,14 @@ namespace LSOmni.BLL.Loyalty
 
             BOCustom.SetMemberAttributes(cardId, myDictionary, stat);
             return 0;
+        }
+        #endregion
+
+        #region Phase V - Firebase
+        public virtual string SendPushNotificationToTopic(string topic, string title, string message, Statistics stat)
+        {
+            FirebaseCustom firebaseCustom = new FirebaseCustom();
+            return firebaseCustom.SendPushNotificationToTopic(topic, title, message, stat);
         }
         #endregion
     }
