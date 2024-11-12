@@ -2394,10 +2394,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             return data;
         }
 
-        private string GetDefaultDeviceId(string userName)
-        {
-            return ("WEB-" + userName);
-        }
+        //private string GetDefaultDeviceId(string userName)
+        //{
+        //    return ("WEB-" + userName);
+        //}
 
         public Terminal TerminalGetById(string id, Statistics stat)
         {

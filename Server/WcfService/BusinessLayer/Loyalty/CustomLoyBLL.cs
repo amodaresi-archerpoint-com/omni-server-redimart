@@ -129,7 +129,7 @@ namespace LSOmni.BLL.Loyalty
                 MemberContact contactFromWS = BOCustom.ContactGetByEmail(contact.Email, stat);
                 if (contactFromWS != null)
                 {
-                    if (contactFromWS.Cards.Find(x => x.Id.ToUpper().Equals(contact.UserName.ToUpper())) == null)
+                    if (contactFromWS.Cards.Find(x => x.Id.ToUpper().Equals(contact.RegCardId.ToUpper())) == null)
                         throw new LSOmniServiceException(StatusCode.EmailExists, "Email " + contact.Email + " is already used by user: " + contactFromWS.Id + "/" + contactFromWS.UserName);
 
                 }

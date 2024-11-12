@@ -129,6 +129,9 @@ namespace LSRetail.Omni.Domain.DataModel.Base
         ConfigNotFound = 24,
 
         [EnumMember]
+        NamesDoNotMatch = 25,   //anmo
+
+        [EnumMember]
         OneAccountInvalid = 30,
         [EnumMember]
         PrivateAccountInvalid = 31,

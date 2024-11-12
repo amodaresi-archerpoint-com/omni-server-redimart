@@ -80,7 +80,8 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Members
         public string BlockedReason { get; set; }
         [DataMember]
         public string GuestType { get; set; }
-
+        [DataMember]
+        public string RegCardId { get; set; } //anmo
         [DataMember]
         public string Name
         {

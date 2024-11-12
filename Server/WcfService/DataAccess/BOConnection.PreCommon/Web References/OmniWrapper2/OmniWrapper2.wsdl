@@ -148,6 +148,7 @@
           <element minOccurs="0" maxOccurs="1" name="SendReceiptbyEmail" type="string" />
           <element minOccurs="0" maxOccurs="1" name="Authenticator" type="string" />
           <element minOccurs="0" maxOccurs="1" name="AuthenticationId" type="string" />
+          <element minOccurs="0" maxOccurs="1" name="RegCardID" type="string" />
         </sequence>
       </complexType>
       <complexType name="MemberAttributeValue">
@@ -428,7 +429,7 @@
   </binding>
   <service name="OmniWrapper2">
     <port name="OmniWrapper2_Port" binding="tns:OmniWrapper2_Binding">
-      <address location="http://localhost:7147/LS22-2-W1_ws/WS/ReplaceWithAPercentEncodedCompanyName/Codeunit/OmniWrapper2" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      <address location="http://localhost:9297/LS22-3-ws/WS/ReplaceWithAPercentEncodedCompanyName/Codeunit/OmniWrapper2" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
     </port>
   </service>
 </definitions>

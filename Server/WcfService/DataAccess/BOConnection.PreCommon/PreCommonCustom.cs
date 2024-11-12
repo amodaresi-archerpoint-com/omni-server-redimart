@@ -374,12 +374,12 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
 
             OmniWrapper2.RootMemberContactCreate root = map.MapToRoot2(contact);
             //LSCentral.RootMemberContactCreate root = map.MapToRoot(contact);
-            logger.Debug(config.LSKey.Key, "MemberContactCreate Request - " + Serialization.ToXml(root, true));
+            logger.Debug(config.LSKey.Key, "ContactCreate2 Request - " + Serialization.ToXml(root, true));
 
             //centralWS.MemberContactCreate(ref respCode, ref errorText, ref clubId, ref schmId, ref acctId, ref contId, ref cardId, ref point, ref root);
             centralWS2.MemberContactCreate(ref respCode, ref errorText, ref clubId, ref schmId, ref acctId, ref contId, ref cardId, ref point, ref root);
-            HandleWS2ResponseCode("MemberContactCreate", respCode, errorText, ref stat, index);
-            logger.Debug(config.LSKey.Key, "MemberContactCreate Response - ClubId: {0}, SchemeId: {1}, AccountId: {2}, ContactId: {3}, CardId: {4}, PointsRemaining: {5}",
+            HandleWS2ResponseCode("ContactCreate2", respCode, errorText, ref stat, index);
+            logger.Debug(config.LSKey.Key, "ContactCreate2 Response - ClubId: {0}, SchemeId: {1}, AccountId: {2}, ContactId: {3}, CardId: {4}, PointsRemaining: {5}",
                 clubId, schmId, acctId, contId, cardId, point);
 
             logger.StatisticEndSub(ref stat, index);
