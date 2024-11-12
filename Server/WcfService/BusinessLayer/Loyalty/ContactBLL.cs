@@ -489,7 +489,7 @@ namespace LSOmni.BLL.Loyalty
 
         private string GetDefaultDeviceId(string userName)
         {
-            return ("WEB-" + userName);
+            return ("WEB-" + userName.ToUpper()); //anmo
         }
 
         #endregion private

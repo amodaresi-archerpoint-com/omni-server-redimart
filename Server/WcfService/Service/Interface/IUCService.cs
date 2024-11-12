@@ -88,6 +88,12 @@ namespace LSOmni.Service
         int SaveConsent(string cardId, string tobaccoValue, string cigValue, string cigarValue,
                                                                     string dipValue, string onpValue, string snusValue);
         #endregion
+
+        #region Phase V - Firebase
+        [OperationContract]
+        string SendPushNotificationToTopic(string topic, string title, string message);
+        #endregion
+
         #region Discount, Offers and GiftCards
 
         /// <summary>

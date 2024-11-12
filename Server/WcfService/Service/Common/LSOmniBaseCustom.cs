@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.ServiceModel.Web;
+using System.ServiceModel;
 using LSOmni.BLL;
 using LSOmni.BLL.Loyalty;
 using LSOmni.Common.Util;
@@ -426,6 +428,39 @@ namespace LSOmni.Service
                 logger.StatisticEndMain(stat);
             }
         }
+        #endregion
+
+        #region Phase V - Firebase
+        public virtual string SendPushNotificationToTopic(string topic, string title, string message)
+        {
+            if (topic == null)
+                topic = string.Empty;
+            if (title == null)
+                title = string.Empty;
+            if (message == null)
+                message = string.Empty;
+
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+
+            try
+            {
+                logger.Debug(config.LSKey.Key, "topic:{0} title:{1} message:{2}", topic, title, message);
+                string messageID = "";
+                CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
+                messageID = customLoyBll.SendPushNotificationToTopic(topic, title, message, stat);
+                return messageID;
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "topic:{0} title:{1} message:{2}", topic, title, message);
+                return ex.Message; //never gets here
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
+        }
+
         #endregion
     }
 }

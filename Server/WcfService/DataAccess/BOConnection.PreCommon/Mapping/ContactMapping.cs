@@ -799,7 +799,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                 DeviceID = contact.LoggedOnToDevice.Id,
                 DeviceFriendlyName = contact.LoggedOnToDevice.DeviceFriendlyName,
 
-                ExternalSystem = string.Empty
+                ExternalSystem = string.Empty,
+                RegCardID = XMLHelper.GetString(contact.RegCardId)  //anmo
             };
 
             if (LSCVersion >= new Version("19.2"))

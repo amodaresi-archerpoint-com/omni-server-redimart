@@ -12,7 +12,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.9.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.11.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -92,8 +92,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:7147/LS22-2-W1_ws/WS/ReplaceWithAPercentEncodedCompanyName/Codeu" +
-            "nit/OmniWrapper2")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:9297/LS22-3-ws/WS/ReplaceWithAPercentEncodedCompanyName/Codeunit" +
+            "/OmniWrapper2")]
         public string LSOmni_DataAccess_BOConnection_PreCommon_OmniWrapper2_OmniWrapper2 {
             get {
                 return ((string)(this["LSOmni_DataAccess_BOConnection_PreCommon_OmniWrapper2_OmniWrapper2"]));

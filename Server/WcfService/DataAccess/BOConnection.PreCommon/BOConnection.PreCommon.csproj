@@ -635,10 +635,10 @@
       <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
       <CachedSettingsPropName>LSOmni_DataAccess_BOConnection_PreCommon_LSActivity15_Activity</CachedSettingsPropName>
     </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost:7147/LS22-2-W1_ws/WS/Codeunit/OmniWrapper2">
+    <WebReferenceUrl Include="http://localhost:9297/LS22-3-ws/WS/Codeunit/OmniWrapper2">
       <UrlBehavior>Dynamic</UrlBehavior>
       <RelPath>Web References\OmniWrapper2\</RelPath>
-      <UpdateFromURL>http://localhost:7147/LS22-2-W1_ws/WS/Codeunit/OmniWrapper2</UpdateFromURL>
+      <UpdateFromURL>http://localhost:9297/LS22-3-ws/WS/Codeunit/OmniWrapper2</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>

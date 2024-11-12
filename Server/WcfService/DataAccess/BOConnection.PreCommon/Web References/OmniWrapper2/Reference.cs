@@ -774,6 +774,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
         
         private string authenticationIdField;
         
+        private string regCardIDField;
+        
         public ContactCreateParameters() {
             this.dateOfBirthField = new System.DateTime(0);
         }
@@ -1067,6 +1069,16 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
             }
             set {
                 this.authenticationIdField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string RegCardID {
+            get {
+                return this.regCardIDField;
+            }
+            set {
+                this.regCardIDField = value;
             }
         }
     }
