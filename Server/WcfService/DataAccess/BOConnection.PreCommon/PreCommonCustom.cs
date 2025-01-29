@@ -491,5 +491,32 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             return true;
         }
         #endregion
+
+        #region Altria Phase V - Register Firebase Token
+        public virtual bool RegisterDevice(string loginID, string deviceID, string firebaseToken, string initialTopic, Statistics stat)
+        {
+            logger.StatisticStartSub(true, ref stat, out int index);
+
+            centralWS2 = new OmniWrapper2.OmniWrapper2();
+            string url = config.SettingsGetByKey(ConfigKey.BOUrl);
+            centralWS2.Url = url.Replace("RetailWebServices", "OmniWrapper2");
+            centralWS2.Timeout = config.SettingsIntGetByKey(ConfigKey.BOTimeout) * 1000;  //millisecs,  60 seconds
+            centralWS2.PreAuthenticate = true;
+            centralWS2.AllowAutoRedirect = true;
+            centralWS2.Credentials = new System.Net.NetworkCredential(
+                                    config.Settings.FirstOrDefault(x => x.Key == ConfigKey.BOUser.ToString()).Value,
+                                    config.Settings.FirstOrDefault(x => x.Key == ConfigKey.BOPassword.ToString()).Value);
+            string respCode = string.Empty;
+            string errorText = string.Empty;
+
+            logger.Debug(config.LSKey.Key, "RegisterDevice Request - loginID: {0} deviceID: {1} firebaseToken: {2} ", loginID, deviceID, firebaseToken);
+            centralWS2.RegisterDevice(ref respCode, ref errorText, loginID, deviceID, firebaseToken, initialTopic);
+            HandleWS2ResponseCode("RegisterDevice", respCode, errorText, ref stat, index);
+            logger.Debug(config.LSKey.Key, "RegisterDevice Response - " + respCode + " " + errorText);
+            logger.StatisticEndSub(ref stat, index);
+            return true;
+        }
+        #endregion
+
     }
 }

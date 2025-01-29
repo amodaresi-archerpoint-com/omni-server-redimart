@@ -27,13 +27,15 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Web.Services.WebServiceBindingAttribute(Name="OmniWrapper2_Binding", Namespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2")]
-    public partial class OmniWrapper2 : MySoapHttpClientProtocol {
+    public partial class OmniWrapper2 : MySoapHttpClientProtocol  {
         
         private System.Threading.SendOrPostCallback GetDirectMarketingInfoOperationCompleted;
         
         private System.Threading.SendOrPostCallback GetMobileProfilesByCardIdOperationCompleted;
         
         private System.Threading.SendOrPostCallback MemberContactCreateOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback RegisterDeviceOperationCompleted;
         
         private System.Threading.SendOrPostCallback RetrievePersonalizedOfferOperationCompleted;
         
@@ -87,6 +89,9 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
         
         /// <remarks/>
         public event MemberContactCreateCompletedEventHandler MemberContactCreateCompleted;
+        
+        /// <remarks/>
+        public event RegisterDeviceCompletedEventHandler RegisterDeviceCompleted;
         
         /// <remarks/>
         public event RetrievePersonalizedOfferCompletedEventHandler RetrievePersonalizedOfferCompleted;
@@ -225,6 +230,46 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
             if ((this.MemberContactCreateCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.MemberContactCreateCompleted(this, new MemberContactCreateCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2:RegisterDevice", RequestNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2", ResponseElementName="RegisterDevice_Result", ResponseNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public void RegisterDevice(ref string responseCode, ref string errorText, string loginID, string deviceID, string firebaseToken, string initialTopic) {
+            object[] results = this.Invoke("RegisterDevice", new object[] {
+                        responseCode,
+                        errorText,
+                        loginID,
+                        deviceID,
+                        firebaseToken,
+                        initialTopic});
+            responseCode = ((string)(results[0]));
+            errorText = ((string)(results[1]));
+        }
+        
+        /// <remarks/>
+        public void RegisterDeviceAsync(string responseCode, string errorText, string loginID, string deviceID, string firebaseToken, string initialTopic) {
+            this.RegisterDeviceAsync(responseCode, errorText, loginID, deviceID, firebaseToken, initialTopic, null);
+        }
+        
+        /// <remarks/>
+        public void RegisterDeviceAsync(string responseCode, string errorText, string loginID, string deviceID, string firebaseToken, string initialTopic, object userState) {
+            if ((this.RegisterDeviceOperationCompleted == null)) {
+                this.RegisterDeviceOperationCompleted = new System.Threading.SendOrPostCallback(this.OnRegisterDeviceOperationCompleted);
+            }
+            this.InvokeAsync("RegisterDevice", new object[] {
+                        responseCode,
+                        errorText,
+                        loginID,
+                        deviceID,
+                        firebaseToken,
+                        initialTopic}, this.RegisterDeviceOperationCompleted, userState);
+        }
+        
+        private void OnRegisterDeviceOperationCompleted(object arg) {
+            if ((this.RegisterDeviceCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.RegisterDeviceCompleted(this, new RegisterDeviceCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -2008,6 +2053,40 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.OmniWrapper2 {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((RootMemberContactCreate)(this.results[8]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4161.0")]
+    public delegate void RegisterDeviceCompletedEventHandler(object sender, RegisterDeviceCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.4161.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class RegisterDeviceCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal RegisterDeviceCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public string responseCode {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+        
+        /// <remarks/>
+        public string errorText {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[1]));
             }
         }
     }

@@ -12,6 +12,7 @@ using LSRetail.Omni.Domain.DataModel.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Members;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Setup;
+using System.ServiceModel.Channels;
 
 namespace LSOmni.BLL.Loyalty
 {
@@ -221,6 +222,27 @@ namespace LSOmni.BLL.Loyalty
         {
             FirebaseCustom firebaseCustom = new FirebaseCustom();
             return firebaseCustom.SendPushNotificationToTopic(topic, title, message, stat);
+        }
+
+        public virtual string SendPushNotificationToToken(string token, string title, string message, Statistics stat)
+        {
+            FirebaseCustom firebaseCustom = new FirebaseCustom();
+            return firebaseCustom.SendPushNotificationToToken(token, title, message, stat);
+        }
+
+        public bool SubscribeTokenToTopic(string token, string topic, Statistics stat)
+        {
+            FirebaseCustom firebaseCustom = new FirebaseCustom();
+            return firebaseCustom.SubscribeTokenToTopic(token, topic, stat);
+        }
+
+        public virtual bool RegisterDevice(string loginID, string deviceID, string firebaseToken, Statistics stat)
+        {
+            if (SubscribeTokenToTopic(firebaseToken, Constants.FIREBASE_TOPIC_DEFAULT, stat))
+                { return BOCustom.RegisterDevice(loginID, deviceID, firebaseToken, Constants.FIREBASE_TOPIC_DEFAULT, stat);  }
+            else
+            { return BOCustom.RegisterDevice(loginID, deviceID, firebaseToken, string.Empty, stat); }
+
         }
         #endregion
     }

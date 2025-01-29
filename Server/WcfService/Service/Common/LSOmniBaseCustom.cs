@@ -10,6 +10,7 @@ using LSRetail.Omni.Domain.DataModel.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Members;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Setup;
+using System.Web.UI.WebControls;
 
 namespace LSOmni.Service
 {
@@ -461,6 +462,78 @@ namespace LSOmni.Service
             }
         }
 
+        public virtual string SendPushNotificationToToken(string token, string title, string message)
+        {
+            if (token == null)
+                token = string.Empty;
+            if (title == null)
+                title = string.Empty;
+            if (message == null)
+                message = string.Empty;
+
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+
+            try
+            {
+                logger.Debug(config.LSKey.Key, "token:{0} title:{1} message:{2}", token, title, message);
+                string messageID = "";
+                CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
+                messageID = customLoyBll.SendPushNotificationToToken(token, title, message, stat);
+                return messageID;
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "token:{0} title:{1} message:{2}", token, title, message);
+                return ex.Message; //never gets here
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
+        }
+
+        public virtual bool SubscribeTokenToTopic(string token, string topic)
+        {
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+
+            try
+            {
+                logger.Debug(config.LSKey.Key, "topic:{0} token:{1}", topic, token);
+
+                CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
+                return customLoyBll.SubscribeTokenToTopic(token, topic, stat);
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "deviceId:{0}", deviceId);
+                return false;
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
+        }
+        public virtual bool RegisterDevice(string loginId, string deviceId, string firebaseToken)
+        {
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+
+            try
+            {
+                logger.Debug(config.LSKey.Key, "BaseCustom: RegisterDevice: deviceId:{0}", deviceId);
+
+                CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
+                return customLoyBll.RegisterDevice(loginId, deviceId, firebaseToken, stat);
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "deviceId:{0}", deviceId);
+                return false;
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
+        }
         #endregion
     }
 }

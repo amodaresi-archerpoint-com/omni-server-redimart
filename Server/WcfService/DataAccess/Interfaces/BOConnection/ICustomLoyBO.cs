@@ -48,5 +48,9 @@ namespace LSOmni.DataAccess.Interface.BOConnection
         #region Altria Phase III - Log terms acceptance 
         bool LogTermsPolicyAcceptance(string loginID, string deviceID, string termsCondVersion, string privacyPolicyVersion, Statistics stat);
         #endregion
+
+        #region Altria Phase V - Register Firebase Token
+        bool RegisterDevice(string loginID, string deviceID, string firebaseToken, string initialTopic, Statistics stat);
+        #endregion
     }
 }

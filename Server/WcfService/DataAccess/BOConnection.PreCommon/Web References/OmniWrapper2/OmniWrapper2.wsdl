@@ -250,6 +250,26 @@
           </sequence>
         </complexType>
       </element>
+      <element name="RegisterDevice">
+        <complexType>
+          <sequence>
+            <element minOccurs="1" maxOccurs="1" name="responseCode" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="errorText" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="loginID" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="deviceID" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="firebaseToken" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="initialTopic" type="string" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="RegisterDevice_Result">
+        <complexType>
+          <sequence>
+            <element minOccurs="1" maxOccurs="1" name="responseCode" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="errorText" type="string" />
+          </sequence>
+        </complexType>
+      </element>
       <element name="RetrievePersonalizedOffer">
         <complexType>
           <sequence>
@@ -326,6 +346,12 @@
   <message name="MemberContactCreate_Result">
     <part name="parameters" element="tns:MemberContactCreate_Result" />
   </message>
+  <message name="RegisterDevice">
+    <part name="parameters" element="tns:RegisterDevice" />
+  </message>
+  <message name="RegisterDevice_Result">
+    <part name="parameters" element="tns:RegisterDevice_Result" />
+  </message>
   <message name="RetrievePersonalizedOffer">
     <part name="parameters" element="tns:RetrievePersonalizedOffer" />
   </message>
@@ -356,6 +382,10 @@
     <operation name="MemberContactCreate">
       <input name="MemberContactCreate" message="tns:MemberContactCreate" />
       <output name="MemberContactCreate_Result" message="tns:MemberContactCreate_Result" />
+    </operation>
+    <operation name="RegisterDevice">
+      <input name="RegisterDevice" message="tns:RegisterDevice" />
+      <output name="RegisterDevice_Result" message="tns:RegisterDevice_Result" />
     </operation>
     <operation name="RetrievePersonalizedOffer">
       <input name="RetrievePersonalizedOffer" message="tns:RetrievePersonalizedOffer" />
@@ -396,6 +426,15 @@
         <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
       </input>
       <output name="MemberContactCreate_Result">
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </output>
+    </operation>
+    <operation name="RegisterDevice">
+      <operation soapAction="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper2:RegisterDevice" style="document" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      <input name="RegisterDevice">
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </input>
+      <output name="RegisterDevice_Result">
         <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
       </output>
     </operation>

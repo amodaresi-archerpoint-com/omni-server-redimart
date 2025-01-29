@@ -92,6 +92,15 @@ namespace LSOmni.Service
         #region Phase V - Firebase
         [OperationContract]
         string SendPushNotificationToTopic(string topic, string title, string message);
+
+        [OperationContract]
+        string SendPushNotificationToToken(string token, string title, string message);
+
+        [OperationContract]
+        bool SubscribeTokenToTopic(string token, string topic);
+
+        [OperationContract]
+        bool RegisterDevice(string loginId, string deviceId, string firebaseToken);
         #endregion
 
         #region Discount, Offers and GiftCards
