@@ -410,5 +410,12 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
             return LSCentralWSBase.LogTermsPolicyAcceptance(loginID, deviceID, termsCondVersion, privacyPolicyVersion, stat);
         }
         #endregion
+
+        #region Altria Phase V - Register Firebase Token
+        public virtual bool RegisterDevice(string loginID, string deviceID, string firebaseToken, string initialTopic, Statistics stat)
+        {
+            return LSCentralWSBase.RegisterDevice(loginID, deviceID, firebaseToken, initialTopic, stat);
+        }
+        #endregion
     }
 }

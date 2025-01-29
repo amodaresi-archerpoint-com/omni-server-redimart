@@ -793,6 +793,9 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 case "0004":
                     statusCode = StatusCode.NAVWebFunctionNotFound;
                     break;
+                case "0005":                                    //anmo
+                    statusCode = StatusCode.ParameterInvalid;   //anmo
+                    break;                                      //anmo
                 case "0025":
                     statusCode = StatusCode.NamesDoNotMatch;
                     break;

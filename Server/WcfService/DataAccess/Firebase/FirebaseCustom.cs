@@ -22,7 +22,7 @@ namespace LSOmni.DataAccess.Firebase
                     Credential = GoogleCredential.GetApplicationDefault()
                                  .CreateScoped("https://www.googleapis.com/auth/firebase.messaging"),
                     ServiceAccountId = "firebase-adminsdk-drcwr@spg-pn1.iam.gserviceaccount.com",
-                    ProjectId = "spg-pn1",
+                    ProjectId = "redi-mart-spg-app",
                 });
             }
             messaging = FirebaseMessaging.GetMessaging(app);
@@ -33,8 +33,27 @@ namespace LSOmni.DataAccess.Firebase
         {
             logger.StatisticStartSub(true, ref stat, out int index);
             string messageID = "";
+
+            var messageObject = new Message()
+            {
+                Notification = new Notification()
+                {
+                    Title = title,
+                    Body = message,
+                },
+                Topic = topic,
+            };
+            messageID = messaging.SendAsync(messageObject).Result;
+            logger.StatisticEndSub(ref stat, index);
+            return messageID;
+        }
+
+        public virtual string SendPushNotificationToToken(string token, string title, string message, Statistics stat)
+        {
+            logger.StatisticStartSub(true, ref stat, out int index);
+            string messageID = "";
             //use topic is reg token for now
-            var registrationToken = topic;
+            var registrationToken = token;
             var messageObject = new Message()
             {
                 Notification = new Notification()
@@ -47,6 +66,15 @@ namespace LSOmni.DataAccess.Firebase
             messageID = messaging.SendAsync(messageObject).Result;
             logger.StatisticEndSub(ref stat, index);
             return messageID;
+        }
+
+        public bool SubscribeTokenToTopic(string token, string topic, Statistics stat)
+        {
+            logger.StatisticStartSub(true, ref stat, out int index);
+            var tokens = new List<string>() { token };
+            var response = messaging.SubscribeToTopicAsync(tokens, topic).Result;
+            logger.StatisticEndSub(ref stat, index);
+            return (response.SuccessCount == 1) ? true : false;
         }
 
     }
