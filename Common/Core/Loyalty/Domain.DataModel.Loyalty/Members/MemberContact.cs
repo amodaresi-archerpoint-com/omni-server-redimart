@@ -170,6 +170,8 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Members
         [DataMember]
         public string AlternateId { get; set; }
         [DataMember]
+        public string ExternalSystem { get; set; }
+        [DataMember]
         public List<Card> Cards { get; set; }
         [DataMember]
         public Account Account { get; set; }
@@ -227,6 +229,11 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Members
 
         #endregion
 
+        public Card GetCard()
+        {
+            return Cards.FirstOrDefault();
+        }
+
         public Card GetCard(string id)
         {
             return Cards.Find(c => c.Id == id);
@@ -259,14 +266,14 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Members
             return list;
         }
 
-        public OneList CreateOneListWithDescription(string description)
+        public OneList CreateOneListWithDescription(string description, ListType type)
         {
             OneList list = null;
 
             list = new OneList()
             {
                 CardId = (Cards.Count == 0) ? string.Empty : Cards[0].Id,
-                ListType = ListType.Wish,
+                ListType = type,
                 Description = description,
                 Items = new ObservableCollection<OneListItem>()
             };
