@@ -238,10 +238,24 @@ namespace LSOmni.BLL.Loyalty
 
         public virtual bool RegisterDevice(string loginID, string deviceID, string firebaseToken, Statistics stat)
         {
-            if (SubscribeTokenToTopic(firebaseToken, Constants.FIREBASE_TOPIC_DEFAULT, stat))
-                { return BOCustom.RegisterDevice(loginID, deviceID, firebaseToken, Constants.FIREBASE_TOPIC_DEFAULT, stat);  }
+            bool wasRegistered = false;
+            try
+            {
+                wasRegistered = SubscribeTokenToTopic(firebaseToken, Constants.FIREBASE_TOPIC_DEFAULT, stat);
+            }
+            catch (Exception ex)
+            { 
+                wasRegistered = false;
+                logger.Warn(config.LSKey.Key, ex, "Subscribing to Firebase topic returned error. Will send Device ID to BC without topic. loginID:{1} deviceID:{2} token:{3}", loginID, DeviceId, firebaseToken);
+            }
+            if (wasRegistered)
+            {
+                return BOCustom.RegisterDevice(loginID, deviceID, firebaseToken, Constants.FIREBASE_TOPIC_DEFAULT, stat);
+            }
             else
-            { return BOCustom.RegisterDevice(loginID, deviceID, firebaseToken, string.Empty, stat); }
+            {
+                return BOCustom.RegisterDevice(loginID, deviceID, firebaseToken, string.Empty, stat);
+            }
 
         }
         #endregion
