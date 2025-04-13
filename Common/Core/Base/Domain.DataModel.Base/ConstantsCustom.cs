@@ -16,11 +16,16 @@ namespace LSRetail.Omni.Domain.DataModel.Base
         public const string REPLY_DENIED = "DENIED";
         public const string AGE_VERIFIED = "EAIV";
         public const string STATUS_OK = "OK";
+        public const string VAR_UUID = "UUID";
         public const string REDI_PENDING = "1";
         public const string REDI_ACCEPTED = "2";
         public const string REDI_DENIED = "3";
+        public const string REDI_REDOACCEPTED = "4";
+        public const string PREF_DEVTOKEN_NO = "DeviceTokenNumber";
+        public const string PREF_DEVTOKEN_DATE = "DeviceTokenDate";
         public const string FIREBASE_TOPIC_DEFAULT = "general";
-        public const int MIN_REQ_BUILD = 39;
-        public const int CS_BUILD = 40;
+        public const int HIST_MAX = 50;
+        public const int MIN_REQ_BUILD = 43;
+        public const int CS_BUILD = 43;
     }
 }

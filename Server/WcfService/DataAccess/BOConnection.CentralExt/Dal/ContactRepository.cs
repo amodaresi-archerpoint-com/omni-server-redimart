@@ -25,7 +25,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
         public ContactRepository(BOConfiguration config, Version version) : base(config, version)
         {
             sqlcolumns = "mt.[Account No_],mt.[Contact No_],mt.[Name],mt.[E-Mail],mt.[Phone No_],mt.[Mobile Phone No_],mt.[Blocked],mt.[Reason Blocked],mt.[Date Blocked],mt.[Blocked by]," +
-                         "mt.[First Name],mt.[Middle Name],mt.[Surname],mt.[Date of Birth],mt.[Gender],mt.[Marital Status],mt.[Home Page]," +
+                         "mt.[First Name],mt.[Middle Name],mt.[Surname],mt.[Date of Birth],mt.[Gender],mt.[Marital Status],mt.[Home Page],mt.[External ID],mt.[External System]," +
                          "mt.[Address],mt.[Address 2],mt.[House_Apartment No_],mt.[City],mt.[Post Code],mt.[Territory Code],mt.[County],mt.[Country_Region Code]";
 
             if (LSCVersion >= new Version("19.2"))
@@ -132,6 +132,68 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             if (recordsRemaining < 0)
                 recordsRemaining = 0;
 
+            return list;
+        }
+
+        public List<ReplCustomer> ReplicateMembersTM(int batchSize, bool fullReplication, ref string lastKey, ref int recordsRemaining)
+        {
+            ProcessLastKey(lastKey, out string mainKey, out string delKey);
+            List<JscKey> keys = GetPrimaryKeys("LSC Member Contact$5ecfc871-5d82-43f1-9c54-59685e82318d");
+
+            sqlcolumns += ",ma.[Club Code],ma.[Scheme Code]";
+            sqlfrom += " LEFT JOIN [" + navCompanyName + "LSC Member Account$5ecfc871-5d82-43f1-9c54-59685e82318d] ma ON ma.[No_]=mt.[Account No_]";
+
+            string sql = "SELECT COUNT(*)" + sqlfrom + GetWhereStatement(true, keys, false);
+            recordsRemaining = GetRecordCountTM(mainKey, sql, keys);
+
+            List<JscActions> actions = LoadDeleteActions(fullReplication, TABLEID, "LSC Member Contact$5ecfc871-5d82-43f1-9c54-59685e82318d", keys, batchSize, ref delKey);
+            sql = GetSQL(fullReplication, batchSize) + sqlcolumns + sqlfrom + GetWhereStatement(true, keys, true);
+
+            List<ReplCustomer> list = new List<ReplCustomer>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    connection.Open();
+                    command.CommandText = sql;
+
+                    JscActions actKey = new JscActions(mainKey);
+                    SetWhereValues(command, actKey, keys, true, true);
+                    TraceSqlCommand(command);
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        int cnt = 0;
+                        while (reader.Read())
+                        {
+                            list.Add(ReaderToCustomer(reader, out mainKey));
+                            cnt++;
+                        }
+                        reader.Close();
+                        recordsRemaining -= cnt;
+                    }
+
+                    foreach (JscActions act in actions)
+                    {
+                        string[] par = act.ParamValue.Split(';');
+                        if (par.Length < 2 || par.Length != keys.Count)
+                            continue;
+
+                        list.Add(new ReplCustomer()
+                        {
+                            AccountNumber = par[0],
+                            Id = par[1],
+                            IsDeleted = true
+                        });
+                    }
+                    connection.Close();
+                }
+            }
+
+            // just in case something goes too far
+            if (recordsRemaining < 0)
+                recordsRemaining = 0;
+
+            lastKey = $"R={mainKey};D={delKey};";
             return list;
         }
 
@@ -608,27 +670,17 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             if (string.IsNullOrWhiteSpace(search))
                 return list;
 
-            SQLHelper.CheckForSQLInjection(search);
-
-            char[] sep = new char[] { ' ' };
-            string[] searchitems = search.Split(sep, StringSplitOptions.RemoveEmptyEntries);
-
-            string sqlwhere = " WHERE c.[Card No_]=@id";
-            foreach (string si in searchitems)
-            {
-                sqlwhere += string.Format(" AND a.[Description] LIKE N'%{0}%' {1}", si, GetDbCICollation());
-            }
-
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT a.[Code],a.[Description],a.[Attribute Type],a.[Default Value],a.[Mandatory] " +
+                    string sqlWhere = SQLHelper.SetSearchParameters(command, search, GetDbCICollation()) + " AND c.[Card No_]=@id";
+                    command.CommandText = "SELECT mt.[Code],mt.[Description],mt.[Attribute Type],mt.[Default Value],mt.[Mandatory] " +
                                           "FROM [" + navCompanyName + "LSC Member Contact$5ecfc871-5d82-43f1-9c54-59685e82318d] mc " +
                                           "JOIN [" + navCompanyName + "LSC Member Attribute Setup$5ecfc871-5d82-43f1-9c54-59685e82318d] ms ON ms.[Club Code]=mc.[Club Code] " +
-                                          "JOIN [" + navCompanyName + "LSC Member Attribute$5ecfc871-5d82-43f1-9c54-59685e82318d] a ON a.[Code]=ms.[Code] " +
+                                          "JOIN [" + navCompanyName + "LSC Member Attribute$5ecfc871-5d82-43f1-9c54-59685e82318d] mt ON mt.[Code]=ms.[Code] " +
                                           "JOIN [" + navCompanyName + "LSC Membership Card$5ecfc871-5d82-43f1-9c54-59685e82318d] c on c.[Contact No_]=mc.[Contact No_]" +
-                                          "AND a.[Visible Type]=0 AND a.[Lookup Type]=0" + sqlwhere;
+                                          "AND mt.[Visible Type]=0 AND mt.[Lookup Type]=0" + sqlWhere;
                     command.Parameters.AddWithValue("@id", cardId);
                     TraceSqlCommand(command);
                     connection.Open();
@@ -772,6 +824,8 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 BlockedReason = SQLHelper.GetString(reader["Reason Blocked"]),
                 DateBlocked = ConvertTo.SafeJsonDate(SQLHelper.GetDateTime(reader["Date Blocked"]), config.IsJson),
                 BlockedBy = SQLHelper.GetString(reader["Blocked by"]),
+                AlternateId = SQLHelper.GetString(reader["External ID"]),
+                ExternalSystem = SQLHelper.GetString(reader["External System"])
             };
 
             if (LSCVersion >= new Version("19.2"))

@@ -6,7 +6,6 @@ using LSOmni.Common.Util;
 using LSOmni.DataAccess.Interface.BOConnection;
 using LSRetail.Omni.Domain.DataModel.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Menu;
-using LSRetail.Omni.Domain.DataModel.Base.Utils;
 using LSRetail.Omni.Domain.DataModel.Base.Setup;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
 using LSRetail.Omni.Domain.DataModel.Base.Hierarchies;
@@ -501,14 +500,15 @@ namespace LSOmni.DataAccess.BOConnection.NavWS
             if (NAVVersion < new Version("17.5"))
                 return NavWSBase.ItemGetByBarcode(code);
 
-            LoyItem item = LSCWSBase.ItemGetByBarcode(code, stat);
+            LoyItem item = LSCWSBase.ItemGetByBarcode(code, storeId, stat);
             if (item != null)
                 return item;
 
             LoyItem bitem = LSCWSBase.ItemFindByBarcode(code, storeId, config.SettingsGetByKey(ConfigKey.ScanPayGo_Terminal), stat);
             item = ItemGetById(bitem.Id, storeId, string.Empty, true, stat);
             item.GrossWeight = bitem.GrossWeight;
-            item.Price = bitem.Price;
+            if (string.IsNullOrEmpty(bitem.Price) == false && bitem.Price != "0")
+                item.Price = bitem.Price;
             return item;
         }
 
@@ -517,7 +517,7 @@ namespace LSOmni.DataAccess.BOConnection.NavWS
             if (NAVVersion < new Version("17.5"))
                 return NavWSBase.ItemGetById(id);
 
-            return LSCWSBase.ItemGetById(id, stat);
+            return LSCWSBase.ItemGetById(id, storeId, includeDetails, stat);
         }
 
         public virtual List<LoyItem> ItemsGetByPublishedOfferId(string pubOfferId, int numberOfItems, Statistics stat)
@@ -540,7 +540,7 @@ namespace LSOmni.DataAccess.BOConnection.NavWS
         public virtual List<LoyItem> ItemsPage(int pageSize, int pageNumber, string itemCategoryId, string productGroupId, string search, string storeId, bool includeDetails, Statistics stat)
         {
             if (NAVVersion < new Version("17.5"))
-                return NavWSBase.ItemPage(storeId, pageNumber, includeDetails);
+                return NavWSBase.ItemPage(storeId, pageNumber);
 
             return LSCWSBase.ItemPage(storeId, pageNumber, includeDetails, stat);
         }
@@ -855,6 +855,11 @@ namespace LSOmni.DataAccess.BOConnection.NavWS
             return LSCWSBase.OrderEdit(request, ref orderId, editType, stat);
         }
 
+        public virtual bool OrderUpdatePayment(string orderId, string storeId, OrderPayment payment, Statistics stat)
+        {
+            return LSCWSBase.OrderUpdatePayment(orderId, storeId, payment, stat);
+        }
+
         #endregion
 
         #region Offer and Advertisement
@@ -914,9 +919,12 @@ namespace LSOmni.DataAccess.BOConnection.NavWS
             }
             else
             {
-                store = LSCWSBase.StoreGetById(id, stat);
-                store.StoreHours = LSCWSBase.StoreHoursGetByStoreId(id, offset, stat);
-                store.Attributes = LSCWSBase.AttributeGet(id, AttributeLinkType.Store, stat);
+                store = LSCWSBase.StoreGetById(id, true, offset, stat);
+                if (NAVVersion < new Version("26.0"))
+                {
+                    store.StoreHours = LSCWSBase.StoreHoursGetByStoreId(id, offset, stat);
+                    store.Attributes = LSCWSBase.AttributeGet(id, AttributeLinkType.Store, stat);
+                }
             }
             return store;
         }
@@ -933,17 +941,19 @@ namespace LSOmni.DataAccess.BOConnection.NavWS
                 {
                     foreach (Store store in stores)
                     {
+                        store.Images = NavWSBase.ImagesGetByLink("Store", store.Id, string.Empty, string.Empty);
                         store.StoreHours = NavWSBase.StoreHoursGetByStoreId(store.Id, offset);
                     }
                 }
             }
             else
             {
-                stores = LSCWSBase.StoresGet(storeType, inclDetails, stat);
-                if (inclDetails)
+                stores = LSCWSBase.StoresGet(storeType, inclDetails, offset, stat);
+                if (inclDetails && NAVVersion < new Version("26.0"))
                 {
                     foreach (Store store in stores)
                     {
+                        store.Images = LSCWSBase.ImagesGetByLink("LSC Store", store.Id, string.Empty, string.Empty, false, stat);
                         store.StoreHours = LSCWSBase.StoreHoursGetByStoreId(store.Id, offset, stat);
                         store.Attributes = LSCWSBase.AttributeGet(store.Id, AttributeLinkType.Store, stat);
                     }

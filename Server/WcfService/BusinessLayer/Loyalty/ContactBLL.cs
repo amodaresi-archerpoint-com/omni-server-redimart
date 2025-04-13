@@ -32,26 +32,39 @@ namespace LSOmni.BLL.Loyalty
 
         public virtual decimal CardGetPointBalance(string cardId, Statistics stat)
         {
+            SecurityCardCheck(cardId);
             return BOLoyConnection.MemberCardGetPoints(cardId, stat);
         }
 
         public virtual List<PointEntry> CardGetPointEntries(string cardNo, DateTime dateFrom, Statistics stat)
         {
+            SecurityCardCheck(cardNo);
             return BOLoyConnection.PointEntriesGet(cardNo, dateFrom, stat);
         }
 
         public virtual List<MemberContact> ContactSearch(ContactSearchType searchType, string search, int maxNumberOfRowsReturned, Statistics stat)
         {
-            return BOLoyConnection.ContactSearch(searchType, search, maxNumberOfRowsReturned, stat);
+            List<MemberContact> list = BOLoyConnection.ContactSearch(searchType, search, maxNumberOfRowsReturned, stat);
+            foreach (MemberContact contact in list)
+            {
+                if (contact.Cards.Count > 0)
+                    SecurityCardCheck(contact.Cards.FirstOrDefault().Id);
+            }
+            return list;
         }
 
         public virtual MemberContact ContactGet(ContactSearchType searchType, string searchValue, Statistics stat)
         {
-            return BOLoyConnection.ContactGet(searchType, searchValue, stat);
+            MemberContact contact = BOLoyConnection.ContactGet(searchType, searchValue, stat);
+            if (contact != null)
+                SecurityCardCheck(contact.Cards.FirstOrDefault().Id);
+            return contact;
         }
 
         public virtual MemberContact ContactGetByCardId(string cardId, int numberOfTrans, Statistics stat)
         {
+            SecurityCardCheck(cardId);
+
             if (string.IsNullOrWhiteSpace(cardId))
                 throw new LSOmniException(StatusCode.CardIdInvalid, "cardId can not be empty or null");
 
@@ -92,6 +105,7 @@ namespace LSOmni.BLL.Loyalty
 
         public virtual List<Profile> ProfilesGetByCardId(string cardId, Statistics stat)
         {
+            SecurityCardCheck(cardId);
             return BOLoyConnection.ProfileGetByCardId(cardId, stat);
         }
 
@@ -106,7 +120,8 @@ namespace LSOmni.BLL.Loyalty
                 if (Validation.IsValidUserName(contact.UserName) == false)
                     throw new LSOmniException(StatusCode.UserNameInvalid, "Validation of user name failed");
                 contact.UserName = contact.UserName.Trim();
-                contact.Password = contact.Password.Trim();
+                if (contact.Password != null)
+                    contact.Password = contact.Password.Trim();
             }
 
             if (string.IsNullOrEmpty(contact.Password) == false && Validation.IsValidPassword(contact.Password) == false)
@@ -154,11 +169,13 @@ namespace LSOmni.BLL.Loyalty
 
         public virtual double ContactAddCard(string contactId, string cardId, string accountId, Statistics stat)
         {
+            SecurityCardCheck(cardId);
             return BOLoyConnection.ContactAddCard(contactId, accountId, cardId, stat);
         }
 
         public virtual void ContactBlock(string accountId, string cardId, Statistics stat)
         {
+            SecurityCardCheck(cardId);
             OneListBLL oBll = new OneListBLL(config, timeoutInSeconds);
             oBll.OneListDeleteByCardId(cardId, stat);
 
@@ -182,6 +199,8 @@ namespace LSOmni.BLL.Loyalty
 
             if (string.IsNullOrWhiteSpace(contact.Cards.FirstOrDefault()?.Id))
                 throw new LSOmniServiceException(StatusCode.MemberCardNotFound, "Card ID is missing");
+
+            SecurityCardCheck(contact.Cards.FirstOrDefault().Id);
 
             //get existing contact in db to compare the email and get accountId
             MemberContact ct = BOLoyConnection.ContactGet(ContactSearchType.CardId, contact.Cards.FirstOrDefault().Id, stat);
@@ -235,7 +254,7 @@ namespace LSOmni.BLL.Loyalty
                 contact.PublishedOffers = BOLoyConnection.PublishedOffersGet(contact.Cards.FirstOrDefault().Id, string.Empty, string.Empty, stat);
 
                 PushNotificationBLL notificationBLL = new PushNotificationBLL(config, timeoutInSeconds);
-                contact.Notifications = notificationBLL.NotificationsGetByCardId(contact.Cards[0].Id, 5000, stat);
+                contact.Notifications = notificationBLL.NotificationsGetByCardId(contact.Cards.FirstOrDefault().Id, 5000, stat);
 
                 OneListBLL oneListBLL = new OneListBLL(config, timeoutInSeconds);
                 contact.OneLists = oneListBLL.OneListGet(contact, true, stat);
@@ -249,7 +268,7 @@ namespace LSOmni.BLL.Loyalty
 
             string securityToken = Security.CreateSecurityToken();
             base.config.SecurityToken = securityToken;
-            this.iDeviceRepository.DeviceSave(deviceId, contact.Id, securityToken);
+            this.iDeviceRepository.DeviceSave(deviceId, contact.Cards.FirstOrDefault().Id, securityToken);
 
             if (dev == null)
             {
@@ -287,7 +306,7 @@ namespace LSOmni.BLL.Loyalty
                 contact.PublishedOffers = BOLoyConnection.PublishedOffersGet(contact.Cards.FirstOrDefault().Id, string.Empty, string.Empty, stat);
 
                 PushNotificationBLL notificationBLL = new PushNotificationBLL(config, timeoutInSeconds);
-                contact.Notifications = notificationBLL.NotificationsGetByCardId(contact.Cards[0].Id, 5000, stat);
+                contact.Notifications = notificationBLL.NotificationsGetByCardId(contact.Cards.FirstOrDefault().Id, 5000, stat);
 
                 OneListBLL oneListBLL = new OneListBLL(config, timeoutInSeconds);
                 contact.OneLists = oneListBLL.OneListGet(contact, true, stat);
@@ -301,7 +320,7 @@ namespace LSOmni.BLL.Loyalty
 
             string securityToken = Security.CreateSecurityToken();
             base.config.SecurityToken = securityToken;
-            this.iDeviceRepository.DeviceSave(deviceId, contact.Id, securityToken);
+            this.iDeviceRepository.DeviceSave(deviceId, contact.Cards.FirstOrDefault().Id, securityToken);
 
             if (dev == null)
                 dev = new Device();

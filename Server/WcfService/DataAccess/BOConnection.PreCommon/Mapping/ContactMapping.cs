@@ -56,7 +56,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                 DeviceID = XMLHelper.GetString(contact.LoggedOnToDevice.Id),
                 DeviceFriendlyName = XMLHelper.GetString(contact.LoggedOnToDevice.DeviceFriendlyName),
 
-                ExternalSystem = string.Empty
+                ExternalSystem = XMLHelper.GetString(contact.ExternalSystem)
             };
 
             if (LSCVersion >= new Version("19.2"))
@@ -65,9 +65,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                 mem.Authenticator = XMLHelper.GetString(contact.Authenticator);
                 mem.SendReceiptbyEmail = ((int)contact.SendReceiptByEMail).ToString();
             }
-
-            if (LSCVersion >= new Version("25.0"))
-                mem.GuestType = XMLHelper.GetString(contact.GuestType);
 
             LSCentral.RootMemberContactCreate root = new LSCentral.RootMemberContactCreate();
             members.Add(mem);
@@ -125,15 +122,11 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
 
                 Phone = XMLHelper.GetString(addr.PhoneNumber),
                 MobilePhoneNo = XMLHelper.GetString(addr.CellPhoneNumber),
-
-                ExternalSystem = string.Empty
+                ExternalSystem = XMLHelper.GetString(contact.ExternalSystem)
             };
 
             if (LSCVersion >= new Version("19.2"))
                 mem.SendReceiptbyEmail = ((int)contact.SendReceiptByEMail).ToString();
-
-            if (LSCVersion >= new Version("25.0"))
-                mem.GuestType = XMLHelper.GetString(contact.GuestType);
 
             List<LSCentral.MemberAttributeValue1> attr = new List<LSCentral.MemberAttributeValue1>();
             if (contact.Profiles != null)
@@ -170,6 +163,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
             {
                 Id = contact.ContactNo,
                 AlternateId = contact.ExternalID,
+                ExternalSystem = contact.ExternalSystem,
                 Email = contact.EMail,
                 FirstName = contact.FirstName,
                 MiddleName = contact.MiddleName,
@@ -257,6 +251,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
             {
                 Id = contact.ContactNo,
                 AlternateId = contact.ExternalID,
+                ExternalSystem = contact.ExternalSystem,
                 Email = contact.EMail,
                 FirstName = contact.FirstName,
                 MiddleName = contact.MiddleName,
@@ -321,6 +316,14 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                 }
             }
 
+            if (LSCVersion >= new Version("24.1") && root.MemberAccount != null)
+            {
+                memberContact.Account.Blocked = root.MemberAccount[0].Blocked;
+                memberContact.Account.Status = (AccountStatus)ConvertTo.SafeInt(root.MemberAccount[0].Status);
+                memberContact.Account.CustomerId = root.MemberAccount[0].CustomerNo;
+                memberContact.Account.Type = (AccountType)ConvertTo.SafeInt(root.MemberAccount[0].AccountType);
+            }
+
             if (root.MemberAttributeList != null)
             {
                 foreach (LSCentral.MemberAttributeList3 attr in root.MemberAttributeList)
@@ -359,6 +362,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
             {
                 Id = contact.ContactNo,
                 AlternateId = contact.ExternalID,
+                ExternalSystem = contact.ExternalSystem,
                 Email = contact.EMail,
                 FirstName = contact.FirstName,
                 MiddleName = contact.MiddleName,
@@ -421,6 +425,14 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping
                         Status = (CardStatus)Convert.ToInt32(card.Status)
                     });
                 }
+            }
+
+            if (LSCVersion >= new Version("24.1") && root.MemberAccount != null)
+            {
+                memberContact.Account.Blocked = root.MemberAccount[0].Blocked;
+                memberContact.Account.Status = (AccountStatus)ConvertTo.SafeInt(root.MemberAccount[0].Status);
+                memberContact.Account.CustomerId = root.MemberAccount[0].CustomerNo;
+                memberContact.Account.Type = (AccountType)ConvertTo.SafeInt(root.MemberAccount[0].AccountType);
             }
 
             if (root.MemberAttributeList != null)

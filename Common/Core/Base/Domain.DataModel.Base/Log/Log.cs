@@ -15,9 +15,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Log
         [EnumMember]
         Debug = 3,
         [EnumMember]
-        Trace = 4,
-        [EnumMember]
-        ConsoleLog = 5,
+        Trace = 4
     }
 
     [DataContract(Namespace = "http://lsretail.com/LSOmniService/Base/2017")]
@@ -30,7 +28,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Log
         [EnumMember]
         Pos = 2,
         [EnumMember]
-        ConsoleLog = 3,
+        Console = 3,
     }
 
     [DataContract(Namespace = "http://lsretail.com/LSOmniService/Base/2017")]
@@ -61,6 +59,18 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Log
             Message = string.Empty;
             Stacktrace = string.Empty;
             TimeStamp = DateTime.Now;
+        }
+
+        public override string ToString()
+        {
+            var log = TimeStamp.ToString("G") + " - " + LogLevel + " - " + Message;
+
+            if (!string.IsNullOrEmpty(Stacktrace))
+            {
+                log += Environment.NewLine + Stacktrace;
+            }
+
+            return log;
         }
     }
 }

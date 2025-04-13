@@ -89,7 +89,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                         case "Middle Name": rec.MiddleName = col.FieldValue; break;
                         case "Surname": rec.LastName = col.FieldValue; break;
                         case "Gender": rec.Gender = (Gender)ConvertTo.SafeInt(col.FieldValue); break;
-                        case "External ID": rec.AlternateId = col.FieldValue; break; //anmo
                         case "E-Mail": rec.Email = col.FieldValue; break;
                         case "Date of Birth": rec.BirthDay = ConvertTo.SafeDateTime(col.FieldValue); break;
                         case "Marital Status": rec.MaritalStatus = (MaritalStatus)ConvertTo.SafeInt(col.FieldValue); break;
@@ -107,6 +106,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                         case "Date Blocked": rec.DateBlocked = ConvertTo.SafeDateTime(col.FieldValue); break;
                         case "Blocked by": rec.BlockedBy = col.FieldValue; break;
                         case "Guest Type": rec.GuestType = col.FieldValue; break;
+                        case "External System": rec.ExternalSystem = col.FieldValue; break;
+                        case "External ID": rec.AlternateId = col.FieldValue; break;
                     }
                 }
                 list.Add(rec);
