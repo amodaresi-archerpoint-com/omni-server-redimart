@@ -1632,7 +1632,8 @@ namespace LSOmni.Service
                 logger.Debug(config.LSKey.Key, $"orderId:{orderId}");
 
                 TransactionBLL bll = new TransactionBLL(config, clientTimeOutInSeconds);
-                return bll.SalesEntryGetSalesByOrderId(orderId, stat);
+                SalesEntryList data = bll.SalesEntryGetSalesByOrderId(orderId, stat);
+                return data.SalesEntries;
             }
             catch (Exception ex)
             {
@@ -1654,7 +1655,7 @@ namespace LSOmni.Service
                 logger.Debug(config.LSKey.Key, $"orderId:{orderId}");
 
                 TransactionBLL bll = new TransactionBLL(config, clientTimeOutInSeconds);
-                return bll.SalesEntryGetSalesExtByOrderId(orderId, stat);
+                return bll.SalesEntryGetSalesByOrderId(orderId, stat);
             }
             catch (Exception ex)
             {
@@ -1898,7 +1899,7 @@ namespace LSOmni.Service
             return true;
         }
 
-        public virtual OrderHospStatus HospOrderStatus(string storeId, string orderId)
+        public virtual List<OrderHospStatus> HospOrderStatus(string storeId, string orderId)
         {
             Statistics stat = logger.StatisticStartMain(config, serverUri);
 
