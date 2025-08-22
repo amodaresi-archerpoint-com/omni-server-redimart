@@ -117,7 +117,9 @@ namespace LSOmni.Service
                 logger.Debug(config.LSKey.Key, @"{0}=[{1}] {2} port:{3} - clientIP:[{4}] UserAgent:[{5}] Version:[{6}] ClientVersion:[{7}] deviceId:[{8}] clientTimeOut:[{9}]",
                     HEADER_TOKEN, config.SecurityToken, serverUri, port, clientIPAddress, userAgent, Version(), version, deviceId, clientTimeOutInSeconds);
 
-                config.Settings.Add(new TenantSetting(ConfigKey.EncrCode.ToString(), ConfigSetting.GetEncrCode(), string.Empty, "string", false, true));
+                //anmo Had to comment out this line tha prevents UCJson from being instantiated
+                //anmo the error handling will not work as the object does not instantiate and I cannot find the inner exception
+                //config.Settings.Add(new TenantSetting(ConfigKey.EncrCode.ToString(), ConfigSetting.GetEncrCode(), string.Empty, "string", false, true));
 
                 config = GetConfig(config);
                 ConfigBLL bll = new ConfigBLL(config);

@@ -25,7 +25,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base
         public const string PREF_DEVTOKEN_DATE = "DeviceTokenDate";
         public const string FIREBASE_TOPIC_DEFAULT = "general";
         public const int HIST_MAX = 50;
-        public const int MIN_REQ_BUILD = 43;
-        public const int CS_BUILD = 43;
+        public const int MIN_REQ_BUILD = 48;
+        public const int CS_BUILD = 48;
     }
 }
