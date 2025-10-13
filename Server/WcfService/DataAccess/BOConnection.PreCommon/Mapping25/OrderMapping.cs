@@ -262,6 +262,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
                         VariantId = oline.VariantCode,
                         VariantDescription = oline.VariantDescription,
                         UomId = oline.UnitofMeasureCode,
+                        LotNumber = oline.LotNo,
+                        SerialNumber = oline.SerialNo,
                         LineType = lineType,
                         StoreId = oline.StoreNo,
                         ClickAndCollectLine = oline.ClickAndCollectLine,
@@ -395,7 +397,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
                 if (line.LineNumber == 0)
                     line.LineNumber = ++lineNo;
 
-                orderLines.Add(new LSCentral25.CustomerOrderCreateCOLineV6()
+                LSCentral25.CustomerOrderCreateCOLineV6 oline = new LSCentral25.CustomerOrderCreateCOLineV6()
                 {
                     DocumentID = string.Empty,
                     ExternalID = (string.IsNullOrEmpty(line.Id)) ? string.Empty : line.Id.ToUpper(),
@@ -419,7 +421,15 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
                     Price = line.Price,
                     NetPrice = line.NetPrice,
                     ValidateTaxParameter = line.ValidateTax
-                });
+                };
+
+                if (LSCVersion >= new Version("27.0")) 
+                {
+                    oline.LotNo = XMLHelper.GetString(line.LotNumber);
+                    oline.SerialNo = XMLHelper.GetString(line.SerialNumber);
+                }
+                orderLines.Add(oline);
+
             }
             root.CustomerOrderCreateCOLineV6 = orderLines.ToArray();
 
@@ -856,6 +866,11 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
             {
                 head.ShipToCountryRegionCode = XMLHelper.GetString(list.ShipToCountryCode);
             }
+            if (LSCVersion >= new Version("27.0"))
+            {
+                head.ShipToCounty = XMLHelper.GetString(list.ShipToCounty);
+                head.ShipToPostCode = XMLHelper.GetString(list.ShipToPostCode);
+            }
 
             trans.Add(head);
             root.MobileTransaction = trans.ToArray();
@@ -1030,10 +1045,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
             return rootin;
         }
 
-        public OrderCheck RootToOrderCheck(LSCentral25.RootSPGOrderCheck1 root)
+        public OrderCheck RootToOrderCheck(LSCentral.RootSPGOrderCheck root)
         {
             OrderCheck order = new OrderCheck();
-            if (root.SPGOrderCheckCOHeader == null || root.SPGOrderCheckCOHeader.Count() == 0)
+            if (root.SPGOrderCheckCOLine == null || root.SPGOrderCheckCOHeader.Count() == 0)
                 return order;
 
             order.StatusDate = root.SPGOrderCheckCOHeader[0].StatusDateTime;
@@ -1042,7 +1057,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
             if (root.SPGOrderCheckCOLine != null)
             {
                 order.Lines = new List<OrderCheckLines>();
-                foreach (LSCentral25.SPGOrderCheckCOLine1 line in root.SPGOrderCheckCOLine)
+                foreach (LSCentral.SPGOrderCheckCOLine line in root.SPGOrderCheckCOLine)
                 {
                     order.Lines.Add(new OrderCheckLines()
                     {
@@ -1064,7 +1079,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
             if (root.SPGOrderCheckCOPayment != null)
             {
                 order.Payments = new List<OrderCheckPayment>();
-                foreach (LSCentral25.SPGOrderCheckCOPayment pay in root.SPGOrderCheckCOPayment)
+                foreach (LSCentral.SPGOrderCheckCOPayment pay in root.SPGOrderCheckCOPayment)
                 {
                     order.Payments.Add(new OrderCheckPayment()
                     {

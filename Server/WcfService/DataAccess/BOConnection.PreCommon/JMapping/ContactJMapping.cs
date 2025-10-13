@@ -17,10 +17,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
             IsJson = json;
         }
 
-        public List<MemberContact> GetMemberContact(string ret)
+        public List<MemberContact> GetMemberContact(string ret, out string resCode, out string resErr)
         {
             List<MemberContact> list = new List<MemberContact>();
-            WSODataCollection result = JsonToWSOData(ret, "MemberContactInfoDaCo");
+            WSODataCollection result = JsonToWSOData(ret, "MemberContactInfoDaCo", out resCode, out  resErr);
             if (result == null)
                 return list;
 
@@ -34,7 +34,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
             List<Scheme> schemes = LoadMemberSchemes(result.GetDataSet(99009024));
             List<Club> clubs = LoadClubs(result.GetDataSet(99009000));
             List<Profile> profiles = LoadMemberProfile(result.GetDataSet(10000817));
-            List<WSODataFlowField> flowfields = LoadFlowFields(result.GetDataSet(99001649));
+            List<WSODataFlowField> flowFields = LoadFlowFields(result.GetDataSet(99001649));
 
             // join data
             foreach (MemberContact cont in list)
@@ -48,10 +48,11 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                 cont.Account = accounts.Find(x => x.Id == cont.Account.Id);
                 cont.Account.Scheme = schemes.Find(x => x.Id == cont.Account.SchemeCode);
                 cont.Account.Scheme.Club = clubs.Find(x => x.Id == cont.Account.Scheme.ClubCode);
-                cont.Profiles = profiles.FindAll(x => x.AccountNo == cont.Account.Id && x.ContactNo == cont.Id);
+                cont.Profiles = profiles.FindAll(x => x.AccountNo == cont.Account.Id && x.ContactNo == cont.Id && x.VisibleType == 0 && x.LookupType == 0 && x.AttributeType == 0);
+                cont.MemberAttributes = profiles.FindAll(x => x.AccountNo == cont.Account.Id && x.ContactNo == cont.Id && x.VisibleType != 0 && x.LookupType != 0 && x.AttributeType == 0);
 
                 string key = "LSC Member Account: " + cont.Account.Id;
-                List<WSODataFlowField> fields = flowfields.FindAll(x => x.Key == key);
+                List<WSODataFlowField> fields = flowFields.FindAll(x => x.Key == key);
                 foreach (WSODataFlowField rec in fields)
                 {
                     cont.Account.PointBalance += (long)rec.DecimalValue;
@@ -259,9 +260,12 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                         case "Account No.": rec.AccountNo = col.FieldValue; break;
                         case "Contact No.": rec.ContactNo = col.FieldValue; break;
                         case "Code": rec.Id = col.FieldValue; break;
-                        case "Type": rec.DataType = (ProfileDataType)ConvertTo.SafeInt(col.FieldValue); break;
+                        case "Value Type": rec.DataType = (ProfileDataType)ConvertTo.SafeInt(col.FieldValue); break;
+                        case "Type": rec.AttributeType = ConvertTo.SafeInt(col.FieldValue); break;
                         case "Description": rec.Description = col.FieldValue; break;
                         case "Value": rec.TextValue = col.FieldValue; break;
+                        case "Visible Type": rec.VisibleType = ConvertTo.SafeInt(col.FieldValue); break;
+                        case "Lookup Type": rec.LookupType = ConvertTo.SafeInt(col.FieldValue); break;
                     }
                 }
                 list.Add(rec);

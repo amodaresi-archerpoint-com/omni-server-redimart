@@ -26,15 +26,17 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
         public DiscountOfferRepository(BOConfiguration config, Version version) : base(config, version)
         {
             sqlcolumns = "mt.[Store No_],mt.[Priority No_],mt.[Item No_],mt.[Variant Code],mt.[Customer Disc_ Group],mt.[Loyalty Scheme Code],mt.[From Date]," +
-                         "mt.[To Date],mt.[Minimum Quantity],mt.[Discount _],mt.[Unit of Measure Code],mt.[Offer No_],mt.[Last Modify Date]," +
-                         "p.[Type],p.[Discount Type],p.[Description],p.[Pop-up Line 1],p.[Pop-up Line 2],p.[Pop-up Line 3],p.[Validation Period ID],p.[Discount Amount Value]";
+                         "mt.[To Date],mt.[Minimum Quantity],mt.[Discount _],mt.[Unit of Measure Code],mt.[Offer No_],mt.[Last Modify Date],mt.[Exclude]," +
+                         "p.[Type],p.[Discount Type],p.[Description],p.[Pop-up Line 1],p.[Pop-up Line 2],p.[Pop-up Line 3],p.[Validation Period ID]," +
+                         "p.[Discount Amount Value],p.[Member Attribute],p.[Member Attribute Value]";
 
             sqlfrom = " FROM [" + navCompanyName + "LSC WI Discounts$5ecfc871-5d82-43f1-9c54-59685e82318d] mt" +
                       " JOIN [" + navCompanyName + "LSC Periodic Discount$5ecfc871-5d82-43f1-9c54-59685e82318d] p ON p.[No_]=mt.[Offer No_]";
 
             sqlMMcolumns = "mt.[Store No_],mt.[Item No_],mt.[Variant Code],mt.[Customer Disc_ Group],mt.[Loyalty Scheme Code],mt.[From Date]," +
-                           "mt.[To Date],mt.[Offer No_],mt.[Last Modify Date]," +
-                           "p.[Type],p.[Priority],p.[Description],p.[Pop-up Line 1],p.[Pop-up Line 2],p.[Pop-up Line 3],p.[Validation Period ID]";
+                           "mt.[To Date],mt.[Offer No_],mt.[Last Modify Date],mt.[Exclude]," +
+                           "p.[Type],p.[Priority],p.[Description],p.[Pop-up Line 1],p.[Pop-up Line 2],p.[Pop-up Line 3],p.[Validation Period ID]," +
+                           "p.[Member Attribute],p.[Member Attribute Value]";
 
             if (LSCVersion >= new Version("21.5"))
                 sqlMMfrom = " FROM [" + navCompanyName + "LSC WI Mix & Match Offer Ext$5ecfc871-5d82-43f1-9c54-59685e82318d] mt" +
@@ -282,7 +284,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             return list;
         }
 
-        public List<ReplDiscountSetup> ReplicateDiscountSetup(int batchSize, bool fullReplication, ref string lastKey, ref string maxKey, ref int recordsRemaining)
+        public List<ReplDiscountSetup> ReplicateDiscountSetup(int batchSize, bool fullReplication, string storeId, ref string lastKey, ref string maxKey, ref int recordsRemaining)
         {
             if (string.IsNullOrWhiteSpace(lastKey))
                 lastKey = "0";
@@ -300,7 +302,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             if (fullReplication)
             {
                 sql = "SELECT COUNT(*) FROM [" + navCompanyName + "LSC Periodic Discount$5ecfc871-5d82-43f1-9c54-59685e82318d] mt" +
-                    GetWhereStatement(true, keys, where, false);
+                    GetWhereStatementWithPriceGroupFilter(fullReplication, keys, where, "mt.[Price Group]", storeId, false);
                 recordsRemaining = GetRecordCount(99001453, lastKey, sql, keys, ref maxKey);
             }
             else
@@ -354,7 +356,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 "mt.[Discount Type],mt.[Deal Price Value],mt.[Discount _ Value],mt.[Discount Amount Value]," +
                 "mt.[Customer Disc_ Group],mt.[Amount to Trigger],mt.[Member Value]," +
                 "mt.[Pop-up Line 1],mt.[Pop-up Line 2],mt.[Pop-up Line 3],mt.[Coupon Code],mt.[Coupon Qty Needed]," +
-                "mt.[Member Type],mt.[Member Attribute],mt.[Maximum Discount Amount],mt.[Tender Type Code]," +
+                "mt.[Member Type],mt.[Member Attribute],mt.[Member Attribute Value],mt.[Maximum Discount Amount],mt.[Tender Type Code]," +
                 "mt.[Tender Type Value],mt.[Prompt for Action],mt.[Tender Offer _],mt.[Tender Offer Amount],mt.[Member Points]," +
                 "ml.[Line No_],ml.[Type] AS [LType],ml.[No_] AS [LNo],ml.[Variant Code],ml.[Standard Price Including VAT],ml.[Standard Price]," +
                 "ml.[Split Deal Price_Disc_ _],ml.[Deal Price_Disc_ _],ml.[Price Group] AS [LPriceGr],ml.[Currency Code]," +
@@ -364,7 +366,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 "ml.[Variant Type],ml.[Exclude],ml.[Member Points] AS [LMemPoint] " +
                 "FROM [" + navCompanyName + "LSC Periodic Discount Line$5ecfc871-5d82-43f1-9c54-59685e82318d] ml " +
                 "JOIN [" + navCompanyName + "LSC Periodic Discount$5ecfc871-5d82-43f1-9c54-59685e82318d] mt ON mt.[No_]=ml.[Offer No_]" +
-                GetWhereStatement(fullReplication, keys, where, false);
+                GetWhereStatementWithPriceGroupFilter(fullReplication, keys, where, "mt.[Price Group]", storeId, false);
 
             List<ReplDiscountSetup> list = new List<ReplDiscountSetup>();
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -610,12 +612,15 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 DiscountValueType = (DiscountValueType)SQLHelper.GetInt32(reader["Discount Type"]),
                 CustomerDiscountGroup = SQLHelper.GetString(reader["Customer Disc_ Group"]),
                 LoyaltySchemeCode = SQLHelper.GetString(reader["Loyalty Scheme Code"]),
+                MemberAttribute = SQLHelper.GetString(reader["Member Attribute"]),
+                MemberAttributeValue = SQLHelper.GetString(reader["Member Attribute Value"]),
                 FromDate = ConvertTo.SafeJsonDate(SQLHelper.GetDateTime(reader["From Date"]), config.IsJson),
                 ToDate = ConvertTo.SafeJsonDate(SQLHelper.GetDateTime(reader["To Date"]), config.IsJson),
                 MinimumQuantity = SQLHelper.GetDecimal(reader, "Minimum Quantity"),
                 OfferNo = SQLHelper.GetString(reader["Offer No_"]),
                 ModifyDate = ConvertTo.SafeJsonDate(SQLHelper.GetDateTime(reader["Last Modify Date"]), config.IsJson),
                 Type = (ReplDiscountType)SQLHelper.GetInt32(reader["Type"]),
+                Exclude = SQLHelper.GetBool(reader["Exclude"]),
                 Description = SQLHelper.GetString(reader["Description"]),
                 ValidationPeriodId = SQLHelper.GetString(reader["Validation Period ID"])
             };
@@ -650,11 +655,14 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 PriorityNo = SQLHelper.GetInt32(reader["Priority"]),
                 CustomerDiscountGroup = SQLHelper.GetString(reader["Customer Disc_ Group"]),
                 LoyaltySchemeCode = SQLHelper.GetString(reader["Loyalty Scheme Code"]),
+                MemberAttribute = SQLHelper.GetString(reader["Member Attribute"]),
+                MemberAttributeValue = SQLHelper.GetString(reader["Member Attribute Value"]),
                 FromDate = ConvertTo.SafeJsonDate(SQLHelper.GetDateTime(reader["From Date"]), config.IsJson),
                 ToDate = ConvertTo.SafeJsonDate(SQLHelper.GetDateTime(reader["To Date"]), config.IsJson),
                 OfferNo = SQLHelper.GetString(reader["Offer No_"]),
                 ModifyDate = ConvertTo.SafeJsonDate(SQLHelper.GetDateTime(reader["Last Modify Date"]), config.IsJson),
                 Type = (ReplDiscountType)(SQLHelper.GetInt32(reader["Type"])),
+                Exclude = SQLHelper.GetBool(reader["Exclude"]),
                 Description = SQLHelper.GetString(reader["Description"]),
                 ValidationPeriodId = SQLHelper.GetString(reader["Validation Period ID"])
             };
@@ -717,6 +725,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 ValidationPeriodId = SQLHelper.GetString(reader["Validation Period ID"]),
                 CouponCode = SQLHelper.GetString(reader["Coupon Code"]),
                 MemberAttribute = SQLHelper.GetString(reader["Member Attribute"]),
+                MemberAttributeValue = SQLHelper.GetString(reader["Member Attribute Value"]),
                 TenderTypeCode = SQLHelper.GetString(reader["Tender Type Code"]),
                 TenderTypeValue = SQLHelper.GetString(reader["Tender Type Value"]),
                 DealPriceValue = SQLHelper.GetDecimal(reader["Deal Price Value"]),

@@ -78,6 +78,10 @@ namespace LSRetail.Omni.Domain.DataModel.Base.SalesEntries
         [DataMember]
         public string UomId { get; set; }
         [DataMember]
+        public string LotNumber { get; set; }
+        [DataMember]
+        public string SerialNumber { get; set; }
+        [DataMember]
         public string StoreId { get; set; }
         [DataMember]
         public string StoreName { get; set; }

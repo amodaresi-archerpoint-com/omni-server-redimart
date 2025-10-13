@@ -53,6 +53,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private System.Threading.SendOrPostCallback CreateHospOrderOperationCompleted;
         
+        private System.Threading.SendOrPostCallback CreateNewCardForContactOperationCompleted;
+        
         private System.Threading.SendOrPostCallback CustomerOrderCancelOperationCompleted;
         
         private System.Threading.SendOrPostCallback CustomerOrderCreateV5OperationCompleted;
@@ -151,8 +153,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private System.Threading.SendOrPostCallback GetVendorCardOperationCompleted;
         
-        private System.Threading.SendOrPostCallback GetVoucherEntriesOperationCompleted;
-        
         private System.Threading.SendOrPostCallback GetVoucherEntriesV2OperationCompleted;
         
         private System.Threading.SendOrPostCallback IMDocumentPostOperationCompleted;
@@ -164,8 +164,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         private System.Threading.SendOrPostCallback LSCSalesShipmentGetOperationCompleted;
         
         private System.Threading.SendOrPostCallback LSCSalesShipmentUpdateOperationCompleted;
-        
-        private System.Threading.SendOrPostCallback MIValidateItemTrackingOperationCompleted;
         
         private System.Threading.SendOrPostCallback MIValidateItemTrackingV2OperationCompleted;
         
@@ -251,8 +249,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private System.Threading.SendOrPostCallback SetMemberCardTokenOperationCompleted;
         
-        private System.Threading.SendOrPostCallback SetTokenEntryOperationCompleted;
-        
         private System.Threading.SendOrPostCallback StoreInvTransactionSendOperationCompleted;
         
         private System.Threading.SendOrPostCallback StoreInvTransactionSendV2OperationCompleted;
@@ -336,6 +332,9 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         /// <remarks/>
         public event CreateHospOrderCompletedEventHandler CreateHospOrderCompleted;
+        
+        /// <remarks/>
+        public event CreateNewCardForContactCompletedEventHandler CreateNewCardForContactCompleted;
         
         /// <remarks/>
         public event CustomerOrderCancelCompletedEventHandler CustomerOrderCancelCompleted;
@@ -485,9 +484,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         public event GetVendorCardCompletedEventHandler GetVendorCardCompleted;
         
         /// <remarks/>
-        public event GetVoucherEntriesCompletedEventHandler GetVoucherEntriesCompleted;
-        
-        /// <remarks/>
         public event GetVoucherEntriesV2CompletedEventHandler GetVoucherEntriesV2Completed;
         
         /// <remarks/>
@@ -504,9 +500,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         /// <remarks/>
         public event LSCSalesShipmentUpdateCompletedEventHandler LSCSalesShipmentUpdateCompleted;
-        
-        /// <remarks/>
-        public event MIValidateItemTrackingCompletedEventHandler MIValidateItemTrackingCompleted;
         
         /// <remarks/>
         public event MIValidateItemTrackingV2CompletedEventHandler MIValidateItemTrackingV2Completed;
@@ -633,9 +626,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         /// <remarks/>
         public event SetMemberCardTokenCompletedEventHandler SetMemberCardTokenCompleted;
-        
-        /// <remarks/>
-        public event SetTokenEntryCompletedEventHandler SetTokenEntryCompleted;
         
         /// <remarks/>
         public event StoreInvTransactionSendCompletedEventHandler StoreInvTransactionSendCompleted;
@@ -1087,6 +1077,48 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             if ((this.CreateHospOrderCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.CreateHospOrderCompleted(this, new CreateHospOrderCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:microsoft-dynamics-schemas/codeunit/OmniWrapper:CreateNewCardForContact", RequestNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper", ResponseElementName="CreateNewCardForContact_Result", ResponseNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public void CreateNewCardForContact(ref string responseCode, ref string errorText, string cardID, string clubID, string schemeID, string accountID, string contactID) {
+            object[] results = this.Invoke("CreateNewCardForContact", new object[] {
+                        responseCode,
+                        errorText,
+                        cardID,
+                        clubID,
+                        schemeID,
+                        accountID,
+                        contactID});
+            responseCode = ((string)(results[0]));
+            errorText = ((string)(results[1]));
+        }
+        
+        /// <remarks/>
+        public void CreateNewCardForContactAsync(string responseCode, string errorText, string cardID, string clubID, string schemeID, string accountID, string contactID) {
+            this.CreateNewCardForContactAsync(responseCode, errorText, cardID, clubID, schemeID, accountID, contactID, null);
+        }
+        
+        /// <remarks/>
+        public void CreateNewCardForContactAsync(string responseCode, string errorText, string cardID, string clubID, string schemeID, string accountID, string contactID, object userState) {
+            if ((this.CreateNewCardForContactOperationCompleted == null)) {
+                this.CreateNewCardForContactOperationCompleted = new System.Threading.SendOrPostCallback(this.OnCreateNewCardForContactOperationCompleted);
+            }
+            this.InvokeAsync("CreateNewCardForContact", new object[] {
+                        responseCode,
+                        errorText,
+                        cardID,
+                        clubID,
+                        schemeID,
+                        accountID,
+                        contactID}, this.CreateNewCardForContactOperationCompleted, userState);
+        }
+        
+        private void OnCreateNewCardForContactOperationCompleted(object arg) {
+            if ((this.CreateNewCardForContactCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.CreateNewCardForContactCompleted(this, new CreateNewCardForContactCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -3109,43 +3141,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:microsoft-dynamics-schemas/codeunit/OmniWrapper:GetVoucherEntries", RequestNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper", ResponseElementName="GetVoucherEntries_Result", ResponseNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public void GetVoucherEntries(ref string responseCode, ref string errorText, string voucherNo, ref RootGetVoucherEntries getVoucherEntriesXML) {
-            object[] results = this.Invoke("GetVoucherEntries", new object[] {
-                        responseCode,
-                        errorText,
-                        voucherNo,
-                        getVoucherEntriesXML});
-            responseCode = ((string)(results[0]));
-            errorText = ((string)(results[1]));
-            getVoucherEntriesXML = ((RootGetVoucherEntries)(results[2]));
-        }
-        
-        /// <remarks/>
-        public void GetVoucherEntriesAsync(string responseCode, string errorText, string voucherNo, RootGetVoucherEntries getVoucherEntriesXML) {
-            this.GetVoucherEntriesAsync(responseCode, errorText, voucherNo, getVoucherEntriesXML, null);
-        }
-        
-        /// <remarks/>
-        public void GetVoucherEntriesAsync(string responseCode, string errorText, string voucherNo, RootGetVoucherEntries getVoucherEntriesXML, object userState) {
-            if ((this.GetVoucherEntriesOperationCompleted == null)) {
-                this.GetVoucherEntriesOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetVoucherEntriesOperationCompleted);
-            }
-            this.InvokeAsync("GetVoucherEntries", new object[] {
-                        responseCode,
-                        errorText,
-                        voucherNo,
-                        getVoucherEntriesXML}, this.GetVoucherEntriesOperationCompleted, userState);
-        }
-        
-        private void OnGetVoucherEntriesOperationCompleted(object arg) {
-            if ((this.GetVoucherEntriesCompleted != null)) {
-                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
-                this.GetVoucherEntriesCompleted(this, new GetVoucherEntriesCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
-            }
-        }
-        
-        /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:microsoft-dynamics-schemas/codeunit/OmniWrapper:GetVoucherEntriesV2", RequestNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper", ResponseElementName="GetVoucherEntriesV2_Result", ResponseNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public void GetVoucherEntriesV2(ref string responseCode, ref string errorText, string voucherNo, int pin, ref RootGetVoucherEntries getVoucherEntriesXML) {
             object[] results = this.Invoke("GetVoucherEntriesV2", new object[] {
@@ -3373,49 +3368,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             if ((this.LSCSalesShipmentUpdateCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.LSCSalesShipmentUpdateCompleted(this, new LSCSalesShipmentUpdateCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
-            }
-        }
-        
-        /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:microsoft-dynamics-schemas/codeunit/OmniWrapper:MIValidateItemTracking", RequestNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper", ResponseElementName="MIValidateItemTracking_Result", ResponseNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public void MIValidateItemTracking(string itemNo, string variantCode, string itemTrackingID, int worksheetNo, ref bool validTracking, ref string responseCode, ref string errorText) {
-            object[] results = this.Invoke("MIValidateItemTracking", new object[] {
-                        itemNo,
-                        variantCode,
-                        itemTrackingID,
-                        worksheetNo,
-                        validTracking,
-                        responseCode,
-                        errorText});
-            validTracking = ((bool)(results[0]));
-            responseCode = ((string)(results[1]));
-            errorText = ((string)(results[2]));
-        }
-        
-        /// <remarks/>
-        public void MIValidateItemTrackingAsync(string itemNo, string variantCode, string itemTrackingID, int worksheetNo, bool validTracking, string responseCode, string errorText) {
-            this.MIValidateItemTrackingAsync(itemNo, variantCode, itemTrackingID, worksheetNo, validTracking, responseCode, errorText, null);
-        }
-        
-        /// <remarks/>
-        public void MIValidateItemTrackingAsync(string itemNo, string variantCode, string itemTrackingID, int worksheetNo, bool validTracking, string responseCode, string errorText, object userState) {
-            if ((this.MIValidateItemTrackingOperationCompleted == null)) {
-                this.MIValidateItemTrackingOperationCompleted = new System.Threading.SendOrPostCallback(this.OnMIValidateItemTrackingOperationCompleted);
-            }
-            this.InvokeAsync("MIValidateItemTracking", new object[] {
-                        itemNo,
-                        variantCode,
-                        itemTrackingID,
-                        worksheetNo,
-                        validTracking,
-                        responseCode,
-                        errorText}, this.MIValidateItemTrackingOperationCompleted, userState);
-        }
-        
-        private void OnMIValidateItemTrackingOperationCompleted(object arg) {
-            if ((this.MIValidateItemTrackingCompleted != null)) {
-                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
-                this.MIValidateItemTrackingCompleted(this, new MIValidateItemTrackingCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -5135,47 +5087,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             if ((this.SetMemberCardTokenCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.SetMemberCardTokenCompleted(this, new SetMemberCardTokenCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
-            }
-        }
-        
-        /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("urn:microsoft-dynamics-schemas/codeunit/OmniWrapper:SetTokenEntry", RequestNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper", ResponseElementName="SetTokenEntry_Result", ResponseNamespace="urn:microsoft-dynamics-schemas/codeunit/OmniWrapper", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public void SetTokenEntry(string contractRecordId_p, string memberCardNo, RootSetTokenEntry setTokenEntryXML, ref bool result, ref string responseCode, ref string errorText) {
-            object[] results = this.Invoke("SetTokenEntry", new object[] {
-                        contractRecordId_p,
-                        memberCardNo,
-                        setTokenEntryXML,
-                        result,
-                        responseCode,
-                        errorText});
-            result = ((bool)(results[0]));
-            responseCode = ((string)(results[1]));
-            errorText = ((string)(results[2]));
-        }
-        
-        /// <remarks/>
-        public void SetTokenEntryAsync(string contractRecordId_p, string memberCardNo, RootSetTokenEntry setTokenEntryXML, bool result, string responseCode, string errorText) {
-            this.SetTokenEntryAsync(contractRecordId_p, memberCardNo, setTokenEntryXML, result, responseCode, errorText, null);
-        }
-        
-        /// <remarks/>
-        public void SetTokenEntryAsync(string contractRecordId_p, string memberCardNo, RootSetTokenEntry setTokenEntryXML, bool result, string responseCode, string errorText, object userState) {
-            if ((this.SetTokenEntryOperationCompleted == null)) {
-                this.SetTokenEntryOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSetTokenEntryOperationCompleted);
-            }
-            this.InvokeAsync("SetTokenEntry", new object[] {
-                        contractRecordId_p,
-                        memberCardNo,
-                        setTokenEntryXML,
-                        result,
-                        responseCode,
-                        errorText}, this.SetTokenEntryOperationCompleted, userState);
-        }
-        
-        private void OnSetTokenEntryOperationCompleted(object arg) {
-            if ((this.SetTokenEntryCompleted != null)) {
-                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
-                this.SetTokenEntryCompleted(this, new SetTokenEntryCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -16869,6 +16780,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private string serialNoField;
         
+        private string lotlNoField;
+        
         private decimal selectedQuantityField;
         
         private decimal counterField;
@@ -17147,6 +17060,16 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             }
             set {
                 this.serialNoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string LotlNo {
+            get {
+                return this.lotlNoField;
+            }
+            set {
+                this.lotlNoField = value;
             }
         }
         
@@ -17584,6 +17507,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private int replicationCounterField;
         
+        private bool toAccountField;
+        
         private string taxGroupCodeField;
         
         private decimal salesTaxRoundingField;
@@ -17602,6 +17527,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             this.exchangeRateField = ((decimal)(0m));
             this.amountinCurrencyField = ((decimal)(0m));
             this.replicationCounterField = 0;
+            this.toAccountField = false;
             this.salesTaxRoundingField = ((decimal)(0m));
         }
         
@@ -17890,6 +17816,17 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             }
             set {
                 this.replicationCounterField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool ToAccount {
+            get {
+                return this.toAccountField;
+            }
+            set {
+                this.toAccountField = value;
             }
         }
         
@@ -19984,6 +19921,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private decimal netAmountField;
         
+        private decimal vATAmountField;
+        
         private decimal costAmountField;
         
         private decimal grossAmountField;
@@ -20119,6 +20058,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             this.wrongShiftField = false;
             this.transSalePmtDiffField = ((decimal)(0m));
             this.netAmountField = ((decimal)(0m));
+            this.vATAmountField = ((decimal)(0m));
             this.costAmountField = ((decimal)(0m));
             this.grossAmountField = ((decimal)(0m));
             this.paymentField = ((decimal)(0m));
@@ -20371,6 +20311,17 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             }
             set {
                 this.netAmountField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.ComponentModel.DefaultValueAttribute(typeof(decimal), "0")]
+        public decimal VATAmount {
+            get {
+                return this.vATAmountField;
+            }
+            set {
+                this.vATAmountField = value;
             }
         }
         
@@ -21485,6 +21436,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private decimal netAmountField;
         
+        private decimal vATAmountField;
+        
         private decimal costAmountField;
         
         private decimal grossAmountField;
@@ -21612,6 +21565,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             this.wrongShiftField = false;
             this.transSalePmtDiffField = ((decimal)(0m));
             this.netAmountField = ((decimal)(0m));
+            this.vATAmountField = ((decimal)(0m));
             this.costAmountField = ((decimal)(0m));
             this.grossAmountField = ((decimal)(0m));
             this.paymentField = ((decimal)(0m));
@@ -21862,6 +21816,17 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             }
             set {
                 this.netAmountField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.ComponentModel.DefaultValueAttribute(typeof(decimal), "0")]
+        public decimal VATAmount {
+            get {
+                return this.vATAmountField;
+            }
+            set {
+                this.vATAmountField = value;
             }
         }
         
@@ -35835,6 +35800,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private decimal netAmountField;
         
+        private decimal vATAmountField;
+        
         private decimal costAmountField;
         
         private decimal grossAmountField;
@@ -35970,6 +35937,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             this.wrongShiftField = false;
             this.transSalePmtDiffField = ((decimal)(0m));
             this.netAmountField = ((decimal)(0m));
+            this.vATAmountField = ((decimal)(0m));
             this.costAmountField = ((decimal)(0m));
             this.grossAmountField = ((decimal)(0m));
             this.paymentField = ((decimal)(0m));
@@ -36222,6 +36190,17 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             }
             set {
                 this.netAmountField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.ComponentModel.DefaultValueAttribute(typeof(decimal), "0")]
+        public decimal VATAmount {
+            get {
+                return this.vATAmountField;
+            }
+            set {
+                this.vATAmountField = value;
             }
         }
         
@@ -41845,6 +41824,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private string attributeTypeField;
         
+        private string lookupTypeField;
+        
+        private string visibleTypeField;
+        
         /// <remarks/>
         public string Type {
             get {
@@ -41912,6 +41895,26 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             }
             set {
                 this.attributeTypeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string LookupType {
+            get {
+                return this.lookupTypeField;
+            }
+            set {
+                this.lookupTypeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string VisibleType {
+            get {
+                return this.visibleTypeField;
+            }
+            set {
+                this.visibleTypeField = value;
             }
         }
     }
@@ -44486,6 +44489,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private string attributeTypeField;
         
+        private string lookupTypeField;
+        
+        private string visibleTypeField;
+        
         /// <remarks/>
         public string Type {
             get {
@@ -44553,6 +44560,26 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             }
             set {
                 this.attributeTypeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string LookupType {
+            get {
+                return this.lookupTypeField;
+            }
+            set {
+                this.lookupTypeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string VisibleType {
+            get {
+                return this.visibleTypeField;
+            }
+            set {
+                this.visibleTypeField = value;
             }
         }
     }
@@ -49710,6 +49737,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private string serialNoField;
         
+        private string lotNoField;
+        
         private decimal selectedQuantityField;
         
         private decimal counterField;
@@ -49988,6 +50017,16 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             }
             set {
                 this.serialNoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string LotNo {
+            get {
+                return this.lotNoField;
+            }
+            set {
+                this.lotNoField = value;
             }
         }
         
@@ -52594,6 +52633,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private decimal netAmountField;
         
+        private decimal vATAmountField;
+        
         private decimal costAmountField;
         
         private decimal grossAmountField;
@@ -52719,6 +52760,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             this.wrongShiftField = false;
             this.transSalePmtDiffField = ((decimal)(0m));
             this.netAmountField = ((decimal)(0m));
+            this.vATAmountField = ((decimal)(0m));
             this.costAmountField = ((decimal)(0m));
             this.grossAmountField = ((decimal)(0m));
             this.paymentField = ((decimal)(0m));
@@ -52957,6 +52999,17 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             }
             set {
                 this.netAmountField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.ComponentModel.DefaultValueAttribute(typeof(decimal), "0")]
+        public decimal VATAmount {
+            get {
+                return this.vATAmountField;
+            }
+            set {
+                this.vATAmountField = value;
             }
         }
         
@@ -62218,6 +62271,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private bool restrictedFlagField;
         
+        private decimal grossAmountIntField;
+        
         private string taxAreaCodeField;
         
         private bool wICTransactionField;
@@ -62267,6 +62322,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             this.overridePLBItemField = false;
             this.overrideDateTimeField = new System.DateTime(0);
             this.restrictedFlagField = false;
+            this.grossAmountIntField = ((decimal)(0m));
             this.wICTransactionField = false;
             this.taxLiableField = false;
             this.netIncExpAmountField = ((decimal)(0m));
@@ -63043,6 +63099,17 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             }
             set {
                 this.restrictedFlagField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.ComponentModel.DefaultValueAttribute(typeof(decimal), "0")]
+        public decimal GrossAmountInt {
+            get {
+                return this.grossAmountIntField;
+            }
+            set {
+                this.grossAmountIntField = value;
             }
         }
         
@@ -65431,6 +65498,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private decimal totalSalesField;
         
+        private decimal expirationinPeriodIntField;
+        
         public MemberAccount() {
             this.dateActivatedField = new System.DateTime(0);
             this.salesCurrentYearField = ((decimal)(0m));
@@ -65440,6 +65509,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             this.createdDateField = new System.DateTime(0);
             this.totalRemainingPointsField = ((decimal)(0m));
             this.totalSalesField = ((decimal)(0m));
+            this.expirationinPeriodIntField = ((decimal)(0m));
         }
         
         /// <remarks/>
@@ -65681,6 +65751,17 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             }
             set {
                 this.totalSalesField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.ComponentModel.DefaultValueAttribute(typeof(decimal), "0")]
+        public decimal ExpirationinPeriodInt {
+            get {
+                return this.expirationinPeriodIntField;
+            }
+            set {
+                this.expirationinPeriodIntField = value;
             }
         }
     }
@@ -71179,6 +71260,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private System.DateTime endingDateField;
         
+        private string memberAttributeField;
+        
+        private string memberAttributeValueField;
+        
         public PublishedOffer() {
             this.endingDateField = new System.DateTime(0);
         }
@@ -71262,6 +71347,26 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             }
             set {
                 this.endingDateField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string MemberAttribute {
+            get {
+                return this.memberAttributeField;
+            }
+            set {
+                this.memberAttributeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string MemberAttributeValue {
+            get {
+                return this.memberAttributeValueField;
+            }
+            set {
+                this.memberAttributeValueField = value;
             }
         }
     }
@@ -71995,6 +72100,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private string boxNoField;
         
+        private string boxBarcodeNoField;
+        
         private decimal remainingQtyField;
         
         private string batchLotField;
@@ -72057,6 +72164,16 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             }
             set {
                 this.boxNoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string BoxBarcodeNo {
+            get {
+                return this.boxBarcodeNoField;
+            }
+            set {
+                this.boxBarcodeNoField = value;
             }
         }
         
@@ -73889,6 +74006,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private string shipToCountryRegionCodeField;
         
+        private string shipToPostCodeField;
+        
+        private string shipToCountyField;
+        
         public MobileTransaction() {
             this.idField = "{00000000-0000-0000-0000-000000000000}";
             this.transactionTypeField = 0;
@@ -74379,6 +74500,26 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             }
             set {
                 this.shipToCountryRegionCodeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string ShipToPostCode {
+            get {
+                return this.shipToPostCodeField;
+            }
+            set {
+                this.shipToPostCodeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string ShipToCounty {
+            get {
+                return this.shipToCountyField;
+            }
+            set {
+                this.shipToCountyField = value;
             }
         }
     }
@@ -76007,6 +76148,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private string prepaymentDocumentNoField;
         
+        private string serialNoField;
+        
+        private string lotNoField;
+        
         public CustomerOrderGetCOLineV3() {
             this.lineNoField = 0;
             this.netPriceField = ((decimal)(0m));
@@ -76560,6 +76705,26 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
                 this.prepaymentDocumentNoField = value;
             }
         }
+        
+        /// <remarks/>
+        public string SerialNo {
+            get {
+                return this.serialNoField;
+            }
+            set {
+                this.serialNoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string LotNo {
+            get {
+                return this.lotNoField;
+            }
+            set {
+                this.lotNoField = value;
+            }
+        }
     }
     
     /// <remarks/>
@@ -76670,6 +76835,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private string prepaymentInvoiceTypeField;
         
+        private string currencyCodeField;
+        
+        private decimal currencyFactorField;
+        
         public CustomerOrderGetCOHeaderV3() {
             this.createdField = new System.DateTime(0);
             this.shipOrderField = false;
@@ -76686,6 +76855,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             this.requestedDeliveryDateField = new System.DateTime(0);
             this.clickandCollectOrderField = false;
             this.collectionbyExclusionField = false;
+            this.currencyFactorField = ((decimal)(0m));
         }
         
         /// <remarks/>
@@ -77201,6 +77371,27 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             }
             set {
                 this.prepaymentInvoiceTypeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string CurrencyCode {
+            get {
+                return this.currencyCodeField;
+            }
+            set {
+                this.currencyCodeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.ComponentModel.DefaultValueAttribute(typeof(decimal), "0")]
+        public decimal CurrencyFactor {
+            get {
+                return this.currencyFactorField;
+            }
+            set {
+                this.currencyFactorField = value;
             }
         }
     }
@@ -79889,6 +80080,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private string prepaymentDocumentNoField;
         
+        private string serialNoField;
+        
+        private string lotNoField;
+        
         public CustomerOrderCreateCOLineV6() {
             this.lineNoField = 0;
             this.netPriceField = ((decimal)(0m));
@@ -80256,6 +80451,26 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
                 this.prepaymentDocumentNoField = value;
             }
         }
+        
+        /// <remarks/>
+        public string SerialNo {
+            get {
+                return this.serialNoField;
+            }
+            set {
+                this.serialNoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string LotNo {
+            get {
+                return this.lotNoField;
+            }
+            set {
+                this.lotNoField = value;
+            }
+        }
     }
     
     /// <remarks/>
@@ -80350,6 +80565,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
         
         private string prepaymentInvoiceTypeField;
         
+        private string currencyCodeField;
+        
+        private decimal currencyFactorField;
+        
         public CustomerOrderCreateCOHeaderV6() {
             this.shipOrderField = false;
             this.requestedDeliveryDateField = new System.DateTime(0);
@@ -80357,6 +80576,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             this.roundingAmountField = ((decimal)(0m));
             this.taxLiableField = false;
             this.createdField = new System.DateTime(0);
+            this.currencyFactorField = ((decimal)(0m));
         }
         
         /// <remarks/>
@@ -80783,6 +81003,27 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             }
             set {
                 this.prepaymentInvoiceTypeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public string CurrencyCode {
+            get {
+                return this.currencyCodeField;
+            }
+            set {
+                this.currencyCodeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.ComponentModel.DefaultValueAttribute(typeof(decimal), "0")]
+        public decimal CurrencyFactor {
+            get {
+                return this.currencyFactorField;
+            }
+            set {
+                this.currencyFactorField = value;
             }
         }
     }
@@ -88455,6 +88696,40 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
     
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9032.0")]
+    public delegate void CreateNewCardForContactCompletedEventHandler(object sender, CreateNewCardForContactCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9032.0")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class CreateNewCardForContactCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal CreateNewCardForContactCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public string responseCode {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+        
+        /// <remarks/>
+        public string errorText {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[1]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9032.0")]
     public delegate void CustomerOrderCancelCompletedEventHandler(object sender, CustomerOrderCancelCompletedEventArgs e);
     
     /// <remarks/>
@@ -90545,48 +90820,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
     
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9032.0")]
-    public delegate void GetVoucherEntriesCompletedEventHandler(object sender, GetVoucherEntriesCompletedEventArgs e);
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9032.0")]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    public partial class GetVoucherEntriesCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
-        
-        private object[] results;
-        
-        internal GetVoucherEntriesCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
-                base(exception, cancelled, userState) {
-            this.results = results;
-        }
-        
-        /// <remarks/>
-        public string responseCode {
-            get {
-                this.RaiseExceptionIfNecessary();
-                return ((string)(this.results[0]));
-            }
-        }
-        
-        /// <remarks/>
-        public string errorText {
-            get {
-                this.RaiseExceptionIfNecessary();
-                return ((string)(this.results[1]));
-            }
-        }
-        
-        /// <remarks/>
-        public RootGetVoucherEntries getVoucherEntriesXML {
-            get {
-                this.RaiseExceptionIfNecessary();
-                return ((RootGetVoucherEntries)(this.results[2]));
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9032.0")]
     public delegate void GetVoucherEntriesV2CompletedEventHandler(object sender, GetVoucherEntriesV2CompletedEventArgs e);
     
     /// <remarks/>
@@ -90825,48 +91058,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((string)(this.results[1]));
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9032.0")]
-    public delegate void MIValidateItemTrackingCompletedEventHandler(object sender, MIValidateItemTrackingCompletedEventArgs e);
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9032.0")]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    public partial class MIValidateItemTrackingCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
-        
-        private object[] results;
-        
-        internal MIValidateItemTrackingCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
-                base(exception, cancelled, userState) {
-            this.results = results;
-        }
-        
-        /// <remarks/>
-        public bool validTracking {
-            get {
-                this.RaiseExceptionIfNecessary();
-                return ((bool)(this.results[0]));
-            }
-        }
-        
-        /// <remarks/>
-        public string responseCode {
-            get {
-                this.RaiseExceptionIfNecessary();
-                return ((string)(this.results[1]));
-            }
-        }
-        
-        /// <remarks/>
-        public string errorText {
-            get {
-                this.RaiseExceptionIfNecessary();
-                return ((string)(this.results[2]));
             }
         }
     }
@@ -92815,48 +93006,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.LSCentral25 {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((string)(this.results[1]));
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9032.0")]
-    public delegate void SetTokenEntryCompletedEventHandler(object sender, SetTokenEntryCompletedEventArgs e);
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Web.Services", "4.8.9032.0")]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    public partial class SetTokenEntryCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
-        
-        private object[] results;
-        
-        internal SetTokenEntryCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
-                base(exception, cancelled, userState) {
-            this.results = results;
-        }
-        
-        /// <remarks/>
-        public bool result {
-            get {
-                this.RaiseExceptionIfNecessary();
-                return ((bool)(this.results[0]));
-            }
-        }
-        
-        /// <remarks/>
-        public string responseCode {
-            get {
-                this.RaiseExceptionIfNecessary();
-                return ((string)(this.results[1]));
-            }
-        }
-        
-        /// <remarks/>
-        public string errorText {
-            get {
-                this.RaiseExceptionIfNecessary();
-                return ((string)(this.results[2]));
             }
         }
     }

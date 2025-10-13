@@ -15,10 +15,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
             IsJson = json;
         }
 
-        public SalesEntry GetSalesEntry(string ret)
+        public SalesEntry GetSalesEntry(string ret, out string resCode, out string resErr)
         {
             SalesEntry rec = null;
-            WSODataCollection result = JsonToWSOData(ret, "SelectedSalesDocDaCo");
+            WSODataCollection result = JsonToWSOData(ret, "SelectedSalesDocDaCo", out resCode, out resErr);
             if (result == null)
                 return rec;
 
@@ -49,10 +49,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
             return rec;
         }
 
-        public List<SalesEntry> GetSalesEntryHistory(string ret)
+        public List<SalesEntry> GetSalesEntryHistory(string ret, out string resCode, out string resErr)
         {
             List<SalesEntry> list = new List<SalesEntry>();
-            WSODataCollection result = JsonToWSOData(ret, "MemberContactSalesHistoryDaCo");
+            WSODataCollection result = JsonToWSOData(ret, "MemberContactSalesHistoryDaCo", out resCode, out resErr);
             if (result == null)
                 return list;
 
@@ -61,17 +61,17 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
             return list;
         }
 
-        public SalesEntryList GetSalesEntrySales(string ret, bool getCardId, out string cardId)
+        public SalesEntryList GetSalesEntrySales(string ret, bool getCardId, out string cardId, out string resCode, out string resErr)
         {
             SalesEntryList entry = new SalesEntryList();
             cardId = string.Empty;
 
-            WSODataCollection result = JsonToWSOData(ret, "SalesInfoDaCo");
+            WSODataCollection result = JsonToWSOData(ret, "SalesInfoDaCo", out resCode, out resErr);
             if (result == null)
                 return entry;
 
             if (getCardId)
-                cardId = JsonToWSODataValue(ret, "CardNo");
+                cardId = GetJsonValue(ret, "CardNo", out resCode, out resErr);
 
             List<SalesEntry> entries = LoadSaleEntries(result.GetDataSet(10000818));
             foreach (SalesEntry rec in entries)
@@ -202,6 +202,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
             if (dynDataSet == null || dynDataSet.DataSetRows.Count == 0)
                 return;
 
+            int payLineNo = 10000;
             foreach (ReplODataRecord row in dynDataSet.DataSetRows)
             {
                 SalesEntryLine rec = new SalesEntryLine();
@@ -209,6 +210,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                 string cardType = string.Empty;
                 string cardNo = string.Empty;
                 string curCode = string.Empty;
+                PaymentType pType = PaymentType.None;
                 decimal curFact = 0;
 
                 foreach (ReplODataField col in row.Fields)
@@ -221,6 +223,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                     {
                         case "Line No.": rec.LineNumber = ConvertTo.SafeInt(col.FieldValue); break;
                         case "Entry Type": rec.LineType = (LineType)ConvertTo.SafeInt(col.FieldValue); break;
+                        case "Payment Type": pType = (PaymentType)ConvertTo.SafeInt(col.FieldValue); break;
                         case "Number": rec.ItemId = col.FieldValue; break;
                         case "Description": rec.ItemDescription = col.FieldValue; break;
                         case "Variant Code": rec.VariantId = col.FieldValue; break;
@@ -258,14 +261,15 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                     {
                         Amount = rec.Amount,
                         AmountLCY = rec.Amount,
-                        LineNumber = rec.LineNumber,
+                        LineNumber = payLineNo,
                         TenderType = rec.ItemId,
                         CardNo = cardNo,
                         CardType = cardType,
                         CurrencyCode = curCode,
                         CurrencyFactor = curFact,
-                        Type = PaymentType.Payment
+                        Type = pType
                     });
+                    payLineNo += 10000;
                 }
                 else
                 {
@@ -334,6 +338,9 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                         case "Document Line No.": rec.LineNumber = ConvertTo.SafeInt(col.FieldValue); break;
                         case "Offer Type": rec.SetDiscType((OfferDiscountType)ConvertTo.SafeInt(col.FieldValue)); break;
                         case "Offer No.": rec.OfferNumber = col.FieldValue; break;
+                        case "Periodic Disc. Group": rec.PeriodicDiscGroup = col.FieldValue; break;
+                        case "Periodic Disc. Type": rec.PeriodicDiscType = (PeriodicDiscType)ConvertTo.SafeInt(col.FieldValue); break;
+                        case "Entry No.": rec.No = col.FieldValue; break;
                         case "Description": rec.Description = col.FieldValue; break;
                         case "Discount Amount": rec.DiscountAmount = ConvertTo.SafeDecimal(col.FieldValue); break;
                     }

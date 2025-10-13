@@ -12,24 +12,38 @@ namespace LSOmni.Common.Util
     {
         public static string DecryptString(string cipherText, string encr)
         {
-            //sometimes I label a password string with :encr: so I know it is an encrypted pwd
+            if (string.IsNullOrEmpty(cipherText))
+                return string.Empty;
+
+            //password string with :encr: is an encrypted pwd
+            string pwd = cipherText;
             if (cipherText.EndsWith(":encr:"))
             {
-                cipherText = cipherText.Replace(":encr:", "");
+                pwd = cipherText.Replace(":encr:", "");
             }
 
             SymmetricAlgorithm algorithm = getAlgorithm(encr);
-            byte[] cipherBytes = Convert.FromBase64String(cipherText);
+            byte[] cipherBytes = Convert.FromBase64String(pwd);
             MemoryStream ms = new MemoryStream();
 
-            CryptoStream cs = new CryptoStream(ms, algorithm.CreateDecryptor(), CryptoStreamMode.Write);
-            cs.Write(cipherBytes, 0, cipherBytes.Length);
-            cs.Close();
+            try
+            {
+                CryptoStream cs = new CryptoStream(ms, algorithm.CreateDecryptor(), CryptoStreamMode.Write);
+                cs.Write(cipherBytes, 0, cipherBytes.Length);
+                cs.Close();
+            }
+            catch
+            {
+                return cipherText;
+            }
             return Encoding.Unicode.GetString(ms.ToArray());
         }
 
         public static string EncryptString(string clearText, string encr)
         {
+            if (string.IsNullOrEmpty(clearText))
+                return string.Empty;
+
             SymmetricAlgorithm algorithm = getAlgorithm(encr);
             byte[] clearBytes = Encoding.Unicode.GetBytes(clearText);
             MemoryStream ms = new MemoryStream();

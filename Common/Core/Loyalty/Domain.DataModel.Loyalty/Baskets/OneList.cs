@@ -25,6 +25,8 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Baskets
             MemberPriceGroupCode = string.Empty;
             PriceGroupCode = string.Empty;
             ShipToCountryCode = string.Empty;
+            ShipToPostCode = string.Empty;
+            ShipToCounty = string.Empty;
             SalesType = string.Empty;
             Currency = string.Empty;
             CreateDate = DateTime.Now;
@@ -143,8 +145,21 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Baskets
         public string MemberPriceGroupCode { get; set; }
         [DataMember]
         public string PriceGroupCode { get; set; }
+        /// <summary>
+        /// Used for tax calculation
+        /// </summary>
         [DataMember]
         public string ShipToCountryCode { get; set; }
+        /// <summary>
+        /// Used for NA tax calculation only
+        /// </summary>
+        [DataMember]
+        public string ShipToCounty { get; set; }
+        /// <summary>
+        /// Used for NA tax calculation only
+        /// </summary>
+        [DataMember]
+        public string ShipToPostCode { get; set; }
         /// <summary>
         /// Set currency if it is different from Ledger Entry Currency
         /// </summary>

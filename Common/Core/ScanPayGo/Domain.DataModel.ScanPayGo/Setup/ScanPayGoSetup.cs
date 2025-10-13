@@ -146,6 +146,7 @@ namespace LSRetail.Omni.Domain.DataModel.ScanPayGo.Setup
 
         public bool GoogleLoginEnabled { get; set; }
         public string GoogleIosClientId { get; set; }
+        public string GoogleRequestId { get; set; }
         public bool FacebookLoginEnabled { get; set; }
         public bool AppleLoginEnabled { get; set; }
         public bool OpenGateEnabled { get; set; }
@@ -162,6 +163,10 @@ namespace LSRetail.Omni.Domain.DataModel.ScanPayGo.Setup
         public string GooglePayConnectionId { get; set; }
         public bool UseOnlineSearch { get; set; } = default;
         public bool EnableNotifications { get; set; }
+
+        //Force Update
+        public string ForceUpdateVersion { get; set; } = default;
+        public string ForceUpdateAppStoreId { get; set; } = default;
 
         public string CurrencyCode
         {

@@ -67,7 +67,7 @@ namespace LSOmni.BLL
             return pwd;
         }
 
-        public virtual BOConfiguration SaveConfig(BOConfiguration config)
+        public virtual BOConfiguration SaveConfig(BOConfiguration dbConfig)
         {
             string username = ValidateToken();
             if (iUserRepository.IsAdmin(username) == false && iConfigRepository.ConfigExists(config.LSKey.Key) == false)
@@ -75,7 +75,7 @@ namespace LSOmni.BLL
                 throw new LSOmniServiceException(StatusCode.AccessNotAllowed, "User does not have permission add tenants");
             }
 
-            iConfigRepository.SaveConfig(config);
+            iConfigRepository.SaveConfig(dbConfig);
             return GetConfig(config.LSKey.Key);
         }
 

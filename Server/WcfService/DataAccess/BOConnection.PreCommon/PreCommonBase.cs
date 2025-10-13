@@ -76,6 +76,9 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 throw new LSOmniServiceException(StatusCode.SecurityTokenInvalid, "SecurityToken invalid");
             }
             config = configuration;
+            string url = config.SettingsGetByKey(ConfigKey.BOUrl);
+            if (string.IsNullOrEmpty(url))
+                return;
 
             base64ConversionMinLength = config.SettingsIntGetByKey(ConfigKey.Base64MinXmlSizeInKB) * 1024; //in KB
             ecomAppId = config.SettingsGetByKey(ConfigKey.NavAppId);
@@ -94,7 +97,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             string restoredata = File.ReadAllText(ecomAppRestoreFileName);
             ecomAppRestore = Convert.ToBoolean(restoredata);
 
-            string url = config.SettingsGetByKey(ConfigKey.BOUrl);
             int sp = url.ToLower().IndexOf("/ws/");
             int ep = url.ToLower().IndexOf("/codeunit");
             NavCompany = HttpUtility.UrlDecode(url.Substring(sp + 4, ep - sp - 4));
@@ -380,7 +382,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
         public string NavVersionToUse(out string centralVersion)
         {
             if (LSCVersion == null)
-                LSCVersion = new Version("26.0");
+                LSCVersion = new Version("27.0");
 
             centralVersion = LSCVersion.ToString();
             if (centralWS == null)
@@ -1086,6 +1088,30 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                     if (navResponseId == "MM_CARD_TO_CONTACT")
                         statusCode = StatusCode.ContactIsBlocked;
                     break;
+                case "2001":
+                    statusCode = StatusCode.InvTransSendNoLines;
+                    break;
+                case "2002":
+                    statusCode = StatusCode.InvTransSendAlreadyReceived;
+                    break;
+                case "2003":
+                    statusCode = StatusCode.InvTransSendWorkSheetNotFound;
+                    break;
+                case "2004":
+                    statusCode = StatusCode.InvTransSendWorkSheetSeqNoNotUnique;
+                    break;
+                case "2005":
+                    statusCode = StatusCode.InvTransSendNoNotUnique;
+                    break;
+                case "2006":
+                    statusCode = StatusCode.InvTransSendUnexpectedEnd;
+                    break;
+                case "2007":
+                    statusCode = StatusCode.InvTransSendTooManyLines;
+                    break;
+                case "2008":
+                    statusCode = StatusCode.InvTransSendAreaCodeMissing;
+                    break;
                 case "2201":
                     statusCode = StatusCode.OrderAlreadyExist;
                     break;
@@ -1109,6 +1135,27 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                     break;
                 case "2253":
                     statusCode = StatusCode.CardInvalidStatus;
+                    break;
+                case "2300":
+                    statusCode = StatusCode.POSTerminalIDMandatory;
+                    break;
+                case "2301":
+                    statusCode = StatusCode.AppIdMandatory;
+                    break;
+                case "2302":
+                    statusCode = StatusCode.AppVersionMandatory;
+                    break;
+                case "2303":
+                    statusCode = StatusCode.DeviceUnitMandatory;
+                    break;
+                case "2304":
+                    statusCode = StatusCode.SignatureInvalid;
+                    break;
+                case "2305":
+                    statusCode = StatusCode.POSTerminalNotFound;
+                    break;
+                case "2306":
+                    statusCode = StatusCode.NoAvailableUnitFound;
                     break;
                 case "4003":
                     statusCode = StatusCode.DiningTableStatusNotAbleToChange;

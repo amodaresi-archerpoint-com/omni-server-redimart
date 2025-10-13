@@ -359,6 +359,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                         case 45: p3 = data.FieldValue; break;
                         case 46: line.ValidationPeriodId = data.FieldValue; break;
                         case 47: amt = ConvertTo.SafeDecimal(data.FieldValue); break;
+                        case 50: line.Exclude = ConvertTo.SafeBoolean(data.FieldValue); break;
                     }
                 }
 
@@ -445,6 +446,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                         case 44: p2 = data.FieldValue; break;
                         case 45: p3 = data.FieldValue; break;
                         case 46: line.ValidationPeriodId = data.FieldValue; break;
+                        case 50: line.Exclude = ConvertTo.SafeBoolean(data.FieldValue); break;
                     }
                 }
 
@@ -575,6 +577,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                         case "Coupon Qty Needed": line.CouponQtyNeeded = ConvertTo.SafeDecimal(data.FieldValue); break;
                         case "Member Type": line.MemberType = (ReplDiscMemberType)ConvertTo.SafeInt(data.FieldValue); break;
                         case "Member Attribute": line.MemberAttribute = data.FieldValue; break;
+                        case "Member Attribute Value": line.MemberAttributeValue = data.FieldValue; break;
                         case "Maximum Discount Amount": line.MaxDiscountAmount = ConvertTo.SafeDecimal(data.FieldValue); break;
                         case "Tender Type Code": line.TenderTypeCode = data.FieldValue; break;
                         case "Tender Type Value": line.TenderTypeValue = data.FieldValue; break;
@@ -770,7 +773,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                         case 11: line.Prompt = data.FieldValue; break;
                         case 12: line.GroupMinSelection = ConvertTo.SafeInt(data.FieldValue); break;
                         case 13: line.GroupMaxSelection = ConvertTo.SafeInt(data.FieldValue); break;
-                        //case 30: line.ItemNo = data.FieldValue; break;
+                        case 14: line.UsageCategory = (ItemUsageCategory)ConvertTo.SafeInt(data.FieldValue); break;
+                        case 15: line.Type = (ItemModifierType)ConvertTo.SafeInt(data.FieldValue); break;
+                        case 16: line.TriggerFunction = (ItemTriggerFunction)ConvertTo.SafeInt(data.FieldValue); break;
+                        case 30: line.TriggerCode = data.FieldValue; break;
                         case 31: line.VariantCode = data.FieldValue; break;
                         case 32: line.Description = data.FieldValue; break;
                         case 33: line.MinSelection = ConvertTo.SafeInt(data.FieldValue); break;
@@ -1885,9 +1891,9 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
             return list;
         }
 
-        public LoyItem GetItem(string ret, bool inclDetail)
+        public LoyItem GetItem(string ret, bool inclDetail, out string resCode, out string resErr)
         {
-            WSODataCollection result = JsonToWSOData(ret, "ItemInfo");
+            WSODataCollection result = JsonToWSOData(ret, "ItemInfo", out resCode, out resErr);
             if (result == null)
                 return null;
 
@@ -2278,6 +2284,41 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
             return list.FindAll(x => x.Location == keyValue);
         }
 
+        public ImageView GetImage(string ret, out string resCode, out string resErr)
+        {
+            WSODataCollection result = JsonToWSOData(ret, "ImageInfo", out resCode, out resErr);
+            if (result == null)
+                return null;
+
+            ReplODataSetRecRef dynDataSet = result.GetDataSet(2000000184);
+            if (dynDataSet == null || dynDataSet.DataSetRows.Count == 0)
+                return null;
+
+            ReplODataRecord row = dynDataSet.DataSetRows[0];
+            ImageView rec = new ImageView();
+
+            int height = 0;
+            int width = 0;
+            foreach (ReplODataField col in row.Fields)
+            {
+                ReplODataSetField fld = dynDataSet.DataSetFields.Find(f => f.FieldIndex == col.FieldIndex);
+                if (fld == null)
+                    continue;
+
+                switch (fld.FieldName)
+                {
+                    case "ID": rec.MediaId = new Guid(col.FieldValue); break;
+                    case "Height": height = ConvertTo.SafeInt(col.FieldValue); break;
+                    case "Width": width = ConvertTo.SafeInt(col.FieldValue); break;
+                    case "Content": rec.ImgBytes = Convert.FromBase64String(col.FieldValue); break;
+                }
+            }
+
+            rec.ImgSize = new ImageSize(width, height, false);
+            return rec;
+        }
+
+
         private class xItemStatus
         {
             public string itemNo;
@@ -2557,10 +2598,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
             return string.Empty;
         }
 
-        public List<ProactiveDiscount> GetDiscount(string ret, string storeId)
+        public List<ProactiveDiscount> GetDiscount(string ret, string storeId, out string resCode, out string resErr)
         {
             List<ProactiveDiscount> list = new List<ProactiveDiscount>();
-            WSODataCollection result = JsonToWSOData(ret, "DiscountInfo");
+            WSODataCollection result = JsonToWSOData(ret, "DiscountInfo", out resCode, out resErr);
             if (result == null)
                 return list;
 

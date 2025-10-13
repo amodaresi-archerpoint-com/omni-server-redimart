@@ -362,20 +362,10 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
 
         public bool UsesNewPriceLines()
         {
-            bool isEnabled = false;
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                using (SqlCommand command = connection.CreateCommand())
-                {
-                    command.CommandText = "SELECT [Enabled] FROM [Tenant Feature Key] WHERE [ID]='SalesPrices'";
-                    connection.Open();
-                    TraceSqlCommand(command);
-                    var data = command.ExecuteScalar();
-                    isEnabled = Convert.ToBoolean(data);
-                    connection.Close();
-                }
-            }
-            return isEnabled;
+            if (config.SettingsKeyExists(ConfigKey.UseSalesPrice) == false)
+                return true;
+
+            return (config.SettingsBoolGetByKey(ConfigKey.UseSalesPrice) == false);
         }
 
         public List<Price> PricesGetByItemId(string itemId, string storeId, string culture, Statistics stat)

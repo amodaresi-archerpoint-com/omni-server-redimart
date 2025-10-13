@@ -616,11 +616,10 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             {
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT mt.[Code],a.[Description],a.[Attribute Type],a.[Default Value],a.[Mandatory] " +
+                    command.CommandText = "SELECT mt.[Code],a.[Description],a.[Attribute Type],a.[Default Value],a.[Mandatory],a.[Visible Type],a.[Lookup Type] " +
                                           "FROM [" + navCompanyName + "LSC Member Attribute Setup$5ecfc871-5d82-43f1-9c54-59685e82318d] mt " +
                                           "JOIN [" + navCompanyName + "LSC Member Management Setup$5ecfc871-5d82-43f1-9c54-59685e82318d] mms ON mms.[Mobile Default Club Code]=mt.[Club Code] " +
-                                          "JOIN [" + navCompanyName + "LSC Member Attribute$5ecfc871-5d82-43f1-9c54-59685e82318d] a ON a.[Code]=mt.[Code] " +
-                                          "AND a.[Visible Type]=0 AND a.[Lookup Type]=0";
+                                          "JOIN [" + navCompanyName + "LSC Member Attribute$5ecfc871-5d82-43f1-9c54-59685e82318d] a ON a.[Code]=mt.[Code] AND a.[Visible Type]=0 AND a.[Lookup Type]=0";
 
                     connection.Open();
                     TraceSqlCommand(command);
@@ -638,19 +637,20 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             return list;
         }
 
-        public virtual List<Profile> ProfileGetByCardId(string id)
+        public virtual List<Profile> ProfileGetByCardId(string id, bool includeAll)
         {
             List<Profile> pro = new List<Profile>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT mt.[Code],a.[Description],a.[Attribute Type],a.[Default Value],a.[Mandatory],v.[Attribute Value] " +
-                                          "FROM [" + navCompanyName + "LSC Member Attribute Setup$5ecfc871-5d82-43f1-9c54-59685e82318d] mt " +
+                    command.CommandText = "SELECT mt.[Code],mt.[Description],mt.[Attribute Type],mt.[Default Value],mt.[Mandatory],mt.[Visible Type],mt.[Lookup Type],v.[Attribute Value] " +
+                                          "FROM [" + navCompanyName + "LSC Member Attribute$5ecfc871-5d82-43f1-9c54-59685e82318d] mt " +
                                           "JOIN [" + navCompanyName + "LSC Membership Card$5ecfc871-5d82-43f1-9c54-59685e82318d] mc ON mc.[Card No_]=@id " +
-                                          "JOIN [" + navCompanyName + "LSC Member Attribute$5ecfc871-5d82-43f1-9c54-59685e82318d] a ON a.[Code]=mt.[Code] " +
                                           "JOIN [" + navCompanyName + "LSC Member Attribute Value$5ecfc871-5d82-43f1-9c54-59685e82318d] v ON v.[Attribute Code]=mt.[Code] " +
-                                          "AND a.[Visible Type]=0 AND a.[Lookup Type]=0 AND v.[Contact No_]=mc.[Contact No_]";
+                                          "AND v.[Account No_]=mc.[Account No_]";
+                    if (includeAll == false)
+                        command.CommandText += " AND mt.[Visible Type]=0 AND mt.[Lookup Type]=0";
 
                     command.Parameters.AddWithValue("@id", id);
                     connection.Open();
@@ -680,12 +680,12 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 using (SqlCommand command = connection.CreateCommand())
                 {
                     string sqlWhere = SQLHelper.SetSearchParameters(command, search, GetDbCICollation()) + " AND c.[Card No_]=@id";
-                    command.CommandText = "SELECT mt.[Code],mt.[Description],mt.[Attribute Type],mt.[Default Value],mt.[Mandatory] " +
+                    command.CommandText = "SELECT mt.[Code],mt.[Description],mt.[Attribute Type],mt.[Default Value],mt.[Mandatory],mt.[Visible Type],mt.[Lookup Type] " +
                                           "FROM [" + navCompanyName + "LSC Member Contact$5ecfc871-5d82-43f1-9c54-59685e82318d] mc " +
                                           "JOIN [" + navCompanyName + "LSC Member Attribute Setup$5ecfc871-5d82-43f1-9c54-59685e82318d] ms ON ms.[Club Code]=mc.[Club Code] " +
                                           "JOIN [" + navCompanyName + "LSC Member Attribute$5ecfc871-5d82-43f1-9c54-59685e82318d] mt ON mt.[Code]=ms.[Code] " +
-                                          "JOIN [" + navCompanyName + "LSC Membership Card$5ecfc871-5d82-43f1-9c54-59685e82318d] c on c.[Contact No_]=mc.[Contact No_]" +
-                                          "AND mt.[Visible Type]=0 AND mt.[Lookup Type]=0" + sqlWhere;
+                                          "JOIN [" + navCompanyName + "LSC Membership Card$5ecfc871-5d82-43f1-9c54-59685e82318d] c ON c.[Contact No_]=mc.[Contact No_] AND mt.[Visible Type]=0 AND mt.[Lookup Type]=0 " + 
+                                          sqlWhere;
                     command.Parameters.AddWithValue("@id", cardId);
                     TraceSqlCommand(command);
                     connection.Open();
@@ -922,6 +922,8 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 Description = SQLHelper.GetString(reader["Description"]),
                 DataType = (ProfileDataType)SQLHelper.GetInt32(reader["Attribute Type"]),
                 DefaultValue = SQLHelper.GetString(reader["Default Value"]),
+                VisibleType = SQLHelper.GetInt32(reader["Visible Type"]),
+                LookupType = SQLHelper.GetInt32(reader["Lookup Type"]),
                 Mandatory = SQLHelper.GetBool(reader["Mandatory"])
             };
             if (contactValues)

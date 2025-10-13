@@ -706,6 +706,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                         case "Click and Collect": line.ClickAndCollect = ConvertTo.SafeBoolean(data.FieldValue); break;
                         case "Store Group Codes": line.StoreGroupCodes = data.FieldValue; break;
                         case "Price Group Codes": line.PriceGroupCodes = data.FieldValue; break;
+                        case "Sales Type Filter": line.HospSalesTypes = data.FieldValue; break;
                         case "LCY Code": lcy = data.FieldValue; break;
                     }
                 }
@@ -743,10 +744,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
             return list;
         }
 
-        public List<Store> GetStores(string ret, int offset)
+        public List<Store> GetStores(string ret, int offset, out string resCode, out string resErr)
         {
             List<Store> list = new List<Store>();
-            WSODataCollection result = JsonToWSOData(ret, "StoreInfo");
+            WSODataCollection result = JsonToWSOData(ret, "StoreInfo", out resCode, out resErr);
             if (result == null)
                 return list;
 

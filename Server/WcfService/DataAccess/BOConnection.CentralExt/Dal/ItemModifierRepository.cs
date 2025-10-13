@@ -24,9 +24,9 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                          "ic.[Max_ Selection] AS [GrMaxSel],ic.[Min_ Selection] AS [GrMinSel],mt.[Time Modifier Minutes]," +
                          "tsi.[Usage Category],tsi.[Usage Sub-Category],ic.[Explanatory Header Text],ic.[Prompt]," +
                          "(SELECT icc.[Min_ Selection] FROM [" + navCompanyName + "LSC Infocode$5ecfc871-5d82-43f1-9c54-59685e82318d] icc " +
-                         "WHERE icc.[Code]=mt.[Trigger Code]) AS [MinSel]," +
+                         "WHERE icc.[Code]=mt.[Code]) AS [MinSel]," +
                          "(SELECT icc.[Max_ Selection] FROM [" + navCompanyName + "LSC Infocode$5ecfc871-5d82-43f1-9c54-59685e82318d] icc " +
-                         "WHERE icc.[Code]=mt.[Trigger Code]) AS [MaxSel]";
+                         "WHERE icc.[Code]=mt.[Code]) AS [MaxSel]";
 
             sqlfrom = " FROM [" + navCompanyName + "LSC Table Specific Infocode$5ecfc871-5d82-43f1-9c54-59685e82318d] tsi" +
                       " JOIN [" + navCompanyName + "LSC Information Subcode$5ecfc871-5d82-43f1-9c54-59685e82318d] mt ON mt.[Code]=tsi.[Infocode Code]";

@@ -233,6 +233,11 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Retail
     {
         public static BarcodeParseResult Parse(IEnumerable<BarcodeMask> masks, string barcode)
         {
+            if (masks == null)
+            {
+                return new BarcodeParseResult(barcode, null);
+            }
+
             foreach (BarcodeMask mask in masks)
             {
                 BarcodeParseResult result = Match(mask, barcode);

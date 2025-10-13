@@ -32,6 +32,10 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Retail
         [DataMember]
         public string LoyaltySchemeCode { get; set; }
         [DataMember]
+        public string MemberAttribute { get; set; }
+        [DataMember]
+        public string MemberAttributeValue { get; set; }
+        [DataMember]
         public decimal MinimumQuantity { get; set; }
         [DataMember]
         public string PeriodId { get; set; }

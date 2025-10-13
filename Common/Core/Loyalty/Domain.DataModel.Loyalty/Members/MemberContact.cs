@@ -161,6 +161,8 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Members
         [DataMember]
         public List<Profile> Profiles { get; set; }
         [DataMember]
+        public List<Profile> MemberAttributes { get; set; }
+        [DataMember]
         public List<SalesEntry> SalesEntries { get; set; }
         [DataMember]
         public List<OneList> OneLists { get; set; }
@@ -209,6 +211,7 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Members
             notifications = new List<Notification>();
             PublishedOffers = new List<PublishedOffer>();
             Profiles = new List<Profile>();
+            MemberAttributes = new List<Profile>();
             SalesEntries = new List<SalesEntry>();
             Cards = new List<Card>();
             OneLists = new List<OneList>();
@@ -345,7 +348,7 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Members
             if (value == null)
                 return;
 
-            if (version >= new Version("25.0"))
+            if (version == null || version >= new Version("25.0"))
             {
                 // enum not same as option
                 if (value == "1")
@@ -361,7 +364,7 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Members
 
         public string GetNewGender(Version version)
         {
-            if (version >= new Version("25.0"))
+            if (version == null || version >= new Version("25.0"))
             {
                 // enum not same as option
                 if (Gender == Gender.Female)

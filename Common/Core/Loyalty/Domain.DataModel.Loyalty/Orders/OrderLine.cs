@@ -71,6 +71,10 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Orders
         public string VariantDescription { get; set; }
         [DataMember]
         public string UomId { get; set; }
+        [DataMember]
+        public string LotNumber { get; set; }
+        [DataMember]
+        public string SerialNumber { get; set; }
         /// <summary>
         /// Store to collect the item from
         /// </summary>

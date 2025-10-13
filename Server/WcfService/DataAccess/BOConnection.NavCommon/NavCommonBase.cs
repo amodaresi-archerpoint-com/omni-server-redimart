@@ -69,6 +69,24 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon
                 throw new LSOmniServiceException(StatusCode.SecurityTokenInvalid, "SecurityToken invalid");
             }
             config = configuration;
+            string url = config.SettingsGetByKey(ConfigKey.BOUrl);
+            if (string.IsNullOrEmpty(url))
+                return;
+
+            string tenVersion = config.SettingsGetByKey(ConfigKey.LSNAV_Version);
+            if (string.IsNullOrEmpty(tenVersion) == false)
+            {
+                Version v = new Version(tenVersion);
+                if (v >= new Version("17.5"))
+                    return;
+            }
+
+            string protocol = config.SettingsGetByKey(ConfigKey.BOProtocol);
+            if (string.IsNullOrWhiteSpace(protocol) == false)
+            {
+                if (protocol.ToUpper().Equals("S2S"))
+                    return;
+            }
 
             base64ConversionMinLength = config.SettingsIntGetByKey(ConfigKey.Base64MinXmlSizeInKB) * 1024; //in KB
 
@@ -116,8 +134,6 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon
             }
 
             ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(AcceptAllCertifications);
-
-            string protocol = config.SettingsGetByKey(ConfigKey.BOProtocol);
             if (string.IsNullOrWhiteSpace(protocol) == false)
             {
                 ServicePointManager.SecurityProtocol = (SecurityProtocolType) EnumHelper.StringToEnum(typeof(SecurityProtocolType), protocol);

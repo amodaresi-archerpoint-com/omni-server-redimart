@@ -63,7 +63,7 @@ namespace LSOmni.Service
                 logger.Debug(config.LSKey.Key, string.Format("ProfilesGetByContactId() - cardId:{0}", cardId));
 
                 ContactBLL profileBLL = new ContactBLL(config, clientTimeOutInSeconds);
-                return profileBLL.ProfilesGetByCardId(cardId, stat);
+                return profileBLL.ProfilesGetByCardId(cardId, false, stat);
             }
             catch (Exception ex)
             {
@@ -355,6 +355,29 @@ namespace LSOmni.Service
             catch (Exception ex)
             {
                 HandleExceptions(ex, "ChangePassword() userName:{0}", userName);
+                return false;
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
+        }
+
+        public virtual bool ContactCreateCard(string contactId, string accountId, string cardId, string clubId, string schemeId)
+        {
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+
+            try
+            {
+                logger.Debug(config.LSKey.Key, "contactId:{0}, accountId:{1}, cardId:{2}", contactId, accountId, cardId);
+
+                ContactBLL contactBLL = new ContactBLL(config, clientTimeOutInSeconds);
+                contactBLL.ContactCreateCard(contactId, accountId, cardId, clubId, schemeId, stat);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "contactId:{0}, accountId:{1}, cardId:{2}", contactId, accountId, cardId);
                 return false;
             }
             finally

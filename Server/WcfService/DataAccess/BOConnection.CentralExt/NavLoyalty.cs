@@ -22,6 +22,7 @@ using LSRetail.Omni.Domain.DataModel.Loyalty.OrderHosp;
 using LSRetail.Omni.Domain.DataModel.ScanPayGo.Setup;
 using LSRetail.Omni.Domain.DataModel.ScanPayGo.Checkout;
 using LSRetail.Omni.Domain.DataModel.ScanPayGo.Payment;
+using LSOmni.DataAccess.BOConnection.PreCommon;
 
 namespace LSOmni.DataAccess.BOConnection.CentralExt
 {
@@ -106,7 +107,15 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt
         public virtual MemberContact ContactGet(ContactSearchType searchType, string searchValue, Statistics stat)
         {
             ContactRepository rep = new ContactRepository(config, LSCVersion);
-            return rep.ContactGet(searchType, searchValue, stat);
+            MemberContact contact = rep.ContactGet(searchType, searchValue, stat);
+
+            if (searchType != ContactSearchType.CardId)
+                return contact;
+
+            List<Profile> profiles = rep.ProfileGetByCardId(searchValue, true);
+            contact.Profiles = profiles.FindAll(p => p.AttributeType == 0 && p.VisibleType == 0 && p.LookupType == 0);
+            contact.MemberAttributes = profiles.FindAll(p => p.AttributeType == 0 && p.VisibleType != 0 && p.LookupType != 0);
+            return contact;
         }
 
         public virtual List<Customer> CustomerSearch(CustomerSearchType searchType, string search, int maxNumberOfRowsReturned, Statistics stat)
@@ -116,6 +125,11 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt
             List<Customer> list = rep.CustomerSearch(searchType, search, maxNumberOfRowsReturned);
             logger.StatisticEndSub(ref stat, index);
             return list;
+        }
+
+        public virtual void ContactCreateCard(string contactId, string accountId, string cardId, string clubId, string schemeId, Statistics stat)
+        {
+            LSCentralWSBase.ContactCreateCard(contactId, accountId, cardId, clubId, schemeId, stat);
         }
 
         public virtual double ContactAddCard(string contactId, string accountId, string cardId, Statistics stat)
@@ -159,11 +173,11 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt
             LSCentralWSBase.LoginChange(oldUserName, newUserName, password, stat);
         }
 
-        public virtual List<Profile> ProfileGetByCardId(string id, Statistics stat)
+        public virtual List<Profile> ProfileGetByCardId(string id, bool includeAll, Statistics stat)
         {
             logger.StatisticStartSub(false, ref stat, out int index);
             ContactRepository rep = new ContactRepository(config, LSCVersion);
-            List<Profile> list = rep.ProfileGetByCardId(id);
+            List<Profile> list = rep.ProfileGetByCardId(id, includeAll);
             logger.StatisticEndSub(ref stat, index);
             return list;
         }

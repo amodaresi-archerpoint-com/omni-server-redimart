@@ -201,6 +201,14 @@ namespace LSOmni.DataAccess.BOConnection.NavWS
             return LSCWSBase.CustomerSearch(searchType, search, maxNumberOfRowsReturned, stat);
         }
 
+        public virtual void ContactCreateCard(string contactId, string accountId, string cardId, string clubId, string schemeId, Statistics stat)
+        {
+            if (NAVVersion < new Version("17.5"))
+                throw new NotImplementedException();
+
+            LSCWSBase.ContactCreateCard(contactId, accountId, cardId, clubId, schemeId, stat);
+        }
+
         public virtual double ContactAddCard(string contactId, string accountId, string cardId, Statistics stat)
         {
             return ContactAddCard(contactId, accountId, cardId, stat);
@@ -269,7 +277,7 @@ namespace LSOmni.DataAccess.BOConnection.NavWS
             LSCWSBase.LoginChange(oldUserName, newUserName, password, stat);
         }
 
-        public virtual List<Profile> ProfileGetByCardId(string id, Statistics stat)
+        public virtual List<Profile> ProfileGetByCardId(string id, bool includeAll, Statistics stat)
         {
             if (NAVVersion < new Version("17.5"))
                 return NavWSBase.ProfileGetAll();
@@ -279,7 +287,7 @@ namespace LSOmni.DataAccess.BOConnection.NavWS
 
         public virtual List<Profile> ProfileGetAll(Statistics stat)
         {
-            return ProfileGetByCardId(string.Empty, stat);
+            return ProfileGetByCardId(string.Empty, true, stat);
         }
 
         public virtual List<Scheme> SchemeGetAll(Statistics stat)

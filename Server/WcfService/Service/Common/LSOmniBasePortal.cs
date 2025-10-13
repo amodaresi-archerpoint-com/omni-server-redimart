@@ -253,7 +253,6 @@ namespace LSOmni.Service
             BOConfiguration config = GetConfig(lskey);
             ConfigBLL bll = null;
 
-
             try
             {
                 logger.Debug(config.LSKey.Key, "Ping");

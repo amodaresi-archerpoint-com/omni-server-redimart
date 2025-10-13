@@ -524,8 +524,12 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             ItemJMapping map = new ItemJMapping(config.IsJson, LSCVersion);
             map.SetKeys(fullRepl, ref lastKey, out int lastEntry);
 
+            bool usePriceLine = true;
+            if (config.SettingsKeyExists(ConfigKey.UseSalesPrice))
+                usePriceLine = (config.SettingsBoolGetByKey(ConfigKey.UseSalesPrice) == false);
+
             string ret;
-            if (LSCVersion >= new Version("26.0"))
+            if (LSCVersion >= new Version("26.0") && usePriceLine)
             {
                 ret = odataWS.GetPriceListLine(storeId, batchSize, fullRepl, lastKey, lastEntry);
                 logger.Trace(config.LSKey.Key, ret);
@@ -821,11 +825,15 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             return list;
         }
 
-        public virtual List<ReplDiscountSetup> ReplicateDiscountSetup(int batchSize, bool fullRepl, ref string lastKey, ref int recordsRemaining)
+        public virtual List<ReplDiscountSetup> ReplicateDiscountSetup(string storeId, int batchSize, bool fullRepl, ref string lastKey, ref int recordsRemaining)
         {
             ItemJMapping map = new ItemJMapping(config.IsJson, LSCVersion);
             map.SetKeys(fullRepl, ref lastKey, out int lastEntry);
-            string ret = odataWS.GetDiscountSetup(batchSize, fullRepl, lastKey, lastEntry);
+            string ret;
+            if (LSCVersion >= new Version("27.0"))
+                ret = odataWS.GetDiscountSetupWPGLookup(storeId, batchSize, fullRepl, lastKey, lastEntry);
+            else
+                ret = odataWS.GetDiscountSetup(batchSize, fullRepl, lastKey, lastEntry);
             logger.Trace(config.LSKey.Key, ret);
             return map.GetReplDiscountSetup(ret, ref lastKey, ref recordsRemaining);
         }

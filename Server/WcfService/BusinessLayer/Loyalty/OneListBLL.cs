@@ -66,7 +66,7 @@ namespace LSOmni.BLL.Loyalty
                 }
             }
 
-            if (string.IsNullOrEmpty(list.Name))
+            if (string.IsNullOrEmpty(list.Name) && !string.IsNullOrEmpty(list.CardId))
             {
                 MemberContact contact = BOLoyConnection.ContactGet(ContactSearchType.CardId, list.CardId, stat);
                 if (contact != null)
@@ -179,8 +179,7 @@ namespace LSOmni.BLL.Loyalty
                         continue;
                     }
 
-                    if ((oline.DiscountLineNumbers.Count() > 0 && line.DiscountLineNumbers.Count() == 0) ||
-                        (oline.DiscountLineNumbers.Count() == 0 && line.DiscountLineNumbers.Count() > 0))
+                    if ((oline.DiscountLineNumbers.Count() > 0 || line.DiscountLineNumbers.Count() > 0))
                     {
                         oLines.Add(line);
                         continue;

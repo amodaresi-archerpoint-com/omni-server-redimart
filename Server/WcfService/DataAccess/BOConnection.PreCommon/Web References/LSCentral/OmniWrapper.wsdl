@@ -10093,7 +10093,7 @@
   </binding>
   <service name="OmniWrapper">
     <port name="OmniWrapper_Port" binding="tns:OmniWrapper_Binding">
-      <address location="http://ishqr90q4tqm:9047/LSCentral24/WS/CRONUS%20-%20LS%20Central/Codeunit/OmniWrapper" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      <address location="http://dhqsrvomni006:9047/LSCentral241/WS/CRONUS%20-%20LS%20Central/Codeunit/OmniWrapper" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
     </port>
   </service>
 </definitions>

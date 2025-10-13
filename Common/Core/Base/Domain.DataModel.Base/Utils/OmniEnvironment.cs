@@ -1,5 +1,4 @@
 ﻿using System.Runtime.Serialization;
-
 using LSRetail.Omni.Domain.DataModel.Base.Setup;
 
 namespace LSRetail.Omni.Domain.DataModel.Base.Utils

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using LSOmni.Common.Util;
 using LSRetail.Omni.Domain.DataModel.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Replication;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
 {
@@ -12,7 +12,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
     {
         protected bool IsJson = false;
         protected static LSLogger logger = new LSLogger();
-        protected Version LSCVersion = new Version("26.0");
+        protected Version LSCVersion = new Version("27.0");
 
         public void SetKeys(bool fullRepl, ref string lastKey, out int lastEntry)
         {
@@ -38,7 +38,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
             if (result == null || result.TableData == null || result.TableData.TableDataUpd == null || result.TableData.TableDataUpd.RecRefJson == null)
             {
                 if (result?.Status == "OnError")
-                    throw new LSOmniServiceException(StatusCode.NavWSError, result.ErrorText);
+                    throw new LSOmniServiceException(StatusCode.NavODataReplicationError, result.ErrorText);
                 return null;
             }
 
@@ -47,9 +47,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
             return result;
         }
 
-        public WSODataCollection JsonToWSOData(string ret, string valueMemberCode)
+        public string GetJsonValue(string ret, string valueMemberCode, out string resCode, out string resErr)
         {
-
             JObject parsed;
             try
             {
@@ -57,46 +56,26 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
             }
             catch (Exception)
             {
-                throw new LSOmniServiceException(StatusCode.NavWSError, "OData4 Error:" + ret);
+                throw new LSOmniServiceException(StatusCode.NavODataError, "OData4 Error:" + ret);
             }
 
             var token = parsed.SelectToken("value");
             parsed = JObject.Parse(token.ToString());
             token = parsed.SelectToken(valueMemberCode);
             if (token == null)
-                throw new LSOmniServiceException(StatusCode.NavWSError, $"{valueMemberCode} element not found in result");
+                throw new LSOmniServiceException(StatusCode.NavODataError, $"{valueMemberCode} element not found in result");
 
-            string resCode = parsed.SelectToken("ResponseCode").Value<string>();
-            string resErr = parsed.SelectToken("ErrorText").Value<string>();
-
-            WSODataCollection result = JsonConvert.DeserializeObject<WSODataCollection>(token.ToString());
-            if (result == null || result.DataCollection == null)
-            {
-                if (resCode != "0000")
-                    throw new LSOmniServiceException(StatusCode.NavWSError, resErr);
-                return null;
-            }
-            return result;
+            resCode = parsed.SelectToken("ResponseCode").Value<string>();
+            resErr = parsed.SelectToken("ErrorText").Value<string>();
+            return token.ToString();
         }
 
-        public string JsonToWSODataValue(string ret, string valueCode)
+        public WSODataCollection JsonToWSOData(string ret, string valueMemberCode, out string resCode, out string resErr)
         {
-
-            JObject parsed;
-            try
-            {
-                parsed = JObject.Parse(ret);
-            }
-            catch (Exception)
-            {
-                throw new LSOmniServiceException(StatusCode.NavWSError, "OData4 Error:" + ret);
-            }
-
-            var token = parsed.SelectToken("value");
-            parsed = JObject.Parse(token.ToString());
-            string result = parsed.SelectToken(valueCode).Value<string>();
-            if (token == null)
-                return string.Empty;
+            string token = GetJsonValue(ret, valueMemberCode, out resCode, out resErr);
+            WSODataCollection result = JsonConvert.DeserializeObject<WSODataCollection>(token);
+            if (result == null || result.DataCollection == null)
+                return null;
 
             return result;
         }
@@ -107,7 +86,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
             if (result == null || result.DataSet == null || result.DataSet.DataSetUpd == null || result.DataSet.DataSetUpd.DynDataSet == null)
             {
                 if (result.Status == "OnError")
-                    throw new LSOmniServiceException(StatusCode.NavWSError, result.ErrorText);
+                    throw new LSOmniServiceException(StatusCode.NavODataReplicationError, result.ErrorText);
                 return null;
             }
 

@@ -15,6 +15,8 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Retail
             Description = string.Empty;   //primary text
             Details = string.Empty;       //secondary text
             ValidationText = string.Empty;  //text about when the expiration date is etc in text 
+            MemberAttribute = string.Empty;
+            MemberAttributeValue = string.Empty;
             Images = new List<ImageView>();
             OfferDetails = new List<OfferDetails>();
             OfferLines = new List<PublishedOfferLine>();
@@ -57,6 +59,10 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Retail
         public string Details { get; set; }
         [DataMember]
         public string ValidationText { get; set; }
+        [DataMember]
+        public string MemberAttribute { get; set; }
+        [DataMember]
+        public string MemberAttributeValue { get; set; }
         [DataMember]
         public bool Selected { get; set; }
         [DataMember]

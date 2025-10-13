@@ -44,6 +44,7 @@ namespace LSOmni.DataAccess.Interface.BOConnection
 
         MemberContact ContactCreate(MemberContact contact, Statistics stat);
         void ContactUpdate(MemberContact contact, string accountId, Statistics stat);
+        void ContactCreateCard(string contactId, string accountId, string cardId, string clubId, string schemeId, Statistics stat);
         double ContactAddCard(string contactId, string accountId, string cardId, Statistics stat);
         MemberContact ContactGet(ContactSearchType searchType, string searchValue, Statistics stat);
         List<Customer> CustomerSearch(CustomerSearchType searchType, string search, int maxNumberOfRowsReturned, Statistics stat);
@@ -56,7 +57,7 @@ namespace LSOmni.DataAccess.Interface.BOConnection
         string SPGPassword(string email, string token, string newPwd, Statistics stat);
         void LoginChange(string oldUserName, string newUserName, string password, Statistics stat);
 
-        List<Profile> ProfileGetByCardId(string id, Statistics stat);
+        List<Profile> ProfileGetByCardId(string id, bool includeAll, Statistics stat);
         List<Profile> ProfileGetAll(Statistics stat);
         List<Scheme> SchemeGetAll(Statistics stat);
         Scheme SchemeGetById(string schemeId, Statistics stat);

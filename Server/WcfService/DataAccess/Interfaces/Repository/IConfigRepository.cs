@@ -11,7 +11,7 @@ namespace LSOmni.DataAccess.Interface.Repository
         BOConfiguration ConfigGet(string lsKey);
         List<BOConfiguration> ConfigGetAll();
         List<BOConfiguration> ConfigGetByKeys(List<LSKey> lsKeys);
-        void SaveConfig(BOConfiguration config);
+        void SaveConfig(BOConfiguration dbConfig);
         bool ConfigIsActive(string lskey);
         bool ConfigExists(string lskey);
         void ToggleLSKey(string lskey, bool toggle);

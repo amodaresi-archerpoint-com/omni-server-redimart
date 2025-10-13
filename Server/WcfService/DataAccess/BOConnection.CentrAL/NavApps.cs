@@ -267,7 +267,7 @@ namespace LSOmni.DataAccess.BOConnection.CentrAL
         public virtual List<ReplDiscountSetup> ReplicateDiscountSetup(string appId, string appType, string storeId, int batchSize, bool fullReplication, ref string lastKey, ref string maxKey, ref int recordsRemaining)
         {
             DiscountOfferRepository rep = new DiscountOfferRepository(config);
-            return rep.ReplicateDiscountSetup(batchSize, fullReplication, ref lastKey, ref maxKey, ref recordsRemaining);
+            return rep.ReplicateDiscountSetup(batchSize, fullReplication, storeId, ref lastKey, ref maxKey, ref recordsRemaining);
         }
 
         public virtual List<ReplDiscountValidation> ReplicateDiscountValidations(string appId, string appType, string storeId, int batchSize, bool fullReplication, ref string lastKey, ref string maxKey, ref int recordsRemaining)

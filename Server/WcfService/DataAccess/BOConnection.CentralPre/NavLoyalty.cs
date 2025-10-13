@@ -106,7 +106,15 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
         public virtual MemberContact ContactGet(ContactSearchType searchType, string searchValue, Statistics stat)
         {
             ContactRepository rep = new ContactRepository(config, LSCVersion);
-            return rep.ContactGet(searchType, searchValue, stat);
+            MemberContact contact = rep.ContactGet(searchType, searchValue, stat);
+
+            if (searchType != ContactSearchType.CardId)
+                return contact;
+
+            List<Profile> profiles = rep.ProfileGetByCardId(searchValue, true);
+            contact.Profiles = profiles.FindAll(p => p.AttributeType == 0 && p.VisibleType == 0 && p.LookupType == 0);
+            contact.MemberAttributes = profiles.FindAll(p => p.AttributeType == 0 && p.VisibleType != 0 && p.LookupType != 0);
+            return contact;
         }
 
         public virtual List<Customer> CustomerSearch(CustomerSearchType searchType, string search, int maxNumberOfRowsReturned, Statistics stat)
@@ -116,6 +124,11 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
             List<Customer> list = rep.CustomerSearch(searchType, search, maxNumberOfRowsReturned);
             logger.StatisticEndSub(ref stat, index);
             return list;
+        }
+
+        public virtual void ContactCreateCard(string contactId, string accountId, string cardId, string clubId, string schemeId, Statistics stat)
+        {
+            LSCentralWSBase.ContactCreateCard(contactId, accountId, cardId, clubId, schemeId, stat);
         }
 
         public virtual double ContactAddCard(string contactId, string accountId, string cardId, Statistics stat)
@@ -159,11 +172,11 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
             LSCentralWSBase.LoginChange(oldUserName, newUserName, password, stat);
         }
 
-        public virtual List<Profile> ProfileGetByCardId(string id, Statistics stat)
+        public virtual List<Profile> ProfileGetByCardId(string id, bool includeAll, Statistics stat)
         {
             logger.StatisticStartSub(false, ref stat, out int index);
             ContactRepository rep = new ContactRepository(config, LSCVersion);
-            List<Profile> list = rep.ProfileGetByCardId(id);
+            List<Profile> list = rep.ProfileGetByCardId(id, includeAll);
             logger.StatisticEndSub(ref stat, index);
             return list;
         }
@@ -545,7 +558,6 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
         {
             if (request.OrderType == OrderType.ScanPayGoSuspend)
             {
-                orderId = string.Empty;
                 return LSCentralWSBase.ScanPayGoSuspend(request, out orderId, stat);
             }
 

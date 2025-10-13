@@ -22,13 +22,16 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
 
         public List<ProactiveDiscount> DiscountsGetByStoreAndItem(string storeId, List<string> itemIds)
         {
-            string sqlcolumns = "p.[No_], p.[Type],p.[Priority],p.[Description],p.[Pop-up Line 1],p.[Pop-up Line 2],p.[Pop-up Line 3],p.[Validation Period ID],mt.[Store No_],mt.[Item No_]," +
-                                "mt.[Variant Code],mt.[Customer Disc_ Group],mt.[Loyalty Scheme Code],mt.[Discount _],mt.[Minimum Quantity],mt.[Unit of Measure Code]";
+            string sqlcolumns = "p.[No_], p.[Type],p.[Priority],p.[Description],p.[Pop-up Line 1],p.[Pop-up Line 2],p.[Pop-up Line 3]," +
+                                "p.[Validation Period ID],p.[Member Attribute],p.[Member Attribute Value]," +
+                                "mt.[Store No_],mt.[Item No_],mt.[Variant Code],mt.[Customer Disc_ Group],mt.[Loyalty Scheme Code]," +
+                                "mt.[Discount _],mt.[Minimum Quantity],mt.[Unit of Measure Code]";
 
             string sqlfrom = " FROM [" + navCompanyName + "LSC WI Discounts$5ecfc871-5d82-43f1-9c54-59685e82318d] mt" +
                              " INNER JOIN [" + navCompanyName + "LSC Periodic Discount$5ecfc871-5d82-43f1-9c54-59685e82318d] p ON p.[No_]=mt.[Offer No_]";
 
-            string sqlMMcolumns = "p.[No_],p.[Type],p.[Priority],p.[Description],p.[Pop-up Line 1],p.[Pop-up Line 2],p.[Pop-up Line 3],p.[Validation Period ID],p.[Discount _ Value] AS [Discount _]," +
+            string sqlMMcolumns = "p.[No_],p.[Type],p.[Priority],p.[Description],p.[Pop-up Line 1],p.[Pop-up Line 2],p.[Pop-up Line 3]," +
+                                  "p.[Validation Period ID],p.[Discount _ Value] AS [Discount _],p.[Member Attribute],p.[Member Attribute Value]," +
                                   "mt.[Store No_],mt.[Item No_],mt.[Variant Code],mt.[Customer Disc_ Group],mt.[Loyalty Scheme Code], 0 AS [Minimum Quantity]," +
                                   "'' AS [Unit of Measure Code]";
 
@@ -221,6 +224,8 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
                 Priority = SQLHelper.GetInt32(reader["Priority"]),
                 ItemId = SQLHelper.GetString(reader["Item No_"]),
                 LoyaltySchemeCode = SQLHelper.GetString(reader["Loyalty Scheme Code"]),
+                MemberAttribute = SQLHelper.GetString(reader["Member Attribute"]),
+                MemberAttributeValue = SQLHelper.GetString(reader["Member Attribute Value"]),
                 MinimumQuantity = SQLHelper.GetDecimal(reader["Minimum Quantity"]),
                 Description = SQLHelper.GetString(reader["Description"]),
                 VariantId = SQLHelper.GetString(reader["Variant Code"]),

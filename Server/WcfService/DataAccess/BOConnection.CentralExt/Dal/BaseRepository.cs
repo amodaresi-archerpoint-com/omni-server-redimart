@@ -29,7 +29,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
 
         private static readonly Object myLock = new Object();
 
-        public static Version LSCVersion = new Version("26.0");
+        public static Version LSCVersion = new Version("27.0");
 
         public BaseRepository(BOConfiguration config, Version navVersion) : this(config)
         {
@@ -509,6 +509,11 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             return GetWhereStatement(fullreplication, keys, whereaddon + GetSQLStoreDist(itemcolumnname, storeid, fullreplication), includeorder);
         }
 
+        public string GetWhereStatementWithPriceGroupFilter(bool fullreplication, List<JscKey> keys, string whereaddon, string itemcolumnname, string storeid, bool includeorder)
+        {
+            return GetWhereStatement(fullreplication, keys, whereaddon + GetSQLPriceGroupFilter(itemcolumnname, storeid, fullreplication), includeorder);
+        }
+
         public string GetWhereStatementWithStoreDist(bool fullreplication, List<JscKey> keys, string itemcolumnname, string storeid, bool includeorder, bool usestatus = true)
         {
             return GetWhereStatement(fullreplication, keys, GetSQLStoreDist(itemcolumnname, storeid, fullreplication, usestatus), includeorder);
@@ -532,6 +537,17 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             return " AND " + itemcolumnname + " IN (SELECT id.[Item No_] FROM [" + navCompanyName + "LSC Store Group Setup$5ecfc871-5d82-43f1-9c54-59685e82318d] sg" +
                    " LEFT JOIN [" + navCompanyName + "LSC Item Distribution$5ecfc871-5d82-43f1-9c54-59685e82318d] id ON id.[Code]=sg.[Store Group] OR id.[Code]='" + storeid + "'" +
                    " WHERE sg.[Store Code]='" + storeid + "')";
+        }
+
+        public string GetSQLPriceGroupFilter(string itemcolumnname, string storeid, bool fullreplication, bool usestatus = true)
+        {
+            if (string.IsNullOrWhiteSpace(storeid))
+                return string.Empty;
+
+            SQLHelper.CheckForSQLInjection(storeid);
+
+            return " AND " + itemcolumnname + " IN (SELECT pg.[Price Group Code] FROM [" + navCompanyName + "LSC Store Price Group$5ecfc871-5d82-43f1-9c54-59685e82318d] pg" +
+              " WHERE pg.[Store]='" + storeid + "') OR COALESCE(" + itemcolumnname + ", '') = ''";
         }
 
         public string GetWhereStatement(bool fullreplication, List<JscKey> keys, bool includeorder)

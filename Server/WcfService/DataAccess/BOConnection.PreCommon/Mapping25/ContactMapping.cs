@@ -316,13 +316,19 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
             {
                 foreach (LSCentral25.MemberAttributeList3 attr in root.MemberAttributeList)
                 {
-                    if (attr.Type != "0" || (attr.AttributeType != "0" && attr.AttributeType != "4"))
+                    if (LSCVersion >= new Version("27.0") && attr.Type != "0")
+                        continue;
+
+                    if ((LSCVersion < new Version("27.0")) && (attr.Type != "0" || (attr.AttributeType != "0" && attr.AttributeType != "4")))
                         continue;
 
                     Profile pro = new Profile()
                     {
                         Id = attr.Code,
                         Description = attr.Description,
+                        LookupType = Convert.ToInt32(attr.LookupType),
+                        VisibleType = Convert.ToInt32(attr.VisibleType),
+                        AttributeType = Convert.ToInt32(attr.Type),
                         DataType = (ProfileDataType)Convert.ToInt32(attr.AttributeType)
                     };
                     if (pro.DataType == ProfileDataType.Text)
@@ -330,7 +336,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
                     else
                         pro.ContactValue = (attr.Value.ToUpper().Equals("YES"));
 
-                    memberContact.Profiles.Add(pro);
+                    if (pro.LookupType == 0 && pro.VisibleType == 0)
+                        memberContact.Profiles.Add(pro);
+                    else
+                        memberContact.MemberAttributes.Add(pro);
                 }
             }
             return memberContact;
@@ -419,13 +428,19 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
             {
                 foreach (LSCentral25.MemberAttributeList2 attr in root.MemberAttributeList)
                 {
-                    if (attr.Type != "0" || (attr.AttributeType != "0" && attr.AttributeType != "4"))
+                    if (LSCVersion >= new Version("27.0") && attr.Type != "0")
+                        continue;
+
+                    if ((LSCVersion < new Version("27.0")) && (attr.Type != "0" || (attr.AttributeType != "0" && attr.AttributeType != "4")))
                         continue;
 
                     Profile pro = new Profile()
                     {
                         Id = attr.Code,
                         Description = attr.Description,
+                        LookupType = Convert.ToInt32(attr.LookupType),
+                        VisibleType = Convert.ToInt32(attr.VisibleType),
+                        AttributeType = Convert.ToInt32(attr.Type),
                         DataType = (ProfileDataType)Convert.ToInt32(attr.AttributeType)
                     };
                     if (pro.DataType == ProfileDataType.Text)
@@ -433,7 +448,10 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
                     else
                         pro.ContactValue = (attr.Value.ToUpper().Equals("YES"));
 
-                    memberContact.Profiles.Add(pro);
+                    if (pro.LookupType == 0 && pro.VisibleType == 0)
+                        memberContact.Profiles.Add(pro);
+                    else
+                        memberContact.MemberAttributes.Add(pro);
                 }
             }
             return memberContact;
@@ -454,6 +472,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
                     Details = offer.SecondaryText,
                     ExpirationDate = ConvertTo.SafeJsonDate(offer.EndingDate, IsJson),
                     OfferId = offer.DiscountNo,
+                    MemberAttribute = offer.MemberAttribute,
+                    MemberAttributeValue = offer.MemberAttributeValue,
                     Code = (OfferDiscountType)Convert.ToInt32(offer.DiscountType),
                     Type = (OfferType)Convert.ToInt32(offer.OfferCategory),
                     Images = GetPublishedOfferImages(root.PublishedOfferImages, offer.No),

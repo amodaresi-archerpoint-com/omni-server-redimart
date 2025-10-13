@@ -114,6 +114,11 @@ namespace LSOmni.DataAccess.BOConnection.NavSQL
             return rep.CustomerSearch(searchType, search, maxNumberOfRowsReturned);
         }
 
+        public virtual void ContactCreateCard(string contactId, string accountId, string cardId, string clubId, string schemeId, Statistics stat)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual double ContactAddCard(string contactId, string accountId, string cardId, Statistics stat)
         {
             return NavWSBase.ContactAddCard(contactId, accountId, cardId);
@@ -155,7 +160,7 @@ namespace LSOmni.DataAccess.BOConnection.NavSQL
             NavWSBase.LoginChange(oldUserName, newUserName, password);
         }
 
-        public virtual List<Profile> ProfileGetByCardId(string id, Statistics stat)
+        public virtual List<Profile> ProfileGetByCardId(string id, bool includeAll, Statistics stat)
         {
             ContactRepository rep = new ContactRepository(config, NAVVersion);
             return rep.ProfileGetByCardId(id);

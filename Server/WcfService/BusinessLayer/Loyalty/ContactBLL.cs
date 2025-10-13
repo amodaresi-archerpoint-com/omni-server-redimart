@@ -81,7 +81,6 @@ namespace LSOmni.BLL.Loyalty
             if (contact.Account.PointBalance == 0)
                 contact.Account.PointBalance = BOLoyConnection.MemberCardGetPoints(cardId, stat);
 
-            contact.Profiles = BOLoyConnection.ProfileGetByCardId(cardId, stat);
             contact.PublishedOffers = BOLoyConnection.PublishedOffersGet(cardId, string.Empty, string.Empty, stat);
             contact.SalesEntries = BOLoyConnection.SalesEntriesGetByCardId(cardId, string.Empty, DateTime.MinValue, false, numberOfTrans, stat);
 
@@ -103,10 +102,10 @@ namespace LSOmni.BLL.Loyalty
             return BOLoyConnection.ProfileGetAll(stat);
         }
 
-        public virtual List<Profile> ProfilesGetByCardId(string cardId, Statistics stat)
+        public virtual List<Profile> ProfilesGetByCardId(string cardId, bool includeAll, Statistics stat)
         {
             SecurityCardCheck(cardId);
-            return BOLoyConnection.ProfileGetByCardId(cardId, stat);
+            return BOLoyConnection.ProfileGetByCardId(cardId, includeAll, stat);
         }
 
         public virtual MemberContact ContactCreate(MemberContact contact, bool doLogin, Statistics stat)
@@ -165,6 +164,11 @@ namespace LSOmni.BLL.Loyalty
             }
             base.SecurityCheck();
             return newContact;
+        }
+
+        public virtual void ContactCreateCard(string contactId, string accountId, string cardId, string clubId, string schemeId, Statistics stat)
+        {
+            BOLoyConnection.ContactCreateCard(contactId, accountId, cardId, clubId, schemeId, stat);
         }
 
         public virtual double ContactAddCard(string contactId, string cardId, string accountId, Statistics stat)
