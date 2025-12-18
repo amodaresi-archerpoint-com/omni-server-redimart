@@ -736,13 +736,13 @@ namespace LSOmni.Service
                 logger.Debug(config.LSKey.Key, "itemId:{0} cardId:{1}", itemId, cardId);
                 
                 OfferBLL bll = new OfferBLL(config, clientTimeOutInSeconds);
-                CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
+                CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);   //anmo
 
                 List<PublishedOffer> list = bll.PublishedOffersGet(cardId, itemId, string.Empty, stat);
                 foreach (PublishedOffer it in list)
                 {
                     logger.Debug(config.LSKey.Key, "PublishedOffersGetByCardId about to call AltriaLogEntryCreate");
-                    customLoyBll.AltriaLogEntryCreate("", it.Id, cardId, 2, 3);
+                    customLoyBll.AltriaLogEntryCreate("", it.Id, cardId, 2, 3); //anmo
                     logger.Debug(config.LSKey.Key, "PublishedOffersGetByCardId returned from calling AltriaLogEntryCreate");
                     foreach (ImageView iv in it.Images)
                     {
