@@ -19,7 +19,7 @@ namespace LSOmni.BLL.Loyalty
             iImageCacheRepository = GetDbRepository<IImageCacheRepository>(config);
         }
 
-        public virtual MobileMenu MenuGet(string storeId, string salesType, bool loadDetails, ImageSize imageSize, Statistics stat)
+        public virtual MobileMenu MenuGet(string restaurantNo, string terminalNo, string salesType, bool loadDetails, ImageSize imageSize, Statistics stat)
         {
             MobileMenu mobileMenu;
 
@@ -28,7 +28,7 @@ namespace LSOmni.BLL.Loyalty
                 CurrencyBLL curBLL = new CurrencyBLL(config, timeoutInSeconds);
                 Currency currency = curBLL.CurrencyGetLocal(stat);
 
-                mobileMenu = BOLoyConnection.MenuGet(storeId, salesType, currency, stat);
+                mobileMenu = BOLoyConnection.MenuGet(restaurantNo, terminalNo, salesType, currency, stat);
                 mobileMenu.Currency = currency;
 
                 if (loadDetails == false)

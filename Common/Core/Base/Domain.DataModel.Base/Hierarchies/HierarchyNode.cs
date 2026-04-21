@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace LSRetail.Omni.Domain.DataModel.Base.Hierarchies
@@ -71,5 +72,17 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Hierarchies
         /// </summary>
         [DataMember]
         public int DealModSizeGroupIndex { get; set; }
+
+        [IgnoreDataMember]
+        public List<HierarchyPoint> Points 
+        {
+            get
+            {
+                var list = new List<HierarchyPoint>(Nodes.OrderBy(x => x.PresentationOrder));
+                list.AddRange(Leafs.OrderBy(x => x.SortOrder));
+
+                return list;
+            }
+        }
     }
 }

@@ -241,6 +241,12 @@ namespace LSOmni.DataAccess.BOConnection.CentrAL.Dal
                         case StoreGetType.WebStore:
                             type = " WHERE mt.[Web Store]=1";
                             break;
+                        case StoreGetType.Loyalty:
+                            type = " WHERE mt.[Loyalty]=1";
+                            break;
+                        case StoreGetType.Mobile:
+                            type = " WHERE mt.[Mobile]=1";
+                            break;
                     }
 
                     command.CommandText = "SELECT " + sqlcolumns + sqlfrom + type +

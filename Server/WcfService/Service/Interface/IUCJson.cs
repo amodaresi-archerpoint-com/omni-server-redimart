@@ -61,10 +61,11 @@ namespace LSOmni.Service
         /// </remarks>
         /// <param name="cardId">Member Card Id to look for</param>
         /// <param name="itemId">Only show Offers for this item</param>
+        /// <param name="storeId">Store Id</param>
         /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        List<PublishedOffer> PublishedOffersGetByCardId(string cardId, string itemId);
+        List<PublishedOffer> PublishedOffersGetByCardId(string cardId, string itemId, string storeId);
 
         /// <summary>
         /// Get related items in a published offer
@@ -669,7 +670,7 @@ namespace LSOmni.Service
         /// Edit Customer Order
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CustomerOrderEdit
+        /// LS Central WS2 : CustomerOrderEditV2
         /// </remarks>
         /// <param name="request">Updated Order object</param>
         /// <param name="orderId">Order Id to edit</param>
@@ -683,6 +684,9 @@ namespace LSOmni.Service
         /// <summary>
         /// Update payments for Customer Order
         /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : COUpdatePaymentV2
+        /// </remarks>
         /// <param name="payment"></param>
         /// <param name="orderId">Customer Order Id</param>
         /// <param name="storeId"></param>
@@ -1852,14 +1856,15 @@ namespace LSOmni.Service
         /// <summary>
         /// Load Hospitality Menu
         /// </summary>
-        /// <param name="storeId">Store to load, empty loads all</param>
+        /// <param name="restaurantNo">Store to load, empty loads all</param>
+        /// <param name="terminalNo">Terminal to load, empty loads all</param>
         /// <param name="salesType">Sales type to load, empty loads all</param>
         /// <param name="loadDetails">Load Item Details and Image data</param>
         /// <param name="imageSize">Size of Image if loadDetails is set to true</param>
         /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        MobileMenu MenuGet(string storeId, string salesType, bool loadDetails, ImageSize imageSize);
+        MobileMenu MenuGet(string restaurantNo, string terminalNo, string salesType, bool loadDetails, ImageSize imageSize);
 
         #endregion menu
 
@@ -3111,31 +3116,6 @@ namespace LSOmni.Service
 
         #endregion search
 
-        #region LS Recommends
-
-        /// <summary>
-        /// Checks if LS Recommend is active in Commerce Service for LS Central
-        /// <p/>NOTE: Not supported anymore
-        /// </summary>
-        /// <returns></returns>
-        [OperationContract]
-        [Obsolete("Not supported anymore", true)]
-        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        bool RecommendedActive();
-
-        /// <summary>
-        /// Get Recommended Items based of list of items
-        /// <p/>NOTE: Not supported anymore
-        /// </summary>
-        /// <param name="items"></param>
-        /// <returns></returns>
-        [OperationContract]
-        [Obsolete("Not supported anymore", true)]
-        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        List<RecommendedItem> RecommendedItemsGet(List<string> items);
-
-        #endregion
-
         #region Activity
 
         /// <summary>
@@ -3917,15 +3897,6 @@ namespace LSOmni.Service
         #endregion
 
         #region ScanPayGo
-
-        /// <summary>
-        /// Creates a client token for payment provider
-        /// </summary>
-        /// <param name="customerId">Customer id, used to show saved cards</param>
-        /// <returns></returns>
-        [OperationContract]
-        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        ClientToken PaymentClientTokenGet(string customerId);
 
         /// <summary>
         /// Gets Profile setup for SPG App

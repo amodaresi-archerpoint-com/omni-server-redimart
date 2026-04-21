@@ -6,7 +6,7 @@ using System.Reflection;
  
 [assembly: AssemblyProduct("Commerce Service for LS Central")] 
 [assembly: AssemblyCompany("LS Retail")]
-[assembly: AssemblyCopyright("Copyright 2025 LS Retail")]
+[assembly: AssemblyCopyright("Copyright 2026 LS Retail")]
 [assembly: AssemblyTrademark("LS Retail")]
 [assembly: AssemblyCulture("")]
 
@@ -17,9 +17,9 @@ using System.Reflection;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("2025.10.0")]
-[assembly: AssemblyFileVersion("2025.10.0")]
-[assembly: AssemblyInformationalVersion("Commerce Service for LS Central 2025.10")]
+[assembly: AssemblyVersion("2026.4.0")]
+[assembly: AssemblyFileVersion("2026.4.0")]
+[assembly: AssemblyInformationalVersion("Commerce Service for LS Central 2026.4")]
 
 #if ANDROID
 [assembly: System.Runtime.Versioning.SupportedOSPlatform("Android21.0")]

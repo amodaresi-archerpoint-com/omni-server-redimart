@@ -66,6 +66,7 @@
     <Compile Include="Mapping25\OrderMapping.cs" />
     <Compile Include="Mapping25\StoreMapping.cs" />
     <Compile Include="Mapping25\TransactionMapping.cs" />
+    <Compile Include="Mapping25\WishListMapping.cs" />
     <Compile Include="MySoapHttpClientProtocol.cs" />
     <Compile Include="JMapping\BaseJMapping.cs" />
     <Compile Include="JMapping\ItemJMapping.cs" />
@@ -196,6 +197,9 @@
     <None Include="Web References\LSCentral25\RootCOFilteredListV2.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
+    <None Include="Web References\LSCentral25\RootCOFilteredListV3.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
     <None Include="Web References\LSCentral25\RootCOGetPutBackItems.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
@@ -220,7 +224,13 @@
     <None Include="Web References\LSCentral25\RootCOUpdatePayment.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
+    <None Include="Web References\LSCentral25\RootCOUpdatePaymentV2.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
     <None Include="Web References\LSCentral25\RootCustomerOrderGetV3.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\LSCentral25\RootCustomerOrderGetV4.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
     <None Include="Web References\LSCentral25\RootCustomerOrderStatus.datasource">
@@ -374,6 +384,18 @@
       <DependentUpon>Reference.map</DependentUpon>
     </None>
     <None Include="Web References\LSCentral25\RootStoreInventoryGetLines.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\LSCentral25\RootWishListLinks.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\LSCentral25\RootWishLists.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\LSCentral25\RootWishLists1.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\LSCentral25\RootWishLists2.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
     <None Include="Web References\LSCentral\Root.datasource">

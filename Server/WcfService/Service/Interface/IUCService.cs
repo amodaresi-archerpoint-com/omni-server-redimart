@@ -55,9 +55,10 @@ namespace LSOmni.Service
         /// </remarks>
         /// <param name="cardId">Member Card Id to look for</param>
         /// <param name="itemId">Only show Offers for this item</param>
+        /// <param name="storeId">Store Id</param>
         /// <returns></returns>
         [OperationContract]
-        List<PublishedOffer> PublishedOffersGetByCardId(string cardId, string itemId);
+        List<PublishedOffer> PublishedOffersGetByCardId(string cardId, string itemId, string storeId);
 
         /// <summary>
         /// Get related items in a published offer
@@ -513,7 +514,7 @@ namespace LSOmni.Service
         /// Edit Customer Order
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CustomerOrderEdit
+        /// LS Central WS2 : CustomerOrderEditV2
         /// </remarks>
         /// <param name="request">Updated Order object</param>
         /// <param name="orderId">Order Id to edit</param>
@@ -526,6 +527,9 @@ namespace LSOmni.Service
         /// <summary>
         /// Update payments for Customer Order
         /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : COUpdatePaymentV2
+        /// </remarks>
         /// <param name="payment"></param>
         /// <param name="orderId">Customer Order Id</param>
         /// <param name="storeId"></param>
@@ -712,20 +716,22 @@ namespace LSOmni.Service
         ///                        <ns1:VariantId/>
         ///                    </ns1:OrderHospLine>
         ///                </ns1:OrderLines>
-        ///                <ns1:OrderPayment>
-        ///                    <ns1:Amount>7.50</ns1:Amount>
-        ///                    <ns1:AuthorizationCode>123456</ns1:AuthorizationCode>
-        ///                    <ns1:CardNumber>45XX..5555</ns1:CardNumber>
-        ///                    <ns1:CardType>VISA</ns1:CardType>
-        ///                    <ns1:CurrencyCode/>
-        ///                    <ns1:CurrencyFactor>1</ns1:CurrencyFactor>
-        ///                    <ns1:ExternalReference>My123456</ns1:ExternalReference>
-        ///                    <ns1:LineNumber>1</ns1:LineNumber>
-        ///                    <ns1:PaymentType>PreAuthorization</ns1:PaymentType>
-        ///                    <ns1:PreApprovedValidDate>2030-01-01</ns1:PreApprovedValidDate>
-        ///                    <ns1:TenderType>1</ns1:TenderType>
-        ///                    <ns1:TokenNumber>123456</ns1:TokenNumber>
-        ///                </ns1:OrderPayment>
+        ///                <ns1:OrderPayments>
+        ///                    <ns1:OrderPayment>
+        ///                        <ns1:Amount>7.50</ns1:Amount>
+        ///                        <ns1:AuthorizationCode>123456</ns1:AuthorizationCode>
+        ///                        <ns1:CardNumber>45XX..5555</ns1:CardNumber>
+        ///                        <ns1:CardType>VISA</ns1:CardType>
+        ///                        <ns1:CurrencyCode/>
+        ///                        <ns1:CurrencyFactor>1</ns1:CurrencyFactor>
+        ///                        <ns1:ExternalReference>My123456</ns1:ExternalReference>
+        ///                        <ns1:LineNumber>1</ns1:LineNumber>
+        ///                        <ns1:PaymentType>PreAuthorization</ns1:PaymentType>
+        ///                        <ns1:PreApprovedValidDate>2030-01-01</ns1:PreApprovedValidDate>
+        ///                        <ns1:TenderType>1</ns1:TenderType>
+        ///                        <ns1:TokenNumber>123456</ns1:TokenNumber>
+        ///                    </ns1:OrderPayment>
+        ///                </ns1:OrderPayments>
         ///                <ns1:PickupTime>2022-06-10T10:00:00</ns1:PickupTime>
         ///                <ns1:RestaurantNo>S0017</ns1:RestaurantNo>
         ///                <ns1:SalesType>TAKEAWAY</ns1:SalesType>
@@ -1631,13 +1637,14 @@ namespace LSOmni.Service
         /// <summary>
         /// Load Hospitality Menu
         /// </summary>
-        /// <param name="storeId">Store to load, empty loads all</param>
+        /// <param name="restaurantNo">Store to load, empty loads all</param>
+        /// <param name="terminalNo">Terminal to load, empty loads all</param>
         /// <param name="salesType">Sales type to load, empty loads all</param>
         /// <param name="loadDetails">Load Item Details and Image data</param>
         /// <param name="imageSize">Size of Image if loadDetails is set to true</param>
         /// <returns></returns>
         [OperationContract]
-        MobileMenu MenuGet(string storeId, string salesType, bool loadDetails, ImageSize imageSize);
+        MobileMenu MenuGet(string restaurantNo, string terminalNo, string salesType, bool loadDetails, ImageSize imageSize);
 
         #endregion menu
 
@@ -2802,29 +2809,6 @@ namespace LSOmni.Service
 
         #endregion search
 
-        #region LS Recommends
-
-        /// <summary>
-        /// Checks if LS Recommend is active in Commerce Service for LS Central
-        /// <p/>NOTE: Not supported anymore
-        /// </summary>
-        /// <returns></returns>
-        [OperationContract]
-        [Obsolete("Not supported anymore", true)]
-        bool RecommendedActive();
-
-        /// <summary>
-        /// Get Recommended Items based of list of items
-        /// <p/>NOTE: Not supported anymore
-        /// </summary>
-        /// <param name="items"></param>
-        /// <returns></returns>
-        [OperationContract]
-        [Obsolete("Not supported anymore", true)]
-        List<RecommendedItem> RecommendedItemsGet(List<string> items);
-
-        #endregion
-
         #region Activity
 
         /// <summary>
@@ -3503,14 +3487,6 @@ namespace LSOmni.Service
         #endregion
 
         #region ScanPayGo
-
-        /// <summary>
-        /// Creates a client token for payment provider
-        /// </summary>
-        /// <param name="customerId">Customer id, used to show saved cards</param>
-        /// <returns></returns>
-        [OperationContract]
-        ClientToken PaymentClientTokenGet(string customerId);
 
         /// <summary>
         /// Gets Profile setup for SPG App

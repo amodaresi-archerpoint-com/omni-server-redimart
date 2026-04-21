@@ -797,6 +797,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 Email = SQLHelper.GetString(reader["E-Mail"]),
                 CellularPhone = SQLHelper.GetString(reader["Mobile Phone No_"]),
                 PhoneLocal = SQLHelper.GetString(reader["Phone No_"]),
+                BirthDay = ConvertTo.SafeJsonDate(SQLHelper.GetDateTime(reader["Date of Birth"]), config.IsJson),
                 Blocked = SQLHelper.GetInt32(reader["Blocked"]),
                 CustomerId = SQLHelper.GetString(reader["Linked To Customer No_"]),
                 ClubCode = SQLHelper.GetString(reader["Club Code"]),

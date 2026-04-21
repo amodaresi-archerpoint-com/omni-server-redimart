@@ -2207,10 +2207,10 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon
             return map.MapFromRootToReturnPolicy(root);
         }
 
-        public MobileMenu MenuGet(string storeId, string salesType, Currency currency)
+        public MobileMenu MenuGet(string restaurantNo, string terminalNo, string salesType, Currency currency)
         {
             MenuXml menuxml = new MenuXml(config.LSKey.Key);
-            string xmlRequest = menuxml.MenuGetAllRequestXML(storeId, salesType);
+            string xmlRequest = menuxml.MenuGetAllRequestXML(restaurantNo, salesType);
             string xmlResponse = RunOperation(xmlRequest, true);
             HandleResponseCode(ref xmlResponse);
             return menuxml.MenuGetAllResponseXML(xmlResponse, currency);

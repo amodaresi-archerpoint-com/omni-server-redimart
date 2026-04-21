@@ -50,7 +50,10 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                         ",mt.[Wed_ Time within Bounds],mt.[Thursday Starting Time],mt.[Thursday Ending Time],mt.[Thu_ Time within Bounds],mt.[Friday Starting Time],mt.[Friday Ending Time] " +
                         ",mt.[Fri_ Time within Bounds],mt.[Saturday Starting Time],mt.[Saturday Ending Time],mt.[Sat_ Time within Bounds],mt.[Sunday Starting Time],mt.[Sunday Ending Time] " +
                         ",mt.[Sun_ Time within Bounds],mt.[Ending Time After Midnight],mt.[Mon_ End_ Time After Midnight],mt.[Tue_ End_ Time After Midnight],mt.[Wed_ End_ Time After Midnight] " +
-                        ",mt.[Thu_ End_ Time After Midnight],mt.[Fri_ End_ Time After Midnight],mt.[Sat_ End_ Time After Midnight],mt.[Sun_ End_ Time After Midnight],mt.[No_ Series] ";
+                        ",mt.[Thu_ End_ Time After Midnight],mt.[Fri_ End_ Time After Midnight],mt.[Sat_ End_ Time After Midnight],mt.[Sun_ End_ Time After Midnight],mt.[No_ Series]";
+
+            if (LSCVersion >= new Version("26.1"))
+                sqlVcolumns += ",[Offer Starting Time],[Offer Ending Time]";
 
             sqlVfrom = " FROM [" + navCompanyName + "LSC Validation Period$5ecfc871-5d82-43f1-9c54-59685e82318d] mt ";
         }
@@ -634,11 +637,15 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             if (string.IsNullOrEmpty(tx3) == false)
                 disc.Details += "\r\n" + tx3;
 
-            decimal amt = SQLHelper.GetDecimal(reader, "Discount Amount Value");
-            if (amt > 0 && disc.Type == ReplDiscountType.DiscOffer)
+            if (disc.Type == ReplDiscountType.DiscOffer)
             {
-                disc.DiscountValueType = DiscountValueType.Amount;
-                disc.DiscountValue = amt;
+                disc.DiscountValueType = DiscountValueType.Percent;
+                decimal amt = SQLHelper.GetDecimal(reader, "Discount Amount Value");
+                if (amt > 0)
+                {
+                    disc.DiscountValue = amt;
+                    disc.DiscountValueType = DiscountValueType.Amount;
+                }
             }
             return disc;
         }
@@ -781,7 +788,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
         {
             timestamp = ConvertTo.ByteArrayToString(reader["timestamp"] as byte[]);
 
-            return new ReplDiscountValidation(config.IsJson)
+            ReplDiscountValidation vrec = new ReplDiscountValidation(config.IsJson)
             {
                 Id = SQLHelper.GetString(reader["ID"]),
                 Description = SQLHelper.GetString(reader["Description"]),
@@ -820,6 +827,13 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 SundayWithinBounds = SQLHelper.GetBool(reader["Sun_ Time within Bounds"]),
                 SundayEndAfterMidnight = SQLHelper.GetBool(reader["Sun_ End_ Time After Midnight"])
             };
+
+            if (LSCVersion >= new Version("26.1"))
+            {
+                vrec.OfferStartTime = ConvertTo.SafeJsonTime(SQLHelper.GetDateTime(reader["Offer Starting Time"]), config.IsJson);
+                vrec.OfferEndTime = ConvertTo.SafeJsonTime(SQLHelper.GetDateTime(reader["Offer Ending Time"]), config.IsJson);
+            }
+            return vrec;
         }
     }
 }

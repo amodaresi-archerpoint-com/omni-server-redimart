@@ -121,7 +121,9 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
             {
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = sqltext + sqlfrom + " WHERE mt.[No_]=@id";
+                    command.CommandText = sqltext + ",fp.[Staff Barcode Logon]" +
+                                          sqlfrom + " LEFT JOIN [" + navCompanyName + "LSC POS Func_ Profile$5ecfc871-5d82-43f1-9c54-59685e82318d] fp ON fp.[Profile ID]=mt.[Functionality Profile]" +
+                                          " WHERE mt.[No_]=@id";
                     command.Parameters.AddWithValue("@id", id);
                     TraceSqlCommand(command);
                     connection.Open();
@@ -177,6 +179,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
                 ItemFilterMethod = SQLHelper.GetInt32(reader["Item Filtering Method"]),
                 Store = new Store(SQLHelper.GetString(reader["Store No_"])),
                 AsnQuantityMethod = (AsnQuantityMethod)SQLHelper.GetInt32(reader["ASN Quantity Method"]),
+                StaffBarcodeLogon = SQLHelper.GetBool(reader["Staff Barcode Logon"]),
                 StoreInventory = true
             };
 

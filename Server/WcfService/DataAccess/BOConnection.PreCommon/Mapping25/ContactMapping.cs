@@ -465,7 +465,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
 
             foreach (LSCentral25.PublishedOffer offer in root.PublishedOffer)
             {
-                list.Add(new PublishedOffer()
+                PublishedOffer off = new PublishedOffer()
                 {
                     Id = offer.No,
                     Description = offer.PrimaryText,
@@ -479,7 +479,23 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
                     Images = GetPublishedOfferImages(root.PublishedOfferImages, offer.No),
                     OfferDetails = GetPublishedOfferDetails(root, offer.No),
                     OfferLines = GetPublishedOfferLines(root.PublishedOfferLine, offer.No)
-                });
+                };
+
+                if (off.Code == OfferDiscountType.Coupon && root.MemberCouponBuffer != null)
+                {
+                    foreach (LSCentral25.MemberCouponBuffer coup in root.MemberCouponBuffer)
+                    {
+                        if (coup.CouponCode == off.OfferId && !string.IsNullOrEmpty(coup.Barcode))
+                            off.Coupons.Add(new Coupon()
+                            {
+                                Barcode = coup.Barcode,
+                                FirstValidDate = ConvertTo.SafeJsonDate(coup.FirstValidDate, IsJson),
+                                LastValidDate = ConvertTo.SafeJsonDate(coup.LastValidDate, IsJson),
+                                StoreNo = coup.StoreNo
+                            });
+                    }
+                }
+                list.Add(off);
             }
             return list;
         }

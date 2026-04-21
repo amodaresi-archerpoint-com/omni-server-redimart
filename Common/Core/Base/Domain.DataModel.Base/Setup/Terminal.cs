@@ -88,6 +88,8 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
         public AsnQuantityMethod AsnQuantityMethod { get; set; }
         [DataMember]
         public decimal AsnQuickScanQty { get; set; }
+        [DataMember]
+        public bool StaffBarcodeLogon { get; set; }
     }
 }
 

@@ -20,6 +20,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Retail
             Images = new List<ImageView>();
             OfferDetails = new List<OfferDetails>();
             OfferLines = new List<PublishedOfferLine>();
+            Coupons = new List<Coupon>();
             ExpirationDate = null;
             Selected = false;
             Code = OfferDiscountType.Unknown;   //discount type
@@ -77,6 +78,8 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Retail
         public OfferType Type { get; set; }
         [DataMember]
         public List<OfferDetails> OfferDetails { get; set; }
+        [DataMember]
+        public List<Coupon> Coupons { get; set; }
 #if WCFSERVER
         //not all data goes to wcf clients
         public byte[] ImgBytes { get; set; }

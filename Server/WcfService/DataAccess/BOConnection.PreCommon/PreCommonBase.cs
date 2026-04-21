@@ -66,8 +66,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
 
         private readonly string ecomAppId = string.Empty;
         private readonly string ecomAppType = string.Empty;
-        private bool ecomAppRestore = false;
-        private readonly string ecomAppRestoreFileName = string.Empty;
 
         public PreCommonBase(BOConfiguration configuration, bool ping = false)
         {
@@ -83,19 +81,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             base64ConversionMinLength = config.SettingsIntGetByKey(ConfigKey.Base64MinXmlSizeInKB) * 1024; //in KB
             ecomAppId = config.SettingsGetByKey(ConfigKey.NavAppId);
             ecomAppType = config.SettingsGetByKey(ConfigKey.NavAppType);
-
-            string rpath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Dat");
-            ecomAppRestoreFileName = Path.Combine(rpath, $"restore-{(string.IsNullOrEmpty(configuration.AppId) ? ecomAppId : configuration.AppId)}.txt");
-            if (Directory.Exists(rpath) == false)
-            {
-                Directory.CreateDirectory(rpath);
-            }
-            if (File.Exists(ecomAppRestoreFileName) == false)
-            {
-                File.WriteAllText(ecomAppRestoreFileName, true.ToString());
-            }
-            string restoredata = File.ReadAllText(ecomAppRestoreFileName);
-            ecomAppRestore = Convert.ToBoolean(restoredata);
 
             int sp = url.ToLower().IndexOf("/ws/");
             int ep = url.ToLower().IndexOf("/codeunit");
@@ -240,7 +225,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 activityWS.Proxy = GetWebProxy();
                 odataWS.Proxy = GetWebProxy();
             }
-            NavVersionToUse(out string cVer);
+            NavVersionToUse(false, out string cVer);
         }
 
         public string SendToOData(string command, string data, bool sendget)
@@ -313,17 +298,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             }
         }
 
-        public bool ResetReplication(bool fullreplication, string lastkey)
-        {
-            if (fullreplication && (string.IsNullOrEmpty(lastkey) || lastkey == "0"))
-            {
-                File.WriteAllText(ecomAppRestoreFileName, true.ToString());
-                ecomAppRestore = true;
-                return true;
-            }
-            return false;
-        }
-
         public XMLTableData DoReplication(int tableid, string storeId, string appid, string apptype, int batchSize, ref string lastKey, out int totalrecs)
         {
             if (string.IsNullOrEmpty(appid))
@@ -340,14 +314,12 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
             NAVWebXml xml = new NAVWebXml(storeId, appid, apptype);
             List<XMLTableData> tablist = new List<XMLTableData>();
 
-            if (restorepoint == 0 && ecomAppRestore)
+            if (restorepoint == 0)
             {
                 // restart to beginning
                 restorepoint = 1;
                 RestoreWebReplication(xml, restorepoint);
                 tablist = StartWebReplication(xml, batchSize, ref restorepoint);
-
-                File.WriteAllText(ecomAppRestoreFileName, false.ToString());
             }
             else
             {
@@ -379,7 +351,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
         }
 
 
-        public string NavVersionToUse(out string centralVersion)
+        public string NavVersionToUse(bool foreceCall, out string centralVersion)
         {
             if (LSCVersion == null)
                 LSCVersion = new Version("27.0");
@@ -396,7 +368,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 //  <add key="LSNAV.Version" value="8.0"/>    or "7.0"  "7.1"
                 //can overwrite what comes from NAV by adding key LSNAV.Version to the appConfig FILE not table.. LSNAV_Version
                 string version = config.SettingsGetByKey(ConfigKey.LSNAV_Version);
-                if (string.IsNullOrEmpty(version) == false)
+                if (foreceCall == false && string.IsNullOrEmpty(version) == false)
                 {
                     LSCVersion = new Version(version);
                     logger.Debug(config.LSKey.Key, "LSNAV.Version Value {0} from TenantConfig is being used", version);
@@ -1190,13 +1162,22 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 case "4021":
                     statusCode = StatusCode.TableAlreadyLocked;
                     break;
+                case "4410":
+                    statusCode = StatusCode.WishListEmpty;
+                    break;
+                case "4411":
+                    statusCode = StatusCode.WishListNumberMissing;
+                    break;
+                case "4412":
+                    statusCode = StatusCode.WorksheetNotFound;
+                    break;
                 case "7750":  //Percassi only
-                    statusCode = StatusCode.SuspendFailure;
-                    break;
+                        statusCode = StatusCode.SuspendFailure;
+                        break;
 
-                default:
-                    break;
-            }
+                    default:
+                        break;
+                    }
             return statusCode;
         }
 

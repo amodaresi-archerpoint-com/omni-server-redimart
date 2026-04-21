@@ -59,8 +59,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://dhqsrvomni001:9047/LSCentralDev/WS/CRONUS%20-%20LS%20Central/Codeunit/Acti" +
-            "vity")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://azdhqsrvomni001:9047/LSCentralDev/WS/CRONUS%20-%20LS%20Central/Codeunit/Ac" +
+            "tivity")]
         public string LSOmni_DataAccess_BOConnection_PreCommon_LSActivity15_Activity {
             get {
                 return ((string)(this["LSOmni_DataAccess_BOConnection_PreCommon_LSActivity15_Activity"]));

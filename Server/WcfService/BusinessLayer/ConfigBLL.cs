@@ -59,7 +59,7 @@ namespace LSOmni.BLL
 
         public virtual string CheckToken(BOConfiguration myconfig)
         {
-            if (myconfig == null)
+            if (myconfig == null || myconfig.LSKey == null || myconfig.LSKey.Key == null)
                 return string.Empty;
 
             string protocol = myconfig.SettingsGetByKey(ConfigKey.BOProtocol);

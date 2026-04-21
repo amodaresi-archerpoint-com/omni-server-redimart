@@ -37,6 +37,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base
         Base64MinXmlSizeInKB = 502,
         SkipBase64Conversion = 503,
         UseSalesPrice = 504,
+        UseCentralWishList = 505,
 
         Central_Token = 510,
         Central_TokenTime = 511,

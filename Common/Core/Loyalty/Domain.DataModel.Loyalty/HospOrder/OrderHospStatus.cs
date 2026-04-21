@@ -43,6 +43,8 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.OrderHosp
         [DataMember]
         public decimal ProductionTime { get; set; }
         [DataMember]
+        public string StatusMessage { get; set; }
+        [DataMember]
         public List<OrderHospStatusLine> Lines { get; set; }
     }
 

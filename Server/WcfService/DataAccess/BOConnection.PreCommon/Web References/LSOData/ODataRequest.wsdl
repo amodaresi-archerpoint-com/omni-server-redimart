@@ -650,6 +650,24 @@
           </sequence>
         </complexType>
       </element>
+      <element name="GetPriceListLine2">
+        <complexType>
+          <sequence>
+            <element minOccurs="1" maxOccurs="1" name="storeNo" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="batchSize" type="int" />
+            <element minOccurs="1" maxOccurs="1" name="fullRepl" type="boolean" />
+            <element minOccurs="1" maxOccurs="1" name="lastKey" type="string" />
+            <element minOccurs="1" maxOccurs="1" name="lastEntryNo" type="int" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="GetPriceListLine2_Result">
+        <complexType>
+          <sequence>
+            <element minOccurs="1" maxOccurs="1" name="return_value" type="string" />
+          </sequence>
+        </complexType>
+      </element>
       <element name="GetProductGroup">
         <complexType>
           <sequence>
@@ -1316,6 +1334,12 @@
   <message name="GetPriceListLine_Result">
     <part name="parameters" element="tns:GetPriceListLine_Result" />
   </message>
+  <message name="GetPriceListLine2">
+    <part name="parameters" element="tns:GetPriceListLine2" />
+  </message>
+  <message name="GetPriceListLine2_Result">
+    <part name="parameters" element="tns:GetPriceListLine2_Result" />
+  </message>
   <message name="GetProductGroup">
     <part name="parameters" element="tns:GetProductGroup" />
   </message>
@@ -1614,6 +1638,10 @@
     <operation name="GetPriceListLine">
       <input name="GetPriceListLine" message="tns:GetPriceListLine" />
       <output name="GetPriceListLine_Result" message="tns:GetPriceListLine_Result" />
+    </operation>
+    <operation name="GetPriceListLine2">
+      <input name="GetPriceListLine2" message="tns:GetPriceListLine2" />
+      <output name="GetPriceListLine2_Result" message="tns:GetPriceListLine2_Result" />
     </operation>
     <operation name="GetProductGroup">
       <input name="GetProductGroup" message="tns:GetProductGroup" />
@@ -2048,6 +2076,15 @@
         <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
       </input>
       <output name="GetPriceListLine_Result">
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </output>
+    </operation>
+    <operation name="GetPriceListLine2">
+      <operation soapAction="urn:microsoft-dynamics-schemas/codeunit/ODataRequest:GetPriceListLine2" style="document" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      <input name="GetPriceListLine2">
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </input>
+      <output name="GetPriceListLine2_Result">
         <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
       </output>
     </operation>

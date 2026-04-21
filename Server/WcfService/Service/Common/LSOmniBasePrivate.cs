@@ -35,7 +35,10 @@ namespace LSOmni.Service
                 return "";
             }
             // return http://localhost/LSOmniService/ucjson.svc/ImageStreamGetById?id=66&width=255&height=455
-            return string.Format("{0}/ImageStreamGetById?id={1}&width={2}&height={3}", BaseUrlReturnedToClient(), imgView.Id, imgView.ImgSize.Width, imgView.ImgSize.Height);
+            if (imgView.ImgSize != null)
+                return string.Format("{0}/ImageStreamGetById?id={1}&width={2}&height={3}", BaseUrlReturnedToClient(), imgView.Id, imgView.ImgSize.Width, imgView.ImgSize.Height);
+            
+            return string.Format("{0}/ImageStreamGetById?id={1}", BaseUrlReturnedToClient(), imgView.Id);
         }
 
         private string BaseUrlReturnedToClient()

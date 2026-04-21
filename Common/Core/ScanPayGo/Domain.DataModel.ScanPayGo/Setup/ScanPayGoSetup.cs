@@ -164,6 +164,9 @@ namespace LSRetail.Omni.Domain.DataModel.ScanPayGo.Setup
         public bool UseOnlineSearch { get; set; } = default;
         public bool EnableNotifications { get; set; }
 
+        //Hospitality, hardcoded, connection to LS Central not added yet since it's not feature complete
+        public bool HospitalityEnabled { get; set; } = false;
+
         //Force Update
         public string ForceUpdateVersion { get; set; } = default;
         public string ForceUpdateAppStoreId { get; set; } = default;

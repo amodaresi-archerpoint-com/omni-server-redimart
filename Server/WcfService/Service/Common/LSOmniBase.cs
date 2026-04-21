@@ -160,25 +160,11 @@ namespace LSOmni.Service
 
             try
             {
-                double minutes = (double)config.SettingsDecimalGetByKey(ConfigKey.LSNAV_Timeout);
-                if (DateTime.Now > lastVersionCheck.AddMinutes(minutes))
-                {
-                    //reset version in Tenant config once a day
-                    lastVersionCheck = DateTime.Now;
-                    logger.Debug(config.LSKey.Key, "Reset LSNAV.Version in TenantConfig");
-                    bll.ConfigSetByKey(config.LSKey.Key, ConfigKey.LSNAV_Version, string.Empty, "string", true, "LS Central Version to use");
-                }
-
                 // Nav returns version number, Ax returns "AX"
                 ver = bll.PingWs(out string centralVer);
-
-                tenVer = config.SettingsGetByKey(ConfigKey.LSNAV_Version);
-                if (string.IsNullOrEmpty(tenVer))
-                {
-                    logger.Debug(config.LSKey.Key, "Save Retail Version {0} to LSNAV.Version in TenantConfig", centralVer);
-                    bll.ConfigSetByKey(config.LSKey.Key, ConfigKey.LSNAV_Version, centralVer, "string", true, "LS Central Version to use");
-                    tenVer = centralVer;
-                }
+                logger.Debug(config.LSKey.Key, "Save Retail Version {0} to LSNAV.Version in TenantConfig", centralVer);
+                bll.ConfigSetByKey(config.LSKey.Key, ConfigKey.LSNAV_Version, centralVer, "string", true, "LS Central Version to use");
+                tenVer = centralVer;
             }
             catch (Exception ex)
             {

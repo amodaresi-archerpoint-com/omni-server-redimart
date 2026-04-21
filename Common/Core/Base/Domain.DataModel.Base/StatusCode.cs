@@ -468,6 +468,13 @@ namespace LSRetail.Omni.Domain.DataModel.Base
 
         #endregion hospPos
 
+        [EnumMember]
+        WishListEmpty = 4410,
+        [EnumMember]
+        WishListNumberMissing = 4411,
+        [EnumMember]
+        WishListNotFound = 4412,
+
         //Inventory - LSOne
         [EnumMember]
         VendorNotFound = 5001,

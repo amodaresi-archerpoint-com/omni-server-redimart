@@ -22,7 +22,6 @@ using LSRetail.Omni.Domain.DataModel.Loyalty.OrderHosp;
 using LSRetail.Omni.Domain.DataModel.ScanPayGo.Setup;
 using LSRetail.Omni.Domain.DataModel.ScanPayGo.Checkout;
 using LSRetail.Omni.Domain.DataModel.ScanPayGo.Payment;
-using LSOmni.DataAccess.BOConnection.PreCommon;
 
 namespace LSOmni.DataAccess.BOConnection.CentralExt
 {
@@ -40,7 +39,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt
 
         public virtual string Ping(out string centralVersion)
         {
-            string ver = LSCentralWSBase.NavVersionToUse(out centralVersion);
+            string ver = LSCentralWSBase.NavVersionToUse(true, out centralVersion);
             if (ver.Contains("ERROR"))
                 throw new ApplicationException(ver);
 
@@ -470,9 +469,9 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt
             return rep.HierarchyGetByStore(storeId, stat);
         }
 
-        public virtual MobileMenu MenuGet(string storeId, string salesType, Currency currency, Statistics stat)
+        public virtual MobileMenu MenuGet(string restaurantNo, string terminalNo, string salesType, Currency currency, Statistics stat)
         {
-            return LSCentralWSBase.MenuGet(storeId, salesType, currency);
+            return LSCentralWSBase.MenuGet(restaurantNo, terminalNo, salesType, currency, stat);
         }
 
         #endregion
@@ -577,6 +576,31 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt
         public virtual bool OrderUpdatePayment(string orderId, string storeId, OrderPayment payment, Statistics stat)
         {
             return LSCentralWSBase.OrderUpdatePayment(orderId, storeId, payment, stat);
+        }
+
+        public virtual string OneListSave(OneList oneList, Statistics stat)
+        {
+            return LSCentralWSBase.OneListSave(oneList, stat);
+        }
+
+        public virtual void OneListModify(string listId, OneListItem line, bool remove, Statistics stat)
+        {
+            LSCentralWSBase.OneListModify(listId, line, remove, stat);
+        }
+
+        public virtual void OneListLink(string listId, string cardId, string contactNo, LinkStatus status, Statistics stat)
+        {
+            LSCentralWSBase.OneListLink(listId, cardId, contactNo, status, stat);
+        }
+
+        public virtual List<OneList> OneListGet(string listId, string cardId, bool includeLines, Statistics stat)
+        {
+            return LSCentralWSBase.OneListGet(listId, cardId, includeLines, stat);
+        }
+
+        public virtual void OneListDelete(string listId, Statistics stat)
+        {
+            LSCentralWSBase.OneListDelete(listId, stat);
         }
 
         public virtual SalesEntry SalesEntryGet(string entryId, DocumentIdType type, Statistics stat)
@@ -725,7 +749,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt
             StoreRepository rep = new StoreRepository(config, LSCVersion);
             AttributeValueRepository arep = new AttributeValueRepository(config, LSCVersion);
             ImageRepository irep = new ImageRepository(config, LSCVersion);
-            Store store = rep.StoreLoyGetById(id, true);
+            Store store = rep.StoreLoyGetById(id);
             if (store != null)
             {
                 store.Images = irep.ImageGetByKey("LSC Store", store.Id, string.Empty, string.Empty, 0, false);
@@ -742,7 +766,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt
             StoreRepository rep = new StoreRepository(config, LSCVersion);
             ImageRepository irep = new ImageRepository(config, LSCVersion);
             AttributeValueRepository arep = new AttributeValueRepository(config, LSCVersion);
-            List<Store> stores = rep.StoreLoyGetAll(storeType, inclDetails);
+            List<Store> stores = rep.StoreLoyGetAll(storeType);
             if (inclDetails)
             {
                 foreach (Store store in stores)

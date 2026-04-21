@@ -23,11 +23,6 @@ namespace LSOmni.BLL.Loyalty
             this.iRepository = GetDbRepository<IDeviceRepository>(config);
         }
 
-        public virtual ClientToken PaymentClientTokenGet(string customerId)
-        {
-            return new ClientToken();
-        }
-
         public virtual bool SecurityCheckLogResponse(string orderNo, string validationError, bool validationSuccessful, Statistics stat)
         {
             return BOLoyConnection.SecurityCheckLogResponse(orderNo, validationError, validationSuccessful, stat);

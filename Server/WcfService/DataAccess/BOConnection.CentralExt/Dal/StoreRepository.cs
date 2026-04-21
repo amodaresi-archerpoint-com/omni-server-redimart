@@ -32,6 +32,10 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             {
                 sqlcolumns += ",mt.[Calc Inv for Sourcing Location]";
             }
+            if (LSCVersion >= new Version("28.0"))
+            {
+                sqlcolumns += ",[Tips Panel ID],[Suggested Tips 1 Percentage],[Suggested Tips 2 Percentage],[Suggested Tips 3 Percentage],[Include Retail Charges on Tips],[Tips Calculation],[Tips Income Acc_ 1],[Tips Income Acc_ 2]";
+            }
 
             sqlfrom = " FROM [" + navCompanyName + "LSC Store$5ecfc871-5d82-43f1-9c54-59685e82318d] mt" +
                       " LEFT JOIN [" + navCompanyName + "LSC POS Terminal$5ecfc871-5d82-43f1-9c54-59685e82318d] tr ON tr.[No_]=mt.[Web Store POS Terminal]";
@@ -258,7 +262,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             return store;
         }
 
-        public Store StoreLoyGetById(string storeId, bool inclDetails)
+        public Store StoreLoyGetById(string storeId)
         {
             Store store = null;
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -275,7 +279,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                     {
                         if (reader.Read())
                         {
-                            store = ReaderToLoyStore(reader, inclDetails);
+                            store = ReaderToLoyStore(reader);
                         }
                         reader.Close();
                     }
@@ -285,7 +289,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             return store;
         }
 
-        public List<Store> StoreLoyGetAll(StoreGetType storeType, bool inclDetails)
+        public List<Store> StoreLoyGetAll(StoreGetType storeType)
         {
             List<Store> stores = new List<Store>();
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -301,6 +305,15 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                         case StoreGetType.WebStore:
                             type = " WHERE mt.[Web Store]=1";
                             break;
+                        case StoreGetType.Restaurant:
+                            type = " WHERE mt.[Use F&B Order Structure]=1";
+                            break;
+                        case StoreGetType.Loyalty:
+                            type = " WHERE mt.[Loyalty]=1";
+                            break;
+                        case StoreGetType.Mobile:
+                            type = " WHERE mt.[Mobile]=1";
+                            break;
                     }
 
                     command.CommandText = "SELECT " + sqlcolumns + sqlfrom + type;
@@ -310,7 +323,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                     {
                         while (reader.Read())
                         {
-                            stores.Add(ReaderToLoyStore(reader, inclDetails));
+                            stores.Add(ReaderToLoyStore(reader));
                         }
                         reader.Close();
                     }
@@ -359,7 +372,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                     {
                         while (reader.Read())
                         {
-                            list.Add(ReaderToLoyStore(reader, false));
+                            list.Add(ReaderToLoyStore(reader));
                         }
                         reader.Close();
                     }
@@ -415,6 +428,36 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                                 Description = desc
                             });
                         }
+                    }
+                    connection.Close();
+                }
+            }
+            return list;
+        }
+
+        private List<HospitalityType> GetHospTypes(string storeNo)
+        {
+            List<HospitalityType> list = new List<HospitalityType>();
+            if (LSCVersion.Major < 28)
+                return list;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT [Restaurant No_],[Sequence],[Sales Type],[Suggested Tips 1 Percentage],[Suggested Tips 2 Percentage],[Suggested Tips 3 Percentage]," +
+                                          "[Tips Calculation],[Tips Income Acc_ 1],[Tips Income Acc_ 2] " +
+                                          "FROM [" + navCompanyName + "LSC Hospitality Type$5ecfc871-5d82-43f1-9c54-59685e82318d] WHERE [Restaurant No_]=@id";
+                    command.Parameters.AddWithValue("@id", storeNo);
+                    TraceSqlCommand(command);
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            list.Add(ReaderToHospType(reader, false));
+                        }
+                        reader.Close();
                     }
                     connection.Close();
                 }
@@ -500,7 +543,8 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                     command.CommandText = "SELECT [Store No_],[Store Group Code],[Item Category Code],[Retail Product Code]," +
                                           "[Item No_],[Variant Code],[Variant Dimension 1 Code],[Refund not Allowed]," +
                                           "[Refund Period Length],[Manager Privileges],[Message 1],[Message 2],[Return Policy HTML] " +
-                                          "FROM [" + navCompanyName + "LSC Return Policy$5ecfc871-5d82-43f1-9c54-59685e82318d]" + where;
+                                          (LSCVersion >= new Version("26.0") ? ("FROM [" + navCompanyName + "LSC ReturnPolicy$5ecfc871-5d82-43f1-9c54-59685e82318d]") : ("FROM [" + navCompanyName + "LSC Return Policy$5ecfc871-5d82-43f1-9c54-59685e82318d]")) + 
+                                          where;
                     TraceSqlCommand(command);
                     connection.Open();
                     using (SqlDataReader reader = command.ExecuteReader())
@@ -599,6 +643,33 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             };
         }
 
+        private HospitalityType ReaderToHospType(SqlDataReader reader, bool fromStore)
+        {
+            //[Sequence],[Sales Type],[Suggested Tips 1 Percentage],[Suggested Tips 2 Percentage],[Suggested Tips 3 Percentage],[Tips Calculation]
+            HospitalityType type = new HospitalityType()
+            {
+                IncomeAccount1 = SQLHelper.GetString(reader["Tips Income Acc_ 1"]),
+                IncomeAccount2 = SQLHelper.GetString(reader["Tips Income Acc_ 2"]),
+                Tip1Percentage = SQLHelper.GetDecimal(reader, "Suggested Tips 1 Percentage"),
+                Tip2Percentage = SQLHelper.GetDecimal(reader, "Suggested Tips 2 Percentage"),
+                Tip3Percentage = SQLHelper.GetDecimal(reader, "Suggested Tips 3 Percentage"),
+                TipInclTax = (SQLHelper.GetInt32(reader["Tips Calculation"]) == 0)
+            };
+
+            if (fromStore)
+            {
+                type.StoreNo = SQLHelper.GetString(reader["No_"]);
+                type.Sequence = 1;
+            }
+            else
+            {
+                type.StoreNo = SQLHelper.GetString(reader["Restaurant No_"]);
+                type.Sequence = SQLHelper.GetInt32(reader["Sequence"]);
+                type.SalesType = SQLHelper.GetString(reader["Sales Type"]);
+            }
+            return type;
+        }
+
         private ReplStore ReaderToStore(SqlDataReader reader, bool invmode, out string timestamp)
         {
             ReplStore store = new ReplStore()
@@ -640,7 +711,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             return store;
         }
 
-        private Store ReaderToLoyStore(SqlDataReader reader, bool includeDetails)
+        private Store ReaderToLoyStore(SqlDataReader reader)
         {
             Store store = new Store()
             {
@@ -655,6 +726,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 WebOmniTerminal = SQLHelper.GetString(reader["Web Store POS Terminal"]),
                 WebOmniStaff = SQLHelper.GetString(reader["Web Store Staff ID"]),
                 HospSalesTypes = GetSalesTypes(SQLHelper.GetString(reader["Sales Type Filter"])),
+                HospTypes = GetHospTypes(SQLHelper.GetString(reader["No_"])),
                 TaxGroupId = SQLHelper.GetString(reader["Store VAT Bus_ Post_ Gr_"]),
                 FunctionalityProfileId = SQLHelper.GetString(reader["Functionality Profile"]),
 
@@ -682,11 +754,13 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             if (LSCVersion >= new Version("18.4"))
             {
                 store.UseSourcingLocation = SQLHelper.GetBool(reader["Calc Inv for Sourcing Location"]);
-            }
-
-            if (includeDetails)
-            {
                 store.SourcingLocations = GetSourcingLocation(SQLHelper.GetString(reader["No_"]));
+            }
+            if (LSCVersion >= new Version("28.0"))
+            {
+                string panel = SQLHelper.GetString(reader["Tips Panel ID"]);
+                if (string.IsNullOrEmpty(panel) == false)
+                    store.HospTypes.Add(ReaderToHospType(reader, true));
             }
             return store;
         }

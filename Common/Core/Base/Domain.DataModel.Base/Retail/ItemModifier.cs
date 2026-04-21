@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using System.Windows.Input;
+using LSRetail.Omni.Domain.DataModel.Base.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Replication;
 
 namespace LSRetail.Omni.Domain.DataModel.Base.Retail
 {
     [DataContract(Namespace = "http://lsretail.com/LSOmniService/Base/2017")]
-    public class ItemModifier : IDisposable
+    public class ItemModifier : Entity, IDisposable
     {
+        private decimal selection;
+
         public ItemModifier()
         {
             Code = string.Empty;
@@ -70,5 +74,21 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Retail
         public decimal AmountPercent { get; set; }
         [DataMember]
         public decimal TimeModifierMinutes { get; set; }
+
+        [IgnoreDataMember]
+        public ICommand DecrementSelection { get; private set; }
+        [IgnoreDataMember]
+        public ICommand IncrementSelection { get; private set; }
+
+        [IgnoreDataMember]
+        public decimal Selection
+        {
+            get => selection;
+            set
+            {
+                selection = value;
+                NotifyPropertyChanged();
+            }
+        }
     }
 }

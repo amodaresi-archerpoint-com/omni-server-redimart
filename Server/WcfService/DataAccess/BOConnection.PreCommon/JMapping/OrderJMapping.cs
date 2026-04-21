@@ -18,33 +18,43 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public SalesEntry GetSalesEntry(string ret, out string resCode, out string resErr)
         {
             SalesEntry rec = null;
-            WSODataCollection result = JsonToWSOData(ret, "SelectedSalesDocDaCo", out resCode, out resErr);
-            if (result == null)
-                return rec;
+            WSODataCollection result = null;
 
-            // get header data
-            List<SalesEntry> list = LoadSaleEntries(result.GetDataSet(10000818));
-            if (list.Count == 0)
-                return rec;
-
-            rec = list.FirstOrDefault();
-            LoadSaleEntryLines(result, rec);
-            rec.DiscountLines = LoadSaleDiscounts(result.GetDataSet(10000836));
-
-            switch (rec.IdType)
+            try
             {
-                case DocumentIdType.Receipt:
-                    rec.LineItemCount = (int)rec.Lines.Sum(q => q.Quantity);
-                    rec.Quantity = rec.LineItemCount;
-                    rec.LineCount = rec.Lines.Count;
-                    break;
-                case DocumentIdType.Order:
-                    if (rec.Lines != null && rec.Lines.Count > 0)
-                    {
-                        rec.StoreId = rec.Lines[0].StoreId;
-                        rec.StoreName = rec.Lines[0].StoreName;
-                    }
-                    break;
+                result = JsonToWSOData(ret, "SelectedSalesDocDaCo", out resCode, out resErr);
+                if (result == null)
+                    return rec;
+
+                // get header data
+                List<SalesEntry> list = LoadSaleEntries(result.GetDataSet(10000818));
+                if (list.Count == 0)
+                    return rec;
+
+                rec = list.FirstOrDefault();
+                LoadSaleEntryLines(result, rec);
+                rec.DiscountLines = LoadSaleDiscounts(result.GetDataSet(10000836));
+
+                switch (rec.IdType)
+                {
+                    case DocumentIdType.Receipt:
+                        rec.LineItemCount = (int)rec.Lines.Sum(q => q.Quantity);
+                        rec.Quantity = rec.LineItemCount;
+                        rec.LineCount = rec.Lines.Count;
+                        break;
+                    case DocumentIdType.Order:
+                        if (rec.Lines != null && rec.Lines.Count > 0)
+                        {
+                            rec.StoreId = rec.Lines[0].StoreId;
+                            rec.StoreName = rec.Lines[0].StoreName;
+                        }
+                        break;
+                }
+            }
+            finally
+            {
+                result?.Dispose();
+                result = null;
             }
             return rec;
         }
@@ -52,40 +62,59 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<SalesEntry> GetSalesEntryHistory(string ret, out string resCode, out string resErr)
         {
             List<SalesEntry> list = new List<SalesEntry>();
-            WSODataCollection result = JsonToWSOData(ret, "MemberContactSalesHistoryDaCo", out resCode, out resErr);
-            if (result == null)
-                return list;
+            WSODataCollection result = null;
 
-            // get data
-            list = LoadSaleEntries(result.GetDataSet(10000818));
+            try
+            {
+                result = JsonToWSOData(ret, "MemberContactSalesHistoryDaCo", out resCode, out resErr);
+                if (result == null)
+                    return list;
+
+                // get data
+                list = LoadSaleEntries(result.GetDataSet(10000818));
+            }
+            finally
+            {
+                result?.Dispose();
+                result = null;
+            }
             return list;
         }
 
         public SalesEntryList GetSalesEntrySales(string ret, bool getCardId, out string cardId, out string resCode, out string resErr)
         {
-            SalesEntryList entry = new SalesEntryList();
             cardId = string.Empty;
+            SalesEntryList entry = new SalesEntryList();
+            WSODataCollection result = null;
 
-            WSODataCollection result = JsonToWSOData(ret, "SalesInfoDaCo", out resCode, out resErr);
-            if (result == null)
-                return entry;
-
-            if (getCardId)
-                cardId = GetJsonValue(ret, "CardNo", out resCode, out resErr);
-
-            List<SalesEntry> entries = LoadSaleEntries(result.GetDataSet(10000818));
-            foreach (SalesEntry rec in entries)
+            try
             {
-                LoadSaleEntryLines(result, rec);
-                rec.DiscountLines = LoadSaleDiscounts(result.GetDataSet(10000836));
+                result = JsonToWSOData(ret, "SalesInfoDaCo", out resCode, out resErr);
+                if (result == null)
+                    return entry;
+
+                if (getCardId)
+                    cardId = GetJsonValue(ret, "CardNo", out resCode, out resErr);
+
+                List<SalesEntry> entries = LoadSaleEntries(result.GetDataSet(10000818));
+                foreach (SalesEntry rec in entries)
+                {
+                    LoadSaleEntryLines(result, rec);
+                    rec.DiscountLines = LoadSaleDiscounts(result.GetDataSet(10000836));
+                }
+                entry.Order = entries.Find(e => e.IdType == DocumentIdType.Order);
+                entry.SalesEntries = entries.FindAll(e => e.IdType == DocumentIdType.Receipt);
+                entry.Shipments = LoadShipment(result.GetDataSet(110));
+                List<SalesEntryShipmentLine> shipLines = LoadShipmentLine(result.GetDataSet(111));
+                foreach (SalesEntryShipment rec in entry.Shipments)
+                {
+                    rec.Lines = shipLines.FindAll(l => l.DocId == rec.Id);
+                }
             }
-            entry.Order = entries.Find(e => e.IdType == DocumentIdType.Order);
-            entry.SalesEntries = entries.FindAll(e => e.IdType == DocumentIdType.Receipt);
-            entry.Shipments = LoadShipment(result.GetDataSet(110));
-            List<SalesEntryShipmentLine> shipLines = LoadShipmentLine(result.GetDataSet(111));
-            foreach (SalesEntryShipment rec in entry.Shipments)
+            finally
             {
-                rec.Lines = shipLines.FindAll(l => l.DocId == rec.Id);
+                result?.Dispose();
+                result = null;
             }
             return entry;
         }

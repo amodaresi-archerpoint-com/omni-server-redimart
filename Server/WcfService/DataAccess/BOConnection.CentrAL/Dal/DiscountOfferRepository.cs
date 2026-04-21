@@ -570,11 +570,15 @@ namespace LSOmni.DataAccess.BOConnection.CentrAL.Dal
             if (string.IsNullOrEmpty(tx3) == false)
                 disc.Details += "\r\n" + tx3;
 
-            decimal amt = SQLHelper.GetDecimal(reader, "Discount Amount Value");
-            if (amt > 0 && disc.Type == ReplDiscountType.DiscOffer)
+            if (disc.Type == ReplDiscountType.DiscOffer)
             {
-                disc.DiscountValueType = DiscountValueType.Amount;
-                disc.DiscountValue = amt;
+                disc.DiscountValueType = DiscountValueType.Percent;
+                decimal amt = SQLHelper.GetDecimal(reader, "Discount Amount Value");
+                if (amt > 0)
+                {
+                    disc.DiscountValue = amt;
+                    disc.DiscountValueType = DiscountValueType.Amount;
+                }
             }
             return disc;
         }

@@ -21,6 +21,7 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Orders
             ItemImageId = string.Empty;
             StoreId = string.Empty;
             SourcingLocation = string.Empty;
+            WishListNo = string.Empty;
 
             LineType = LineType.Item; //never change this unless you know what you are doing !
 
@@ -75,6 +76,8 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Orders
         public string LotNumber { get; set; }
         [DataMember]
         public string SerialNumber { get; set; }
+        [DataMember]
+        public string WishListNo { get; set; }
         /// <summary>
         /// Store to collect the item from
         /// </summary>
@@ -123,6 +126,8 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Orders
         public decimal Amount { get; set; }
         [DataMember]
         public bool ValidateTax { get; set; }
+        [DataMember]
+        public bool ServiceItem { get; set; }
 
         [IgnoreDataMember]
         public bool ItemHasVariant

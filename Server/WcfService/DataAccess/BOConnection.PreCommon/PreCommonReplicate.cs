@@ -529,7 +529,13 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 usePriceLine = (config.SettingsBoolGetByKey(ConfigKey.UseSalesPrice) == false);
 
             string ret;
-            if (LSCVersion >= new Version("26.0") && usePriceLine)
+            if (LSCVersion >= new Version("28.0") && usePriceLine)
+            {
+                ret = odataWS.GetPriceListLine2(storeId, batchSize, fullRepl, lastKey, lastEntry);
+                logger.Trace(config.LSKey.Key, ret);
+                return map.GetReplPriceListLine2(ret, storeId, ref lastKey, ref recordsRemaining);
+            }
+            else if (LSCVersion >= new Version("26.0") && usePriceLine)
             {
                 ret = odataWS.GetPriceListLine(storeId, batchSize, fullRepl, lastKey, lastEntry);
                 logger.Trace(config.LSKey.Key, ret);
@@ -574,7 +580,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon
                 }
 
                 xml = new NAVWebXml(storeId, appId, appType);
-                if (ResetReplication(fullRepl, lastKey))
+                if (fullRepl && lastKey == "0")
                 {
                     int i = 0;
                     StartWebReplication(xml, 0, ref i);

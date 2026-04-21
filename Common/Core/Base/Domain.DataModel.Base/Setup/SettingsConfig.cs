@@ -7,8 +7,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
 {
     public enum SettingsConfigUrlType
     {
-        Normal = 0,
-        Simplified = 1,
+        Normal = 0
     }
 
     public enum SettingsConfigSecurityStandard
@@ -79,6 +78,8 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
         private bool consoleLogToLog;
 
         private bool ignoreCertificateErrors;
+        private bool disableStartupLoadingOverlay;
+        
 
         private string webView2RuntimeLocation;
 
@@ -105,6 +106,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
         public const string HardwareMinutesKey = "HardwareMinutesKey";
 
         public const string IgnoreCertificateErrorsKey = "IgnoreCertificateErrorsKey";
+        public const string DisableStartupLoadingOverlayKey = "DisableStartupLoadingOverlayKey";
 
         public const string WebView2RuntimeLocationKey = "WebView2RuntimeLocationKey";
 
@@ -300,6 +302,17 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
             }
         }
 
+        [System.Xml.Serialization.XmlElementAttribute("DisableStartupLoadingOverlay")]
+        public bool DisableStartupLoadingOverlay
+        {
+            get => disableStartupLoadingOverlay;
+            set
+            {
+                disableStartupLoadingOverlay = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         [System.Xml.Serialization.XmlElementAttribute("IgnoreCertificateErrors")]
         public bool IgnoreCertificateErrors
         {
@@ -424,7 +437,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
             this.page = config.page;
             this.company = config.company;
             this.tenant = config.tenant;
-            this.urlType = config.urlType;
+            this.urlType = SettingsConfigUrlType.Normal;
             this.userName = config.userName;
             this.password = config.password;
             this.hexColor = config.hexColor;
@@ -715,7 +728,6 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
             {
                 urlType = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged("UrlToUse");
             }
         }
 
@@ -727,7 +739,6 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
             {
                 securityStandard = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged("UrlToUse");
             }
         }
 
@@ -739,7 +750,6 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
             {
                 settingsConfigType = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged("UrlToUse");
             }
         }
 
@@ -751,7 +761,6 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
             {
                 computerName = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged("UrlToUse");
             }
         }
 
@@ -763,7 +772,6 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
             {
                 port = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged("UrlToUse");
             }
         }
 
@@ -775,7 +783,6 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
             {
                 webServiceInstance = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged("UrlToUse");
             }
         }
 
@@ -787,7 +794,6 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
             {
                 page = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged("UrlToUse");
             }
         }
 
@@ -799,7 +805,6 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
             {
                 company = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged("UrlToUse");
             }
         }
 
@@ -811,7 +816,6 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
             {
                 isSaas = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged("UrlToUse");
             }
         }
 
@@ -822,7 +826,6 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
             {
                 otherParameters = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged("UrlToUse");
             }
         }
 
@@ -835,7 +838,6 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
             {
                 tenant = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged("UrlToUse");
             }
         }
 
@@ -1149,7 +1151,6 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
             {
                 tabletMode = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged("UrlToUse");
             }
         }
         [System.Xml.Serialization.XmlElementAttribute("ShowBackButton")]
@@ -1247,65 +1248,9 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
         {
             get => !DisableWhenOffline || ServiceStatus == SettingsConfigServiceStatus.Online;
         }
-
-
-        public string UrlToUse
-        {
-            get
-            {
-                //Url = GetUrlToUse();
-                return Url;
-            }
-        }
-
-        public string UrlToUseWithAuth
-        {
-            get
-            { 
-                Url = GetUrlToUse(true);
-                return Url;
-            }
-        }
-
-        public string GetUrlToUse(bool withAuth = false)
-        {
-            UrlParser urlParser;
-            if (UrlType == SettingsConfigUrlType.Normal)
-            {
-                urlParser = new UrlParser(url);
-                ComputerName = urlParser.ComputerName;
-                Port = urlParser.Port;
-                Tenant = urlParser.Tenant;
-                Company = urlParser.Company;
-                Page = urlParser.Page;
-                WebServiceInstance = urlParser.InstanceName;
-                OtherParameters = urlParser.OtherSettings;
-                SecurityStandard = urlParser.InternetProtocol == "https" ? SettingsConfigSecurityStandard.Https : SettingsConfigSecurityStandard.Http;
-                if (withAuth)
-                {
-                    return urlParser.GetUrl(isSaas, TabletMode, userName, password);
-                }
-
-                return urlParser.GetUrl(isSaas, TabletMode);
-            }
-
-            urlParser = new UrlParser(SecurityStandard.ToString(),
-                ComputerName,
-                WebServiceInstance,
-                Port,
-                Company,
-                Page,
-                Tenant,
-                OtherParameters);
-            if (withAuth)
-            {
-                return urlParser.GetUrl(isSaas, TabletMode, userName, password);
-            }
-
-            return urlParser.GetUrl(isSaas, TabletMode);
-        }
-
+        
         public string UsernameToUse => Environment.ExpandEnvironmentVariables(userName);
+
 
         public SettingsConfig ShallowCopy()
         {
