@@ -43,6 +43,8 @@
 
   <ItemGroup>
     <Compile Include="..\..\Base\Domain.DataModel.Base\Properties\Version.cs" Link="Properties\Version.cs" />
+    <Compile Include="Notifications\TopicSubscriptionError.cs" />
+    <Compile Include="Notifications\TopicSubscriptionResult.cs" />
   </ItemGroup>
 
   <ItemGroup>

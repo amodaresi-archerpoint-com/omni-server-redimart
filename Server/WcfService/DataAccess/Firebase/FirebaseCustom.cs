@@ -4,6 +4,7 @@ using Google.Apis.Auth.OAuth2;
 using System;
 using System.Collections.Generic;
 using LSOmni.Common.Util;
+using LSRetail.Omni.Domain.DataModel.Loyalty.Notifications;
 
 namespace LSOmni.DataAccess.Firebase
 {
@@ -75,6 +76,42 @@ namespace LSOmni.DataAccess.Firebase
             var response = messaging.SubscribeToTopicAsync(tokens, topic).Result;
             logger.StatisticEndSub(ref stat, index);
             return (response.SuccessCount == 1) ? true : false;
+        }
+
+        public TopicSubscriptionResult SubscribeTokensToTopic(List<string> tokens, string topic, Statistics stat)
+        {
+            logger.StatisticStartSub(true, ref stat, out int index);
+            var response = messaging.SubscribeToTopicAsync(tokens, topic).Result;
+            logger.StatisticEndSub(ref stat, index);
+            return BuildTopicSubscriptionResult(tokens, response);
+        }
+
+        public TopicSubscriptionResult UnsubscribeTokensFromTopic(List<string> tokens, string topic, Statistics stat)
+        {
+            logger.StatisticStartSub(true, ref stat, out int index);
+            var response = messaging.UnsubscribeFromTopicAsync(tokens, topic).Result;
+            logger.StatisticEndSub(ref stat, index);
+            return BuildTopicSubscriptionResult(tokens, response);
+        }
+
+        private TopicSubscriptionResult BuildTopicSubscriptionResult(List<string> tokens, TopicManagementResponse response)
+        {
+            var errors = new List<TopicSubscriptionError>();
+            foreach (var error in response.Errors)
+            {
+                errors.Add(new TopicSubscriptionError
+                {
+                    Index = error.Index,
+                    Token = tokens[error.Index],
+                    Reason = error.Reason,
+                });
+            }
+            return new TopicSubscriptionResult
+            {
+                SuccessCount = response.SuccessCount,
+                FailureCount = response.FailureCount,
+                Errors = errors,
+            };
         }
 
     }

@@ -9,6 +9,7 @@ using LSOmni.Common.Util;
 using LSRetail.Omni.Domain.DataModel.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Members;
+using LSRetail.Omni.Domain.DataModel.Loyalty.Notifications;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Setup;
 using System.Web.UI.WebControls;
 
@@ -513,6 +514,54 @@ namespace LSOmni.Service
                 logger.StatisticEndMain(stat);
             }
         }
+        public virtual TopicSubscriptionResult SubscribeTokensToTopic(List<string> tokens, string topic)
+        {
+            if (topic == null)
+                topic = string.Empty;
+
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+
+            try
+            {
+                logger.Debug(config.LSKey.Key, "topic:{0} tokenCount:{1}", topic, tokens?.Count ?? 0);
+                CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
+                return customLoyBll.SubscribeTokensToTopic(tokens, topic, stat);
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "topic:{0}", topic);
+                return null;
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
+        }
+
+        public virtual TopicSubscriptionResult UnsubscribeTokensFromTopic(List<string> tokens, string topic)
+        {
+            if (topic == null)
+                topic = string.Empty;
+
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+
+            try
+            {
+                logger.Debug(config.LSKey.Key, "topic:{0} tokenCount:{1}", topic, tokens?.Count ?? 0);
+                CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);
+                return customLoyBll.UnsubscribeTokensFromTopic(tokens, topic, stat);
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "topic:{0}", topic);
+                return null;
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
+        }
+
         public virtual bool RegisterDevice(string loginId, string deviceId, string firebaseToken)
         {
             Statistics stat = logger.StatisticStartMain(config, serverUri);
