@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LSOmni.Common.Util;
 using LSOmni.DataAccess.Interface.BOConnection;
 using LSOmni.DataAccess.Firebase;
+using LSRetail.Omni.Domain.DataModel.Loyalty.Notifications;
 //using LSRetail.Omni.DiscountEngine.DataModels;
 using LSRetail.Omni.Domain.DataModel.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
@@ -234,6 +235,18 @@ namespace LSOmni.BLL.Loyalty
         {
             FirebaseCustom firebaseCustom = new FirebaseCustom();
             return firebaseCustom.SubscribeTokenToTopic(token, topic, stat);
+        }
+
+        public TopicSubscriptionResult SubscribeTokensToTopic(List<string> tokens, string topic, Statistics stat)
+        {
+            FirebaseCustom firebaseCustom = new FirebaseCustom();
+            return firebaseCustom.SubscribeTokensToTopic(tokens, topic, stat);
+        }
+
+        public TopicSubscriptionResult UnsubscribeTokensFromTopic(List<string> tokens, string topic, Statistics stat)
+        {
+            FirebaseCustom firebaseCustom = new FirebaseCustom();
+            return firebaseCustom.UnsubscribeTokensFromTopic(tokens, topic, stat);
         }
 
         public virtual bool RegisterDevice(string loginID, string deviceID, string firebaseToken, Statistics stat)

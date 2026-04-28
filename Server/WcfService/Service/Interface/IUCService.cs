@@ -13,6 +13,7 @@ using LSRetail.Omni.Domain.DataModel.Base.Menu;
 using LSRetail.Omni.Domain.DataModel.Base.Utils;
 using LSRetail.Omni.Domain.DataModel.Base.SalesEntries;
 using LSRetail.Omni.Domain.DataModel.Base.Hierarchies;
+using LSRetail.Omni.Domain.DataModel.Loyalty.Notifications;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Replication;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Members;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Items;
@@ -98,6 +99,12 @@ namespace LSOmni.Service
 
         [OperationContract]
         bool SubscribeTokenToTopic(string token, string topic);
+
+        [OperationContract]
+        TopicSubscriptionResult SubscribeTokensToTopic(List<string> tokens, string topic);
+
+        [OperationContract]
+        TopicSubscriptionResult UnsubscribeTokensFromTopic(List<string> tokens, string topic);
 
         [OperationContract]
         bool RegisterDevice(string loginId, string deviceId, string firebaseToken);
