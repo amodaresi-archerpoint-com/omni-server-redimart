@@ -125,10 +125,13 @@ begin
   SQLPage_xCreateUser.Checked := GetCommandLineParamBoolean('-SqlCrUsr', True);
 
   CheckPage_IISCheckBox.Checked := GetCommandLineParamBoolean('-IisX', True);
+  IISPage_xS2S.Checked := GetCommandLineParamBoolean('-Is2s', False);
   IISPage_txtWcfSiteName.Text := GetCommandLineParamString('-IisSite', 'Default Web Site');
   IISPage_txtWcfServiceName.Text := GetCommandLineParamString('-IisSrv', 'CommerceService');
-  IISPage_txtNavUrl.Text := GetCommandLineParamString('-IisUrl', 'http://localhost:7047/BC230/WS/CRONUS - LS Central/Codeunit/RetailWebServices');
-  IISPage_txtODataUrl.Text := GetCommandLineParamString('-IisOData', 'http://localhost:7048/BC230/ODataV4');
+  IISPage_txtNavUrl.Text := GetCommandLineParamString('-IisUrl', 'http://localhost:9047/LSCentral/WS/CRONUS - LS Central/Codeunit/RetailWebServices');
+  IISPage_txtODataUrl.Text := GetCommandLineParamString('-IisOData', 'http://localhost:9048/LSCentral/ODataV4');
+  IISPage_txtEComUrl.Text := GetCommandLineParamString('-IEcomUrl', 'Demo');
+  IISPage_txtNavTen.Text := GetCommandLineParamString('-IisTen', '');
   IISPage_txtNavUser.Text := GetCommandLineParamString('-IisUsr', '');
   IISPage_txtNavPwd.Text := GetCommandLineParamString('-IisPwd', '');
 end;
@@ -251,30 +254,16 @@ begin
   Result := True;
   try
     // Central Web Service
-    if CheckPage_IISCheckBox.Checked then
+    if not CheckPage_MultiCheckBox.Checked then
     begin
-      if CheckPage_MultiCheckBox.Checked then
-      begin
-        Log('Update DB IIS Settings');
-        ADOUpdateAppSettings('BOUrl', Trim(IISPage_txtNavUrl.Text));
-        ADOUpdateAppSettings('BOODataUrl', Trim(IISPage_txtODataUrl.Text));
-        ADOUpdateAppSettings('BOUser', Trim(IISPage_txtNavUser.Text));
-        ADOUpdateAppSettings('BOPassword', Trim(IISPage_txtNavPwd.Text));
-        ADOUpdateAppSettings('BOTenant', Trim(IISPage_txtNavTen.Text));
-        if IISPage_xS2S.Checked then
-          ADOUpdateAppSettings('BOProtocol', 'S2S');
-      end
-      else
-      begin
-        Log('Update File IIS Settings');
-        UpdateAppSettingsConfig('BOConnection.Nav.Url', Trim(IISPage_txtNavUrl.Text), ExpandConstant('{app}\{code:WcfDir}'));
-        UpdateAppSettingsConfig('BOConnection.Nav.ODataUrl', Trim(IISPage_txtODataUrl.Text), ExpandConstant('{app}\{code:WcfDir}'));
-        UpdateAppSettingsConfig('BOConnection.Nav.UserName', Trim(IISPage_txtNavUser.Text), ExpandConstant('{app}\{code:WcfDir}'));
-        UpdateAppSettingsConfig('BOConnection.Nav.Password', Trim(IISPage_txtNavPwd.Text), ExpandConstant('{app}\{code:WcfDir}'));
-        UpdateAppSettingsConfig('BOConnection.Nav.Tenant', Trim(IISPage_txtNavTen.Text), ExpandConstant('{app}\{code:WcfDir}'));
-        if IISPage_xS2S.Checked then
-          UpdateAppSettingsConfig('BOConnection.Nav.Protocol', 'S2S', ExpandConstant('{app}\{code:WcfDir}'));
-      end;
+      Log('Update File IIS Settings');
+      UpdateAppSettingsConfig('BOConnection.Nav.Url', Trim(IISPage_txtNavUrl.Text), ExpandConstant('{app}\{code:WcfDir}'));
+      UpdateAppSettingsConfig('BOConnection.Nav.ODataUrl', Trim(IISPage_txtODataUrl.Text), ExpandConstant('{app}\{code:WcfDir}'));
+      UpdateAppSettingsConfig('BOConnection.Nav.UserName', Trim(IISPage_txtNavUser.Text), ExpandConstant('{app}\{code:WcfDir}'));
+      UpdateAppSettingsConfig('BOConnection.Nav.Password', Trim(IISPage_txtNavPwd.Text), ExpandConstant('{app}\{code:WcfDir}'));
+      UpdateAppSettingsConfig('BOConnection.Nav.Tenant', Trim(IISPage_txtNavTen.Text), ExpandConstant('{app}\{code:WcfDir}'));
+      if IISPage_xS2S.Checked then
+        UpdateAppSettingsConfig('BOConnection.Nav.Protocol', 'S2S', ExpandConstant('{app}\{code:WcfDir}'));
     end;
 
     // Central connection string

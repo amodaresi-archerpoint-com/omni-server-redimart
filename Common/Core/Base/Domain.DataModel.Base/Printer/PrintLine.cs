@@ -136,6 +136,9 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Printer
         {
             switch (barcodeSystemFromNav)
             {
+                case "QRCODE":
+                    return BarcodeSystem.QRCODE;
+
                 case "EAN13":
                     return BarcodeSystem.EAN13;
 

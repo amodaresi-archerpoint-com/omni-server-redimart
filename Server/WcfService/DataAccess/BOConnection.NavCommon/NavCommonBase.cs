@@ -57,9 +57,6 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon
 
         private string ecomAppId = string.Empty;
         private string ecomAppType = string.Empty;
-        private bool ecomAppRestore = false;
-        private string ecomAppRestoreFileName = string.Empty;
-
         private string pgtablename = "Product Group";
 
         public NavCommonBase(BOConfiguration configuration, bool ping = false)
@@ -69,24 +66,29 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon
                 throw new LSOmniServiceException(StatusCode.SecurityTokenInvalid, "SecurityToken invalid");
             }
             config = configuration;
+            string url = config.SettingsGetByKey(ConfigKey.BOUrl);
+            if (string.IsNullOrEmpty(url))
+                return;
+
+            string tenVersion = config.SettingsGetByKey(ConfigKey.LSNAV_Version);
+            if (string.IsNullOrEmpty(tenVersion) == false)
+            {
+                Version v = new Version(tenVersion);
+                if (v >= new Version("17.5"))
+                    return;
+            }
+
+            string protocol = config.SettingsGetByKey(ConfigKey.BOProtocol);
+            if (string.IsNullOrWhiteSpace(protocol) == false)
+            {
+                if (protocol.ToUpper().Equals("S2S"))
+                    return;
+            }
 
             base64ConversionMinLength = config.SettingsIntGetByKey(ConfigKey.Base64MinXmlSizeInKB) * 1024; //in KB
 
             ecomAppId = config.SettingsGetByKey(ConfigKey.NavAppId);
             ecomAppType = config.SettingsGetByKey(ConfigKey.NavAppType);
-
-            string rpath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Dat");
-            ecomAppRestoreFileName = Path.Combine(rpath, $"restore-{(string.IsNullOrEmpty(configuration.AppId) ? ecomAppId : configuration.AppId)}.txt");
-            if (Directory.Exists(rpath) == false)
-            {
-                Directory.CreateDirectory(rpath);
-            }
-            if (File.Exists(ecomAppRestoreFileName) == false)
-            {
-                File.WriteAllText(ecomAppRestoreFileName, true.ToString());
-            }
-            string restoredata = File.ReadAllText(ecomAppRestoreFileName);
-            ecomAppRestore = Convert.ToBoolean(restoredata);
 
             string domain = "";
             NetworkCredential credentials = null;
@@ -116,8 +118,6 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon
             }
 
             ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(AcceptAllCertifications);
-
-            string protocol = config.SettingsGetByKey(ConfigKey.BOProtocol);
             if (string.IsNullOrWhiteSpace(protocol) == false)
             {
                 ServicePointManager.SecurityProtocol = (SecurityProtocolType) EnumHelper.StringToEnum(typeof(SecurityProtocolType), protocol);
@@ -209,15 +209,6 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon
                 pgtablename = "Retail Product Group";
         }
 
-        public void ResetReplication(bool fullreplication, string lastkey)
-        {
-            if (fullreplication && (string.IsNullOrEmpty(lastkey) || lastkey == "0"))
-            {
-                File.WriteAllText(ecomAppRestoreFileName, true.ToString());
-                ecomAppRestore = true;
-            }
-        }
-
         public XMLTableData DoReplication(int tableid, string storeId, string appid, string apptype, int batchSize, ref string lastKey, out int totalrecs)
         {
             if (string.IsNullOrEmpty(appid))
@@ -234,14 +225,12 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon
             NAVWebXml xml = new NAVWebXml(storeId, appid, apptype);
             List<XMLTableData> tablist = new List<XMLTableData>();
 
-            if (restorepoint == 0 && ecomAppRestore)
+            if (restorepoint == 0)
             {
                 // restart to beginning
                 restorepoint = 1;
                 RestoreWebReplication(xml, restorepoint);
                 tablist = StartWebReplication(xml, batchSize, ref restorepoint);
-
-                File.WriteAllText(ecomAppRestoreFileName, false.ToString());
             }
             else
             {

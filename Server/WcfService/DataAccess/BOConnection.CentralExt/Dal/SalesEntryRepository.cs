@@ -113,7 +113,8 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                         "JOIN [" + navCompanyName + "LSC Store$5ecfc871-5d82-43f1-9c54-59685e82318d] st ON st.[No_]=mt.[Store No_] " +
                         "LEFT JOIN [" + navCompanyName + "LSC Posted CO Header$5ecfc871-5d82-43f1-9c54-59685e82318d] co ON co.[Document ID]=mt.[Customer Order ID] " +
                         ((LSCVersion >= new Version("21.2")) ? "LEFT JOIN [" + navCompanyName + "LSC Food & Beverage Order$5ecfc871-5d82-43f1-9c54-59685e82318d] fab ON fab.[Order No_]=mt.[Receipt No_] " : " ") +
-                        "WHERE ((mt.[No_ of Items]>0 AND mt.[Sale Is Return Sale]=0) OR (mt.[Sale Is Return Sale]=1))  AND " + ((string.IsNullOrEmpty(entryId)) ? "mt.[Store No_]=@sid AND mt.[POS Terminal No_]=@tid AND mt.[Transaction No_]=@id" : "mt.[Receipt No_]=@id");
+                        "WHERE ((mt.[No_ of Items]>0 AND mt.[Sale Is Return Sale]=0) OR (mt.[Sale Is Return Sale]=1)) AND " + 
+                        ((string.IsNullOrEmpty(entryId)) ? "mt.[Store No_]=@sid AND mt.[POS Terminal No_]=@tid AND mt.[Transaction No_]=@id" : "mt.[Receipt No_]=@id");
 
                     if (string.IsNullOrEmpty(entryId))
                     {
@@ -195,7 +196,9 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                     {
                         while (reader.Read())
                         {
-                            list.Add(SalesEntryGetById(string.Empty, SQLHelper.GetString(reader["Store No_"]), SQLHelper.GetString(reader["POS Terminal No_"]), SQLHelper.GetInt32(reader["Transaction No_"]), stat));
+                            SalesEntry e = SalesEntryGetById(string.Empty, SQLHelper.GetString(reader["Store No_"]), SQLHelper.GetString(reader["POS Terminal No_"]), SQLHelper.GetInt32(reader["Transaction No_"]), stat);
+                            if (e != null)
+                                list.Add(e);
                         }
                         reader.Close();
                     }
@@ -454,7 +457,8 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 {
                     command.CommandText = "SELECT " +
                                 "ml.[Store No_],st.[Name],ml.[Transaction No_],ml.[Item No_],ml.[Variant Code],ml.[Unit of Measure],ml.[Deal Modifier Line No_],ml.[Deal Header Line No_]," +
-                                "ml.[Quantity],ml.[UOM Quantity],ml.[Price],ml.[Net Price],ml.[Net Amount],ml.[Discount Amount],ml.[VAT Amount],ml.[Refund Qty_],ml.[Line No_],i.[Description],ml.[Parent Line No_]," +
+                                "ml.[Quantity],ml.[UOM Quantity],ml.[Price],ml.[Net Price],ml.[Net Amount],ml.[Discount Amount],ml.[VAT Amount],ml.[Refund Qty_]," +
+                                "ml.[Line No_],ml.[Parent Line No_],ml.[Serial No_],ml.[Lot No_],i.[Description]," +
                                 "v.[Variant Dimension 1],v.[Variant Dimension 2],v.[Variant Dimension 3],v.[Variant Dimension 4],v.[Variant Dimension 5]" +
                                 " FROM [" + navCompanyName + "LSC Trans_ Sales Entry$5ecfc871-5d82-43f1-9c54-59685e82318d] ml" +
                                 " JOIN [" + navCompanyName + "Item$437dbf0e-84ff-417a-965d-ed2bb9650972] i ON i.[No_]=ml.[Item No_]" +
@@ -1038,6 +1042,8 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 ParentLine = SQLHelper.GetInt32(reader["Parent Line No_"]),
                 VariantId = SQLHelper.GetString(reader["Variant Code"]),
                 UomId = SQLHelper.GetString(reader["Unit of Measure"]),
+                LotNumber = SQLHelper.GetString(reader["Lot No_"]),
+                SerialNumber = SQLHelper.GetString(reader["Serial No_"]),
                 Quantity = SQLHelper.GetDecimal(reader, "Quantity", true),
                 LineType = LineType.Item,
                 ItemId = SQLHelper.GetString(reader["Item No_"]),
@@ -1230,7 +1236,8 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 CurrencyFactor = SQLHelper.GetDecimal(reader, "CurrencyFactor", false),
                 CurrencyCode = SQLHelper.GetString(reader["Currency Code"]),
                 TenderType = SQLHelper.GetString(reader["Number"]),
-                CardNo = SQLHelper.GetString(reader["Card Number"])
+                CardNo = SQLHelper.GetString(reader["Card Number"]),
+                Type = PaymentType.Payment
             };
         }
 

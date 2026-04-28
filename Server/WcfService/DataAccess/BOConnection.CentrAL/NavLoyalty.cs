@@ -105,13 +105,26 @@ namespace LSOmni.DataAccess.BOConnection.CentrAL
         public virtual MemberContact ContactGet(ContactSearchType searchType, string searchValue, Statistics stat)
         {
             ContactRepository rep = new ContactRepository(config, NAVVersion);
-            return rep.ContactGet(searchType, searchValue);
+            MemberContact contact = rep.ContactGet(searchType, searchValue);
+
+            if (searchType != ContactSearchType.CardId)
+                return contact;
+
+            List<Profile> profiles = rep.ProfileGetByCardId(searchValue, true);
+            contact.Profiles = profiles.FindAll(p => p.AttributeType == 0 && p.VisibleType == 0 && p.LookupType == 0);
+            contact.MemberAttributes = profiles.FindAll(p => p.AttributeType == 0 && p.VisibleType != 0 && p.LookupType != 0);
+            return contact;
         }
 
         public virtual List<Customer> CustomerSearch(CustomerSearchType searchType, string search, int maxNumberOfRowsReturned, Statistics stat)
         {
             CustomerRepository rep = new CustomerRepository(config, NAVVersion);
             return rep.CustomerSearch(searchType, search, maxNumberOfRowsReturned);
+        }
+
+        public virtual void ContactCreateCard(string contactId, string accountId, string cardId, string clubId, string schemeId, Statistics stat)
+        {
+            throw new NotImplementedException();
         }
 
         public virtual double ContactAddCard(string contactId, string accountId, string cardId, Statistics stat)
@@ -155,10 +168,10 @@ namespace LSOmni.DataAccess.BOConnection.CentrAL
             NavWSBase.LoginChange(oldUserName, newUserName, password);
         }
 
-        public virtual List<Profile> ProfileGetByCardId(string id, Statistics stat)
+        public virtual List<Profile> ProfileGetByCardId(string id, bool includeAll, Statistics stat)
         {
             ContactRepository rep = new ContactRepository(config, NAVVersion);
-            return rep.ProfileGetByCardId(id);
+            return rep.ProfileGetByCardId(id, includeAll);
         }
 
         public virtual List<Profile> ProfileGetAll(Statistics stat)
@@ -388,9 +401,9 @@ namespace LSOmni.DataAccess.BOConnection.CentrAL
             return rep.HierarchyGetByStore(storeId);
         }
 
-        public virtual MobileMenu MenuGet(string storeId, string salesType, Currency currency, Statistics stat)
+        public virtual MobileMenu MenuGet(string restaurantNo, string terminalNo, string salesType, Currency currency, Statistics stat)
         {
-            return NavWSBase.MenuGet(storeId, salesType, currency);
+            return NavWSBase.MenuGet(restaurantNo, terminalNo, salesType, currency);
         }
 
         #endregion
@@ -488,6 +501,31 @@ namespace LSOmni.DataAccess.BOConnection.CentrAL
             throw new NotImplementedException();
         }
 
+        public virtual string OneListSave(OneList oneList, Statistics stat)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void OneListModify(string listId, OneListItem line, bool remove, Statistics stat)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void OneListLink(string listId, string cardId, string contactNo, LinkStatus status, Statistics stat)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual List<OneList> OneListGet(string listId, string cardId, bool includeLines, Statistics stat)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void OneListDelete(string listId, Statistics stat)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual SalesEntry SalesEntryGet(string entryId, DocumentIdType type, Statistics stat)
         {
             SalesEntry entry;
@@ -542,6 +580,7 @@ namespace LSOmni.DataAccess.BOConnection.CentrAL
         {
             SalesEntryRepository repo = new SalesEntryRepository(config, NAVVersion);
             SalesEntryList data = new SalesEntryList();
+            data.SalesEntries = new List<SalesEntry>();
             List<SalesEntryId> list = repo.SalesEntryGetSalesByOrderId(orderId);
             foreach (SalesEntryId item in list)
             {

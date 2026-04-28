@@ -214,9 +214,9 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 StartingDate = ConvertTo.SafeJsonDate(SQLHelper.GetDateTime(reader["Starting Date"]), config.IsJson)
             };
 
-            if (SQLHelper.GetDecimal(reader, "LSC POS Exchange Rate Amount") != 0)
+            if (SQLHelper.GetDecimal(reader, "LSC POS Exchange Rate Amount$5ecfc871-5d82-43f1-9c54-59685e82318d") != 0)
             {
-                currency.CurrencyFactor = ((1 / SQLHelper.GetDecimal(reader, "LSC POS Exchange Rate Amount")) * SQLHelper.GetDecimal(reader, "LSC POS Rel_ Exch_ Rate Amount"));
+                currency.CurrencyFactor = ((1 / SQLHelper.GetDecimal(reader, "LSC POS Exchange Rate Amount$5ecfc871-5d82-43f1-9c54-59685e82318d")) * SQLHelper.GetDecimal(reader, "LSC POS Rel_ Exch_ Rate Amount$5ecfc871-5d82-43f1-9c54-59685e82318d"));
             }
             else
             {

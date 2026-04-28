@@ -63,7 +63,7 @@ namespace LSOmni.Service
                 logger.Debug(config.LSKey.Key, string.Format("ProfilesGetByContactId() - cardId:{0}", cardId));
 
                 ContactBLL profileBLL = new ContactBLL(config, clientTimeOutInSeconds);
-                return profileBLL.ProfilesGetByCardId(cardId, stat);
+                return profileBLL.ProfilesGetByCardId(cardId, false, stat);
             }
             catch (Exception ex)
             {
@@ -355,6 +355,29 @@ namespace LSOmni.Service
             catch (Exception ex)
             {
                 HandleExceptions(ex, "ChangePassword() userName:{0}", userName);
+                return false;
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
+        }
+
+        public virtual bool ContactCreateCard(string contactId, string accountId, string cardId, string clubId, string schemeId)
+        {
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+
+            try
+            {
+                logger.Debug(config.LSKey.Key, "contactId:{0}, accountId:{1}, cardId:{2}", contactId, accountId, cardId);
+
+                ContactBLL contactBLL = new ContactBLL(config, clientTimeOutInSeconds);
+                contactBLL.ContactCreateCard(contactId, accountId, cardId, clubId, schemeId, stat);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "contactId:{0}, accountId:{1}, cardId:{2}", contactId, accountId, cardId);
                 return false;
             }
             finally
@@ -716,17 +739,14 @@ namespace LSOmni.Service
             }
         }
 
-        public virtual List<PublishedOffer> POSPublishedOffersGetByCardId(string cardId, string itemId)
-        {
-            return PublishedOffersGetByCardId(cardId, itemId);
-        }
-
-        public virtual List<PublishedOffer> PublishedOffersGetByCardId(string cardId, string itemId)
+        public virtual List<PublishedOffer> PublishedOffersGetByCardId(string cardId, string itemId, string storeId)
         {
             if (cardId == null)
                 cardId = string.Empty;
             if (itemId == null)
                 itemId = string.Empty;
+            if (storeId == null)
+                storeId = string.Empty;
 
             Statistics stat = logger.StatisticStartMain(config, serverUri);
 
@@ -737,8 +757,7 @@ namespace LSOmni.Service
                 
                 OfferBLL bll = new OfferBLL(config, clientTimeOutInSeconds);
                 CustomLoyBLL customLoyBll = new CustomLoyBLL(config, clientTimeOutInSeconds);   //anmo
-
-                List<PublishedOffer> list = bll.PublishedOffersGet(cardId, itemId, string.Empty, stat);
+                List<PublishedOffer> list = bll.PublishedOffersGet(cardId, itemId, storeId, stat);
                 foreach (PublishedOffer it in list)
                 {
                     logger.Debug(config.LSKey.Key, "PublishedOffersGetByCardId about to call AltriaLogEntryCreate");
@@ -2047,22 +2066,22 @@ namespace LSOmni.Service
             }
         }
 
-        public virtual MobileMenu MenuGet(string storeId, string salesType, bool loadDetails, ImageSize imageSize)
+        public virtual MobileMenu MenuGet(string restaurantNo, string terminalNo, string salesType, bool loadDetails, ImageSize imageSize)
         {
             Statistics stat = logger.StatisticStartMain(config, serverUri);
 
             try
             {
-                logger.Debug(config.LSKey.Key, "id:{0} storeId:{1}", salesType, storeId);
+                logger.Debug(config.LSKey.Key, "id:{0} storeId:{1}", salesType, restaurantNo);
 
                 MenuBLL bll = new MenuBLL(config, clientTimeOutInSeconds);
-                MobileMenu mobileMenu = bll.MenuGet(storeId, salesType, loadDetails, imageSize, stat);
+                MobileMenu mobileMenu = bll.MenuGet(restaurantNo, terminalNo, salesType, loadDetails, imageSize, stat);
                 MenuSetLocation(mobileMenu);
                 return mobileMenu;
             }
             catch (Exception ex)
             {
-                HandleExceptions(ex, "id:{0} storeId:{1}", salesType, storeId);
+                HandleExceptions(ex, "id:{0} storeId:{1}", salesType, restaurantNo);
                 return null; //never gets here
             }
             finally
@@ -2241,6 +2260,28 @@ namespace LSOmni.Service
             }
         }
 
+        public virtual OrderMessageResult OrderMessageReturns(OrderMessageReturns orderReturns)
+        {
+            Statistics stat = logger.StatisticStartMain(config, serverUri);
+
+            try
+            {
+                logger.Debug(config.LSKey.Key, LogJson(orderReturns));
+
+                OrderMessageBLL bll = new OrderMessageBLL(config, clientTimeOutInSeconds);
+                return bll.OrderMessageReturns(orderReturns);
+            }
+            catch (Exception ex)
+            {
+                HandleExceptions(ex, "OrderMessagReturns");
+                return null; //never gets here
+            }
+            finally
+            {
+                logger.StatisticEndMain(stat);
+            }
+        }
+
         #endregion OrderMessage
 
         #region LS Recommends
@@ -2264,28 +2305,6 @@ namespace LSOmni.Service
         #endregion LS Recommends
 
         #region ScanPayGo
-
-        public virtual ClientToken PaymentClientTokenGet(string customerId)
-        {
-            Statistics stat = logger.StatisticStartMain(config, serverUri);
-
-            try
-            {
-                logger.Debug(config.LSKey.Key, $"customerId:{customerId}");
-
-                ScanPayGoBLL bll = new ScanPayGoBLL(config, clientTimeOutInSeconds);
-                return bll.PaymentClientTokenGet(customerId);
-            }
-            catch (Exception ex)
-            {
-                HandleExceptions(ex, "customerId:{0}", customerId);
-                return null; //never gets here
-            }
-            finally
-            {
-                logger.StatisticEndMain(stat);
-            }
-        }
 
         public virtual ScanPayGoProfile ScanPayGoProfileGet(string profileId, string storeNo)
         {

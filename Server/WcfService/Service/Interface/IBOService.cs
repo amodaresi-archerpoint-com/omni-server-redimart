@@ -44,6 +44,9 @@ namespace LSOmni.Service
         [OperationContract]
         OrderMessageShippingResult OrderMessageShipping(OrderMessageShipping orderShipping);
 
+        [OperationContract]
+        OrderMessageResult OrderMessageReturns(OrderMessageReturns orderReturns);
+
         #endregion OrderMessage
 
         #region OneList

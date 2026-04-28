@@ -354,7 +354,6 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon
 
         public virtual List<ReplStore> ReplicateStores(string appId, string appType, string storeId, int batchSize, bool fullReplication, ref string lastKey, ref int recordsRemaining)
         {
-            ResetReplication(fullReplication, lastKey);
             XMLTableData table = DoReplication(99001470, storeId, appId, appType, batchSize, ref lastKey, out recordsRemaining);
 
             ReplicateRepository rep = new ReplicateRepository(config);
@@ -390,7 +389,7 @@ namespace LSOmni.DataAccess.BOConnection.NavCommon
         {
             string lastKey = string.Empty;
             string maxKey = string.Empty;
-            ResetReplication(fullReplication, lastKey);
+
             XMLTableData table = DoReplication(10012806, storeId, appId, appType, 0, ref lastKey, out int recordsRemaining);
 
             ReplicateRepository rep = new ReplicateRepository(config);

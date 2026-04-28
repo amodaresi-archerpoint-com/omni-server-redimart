@@ -48,6 +48,10 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Setup
         [DataMember]
         public string TextValue { get; set; }
 
+        public int AttributeType { get; set; }
+        public int LookupType { get; set; }
+        public int VisibleType { get; set; }
+
         public string AccountNo { get; set; }
         public string ContactNo { get; set; }
 

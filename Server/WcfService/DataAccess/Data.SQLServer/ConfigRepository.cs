@@ -96,6 +96,10 @@ namespace LSOmni.DataAccess.Dal
             SQLHelper.CheckForSQLInjection(lsKey);
             BOConfiguration dbconfig = null;
             List<TenantSetting> list = new List<TenantSetting>();
+            string encrcode = string.Empty;
+
+            if (ConfigSetting.KeyExists("Security.EncrCode"))
+                encrcode = ConfigSetting.GetEncrCode();
 
             using (SqlConnection connection = new SqlConnection(sqlConnectionString))
             {
@@ -127,7 +131,7 @@ namespace LSOmni.DataAccess.Dal
                             }
 
                             if (DecryptConfigValue.IsEncryptedPwd(value))
-                                value = DecryptConfigValue.DecryptString(value, config.SettingsGetByKey(ConfigKey.EncrCode));
+                                value = DecryptConfigValue.DecryptString(value, encrcode);
 
                             list.Add(new TenantSetting(key, value, comment, dataType, advanced, isDefault));
                         }

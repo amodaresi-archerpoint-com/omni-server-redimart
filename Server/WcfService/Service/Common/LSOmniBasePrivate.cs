@@ -35,7 +35,10 @@ namespace LSOmni.Service
                 return "";
             }
             // return http://localhost/LSOmniService/ucjson.svc/ImageStreamGetById?id=66&width=255&height=455
-            return string.Format("{0}/ImageStreamGetById?id={1}&width={2}&height={3}", BaseUrlReturnedToClient(), imgView.Id, imgView.ImgSize.Width, imgView.ImgSize.Height);
+            if (imgView.ImgSize != null)
+                return string.Format("{0}/ImageStreamGetById?id={1}&width={2}&height={3}", BaseUrlReturnedToClient(), imgView.Id, imgView.ImgSize.Width, imgView.ImgSize.Height);
+            
+            return string.Format("{0}/ImageStreamGetById?id={1}", BaseUrlReturnedToClient(), imgView.Id);
         }
 
         private string BaseUrlReturnedToClient()
@@ -193,15 +196,12 @@ namespace LSOmni.Service
                 if (ConfigSetting.KeyExists("ECom.Url"))
                     config.Settings.FirstOrDefault(x => x.Key == ConfigKey.EComUrl.ToString()).Value = ConfigSetting.GetString("ECom.Url");
 
-                if (ConfigSetting.KeyExists("Security.EncrCode"))
-                    config.Settings.FirstOrDefault(x => x.Key == ConfigKey.EncrCode.ToString()).Value = ConfigSetting.GetEncrCode();
                 if (ConfigSetting.KeyExists("Security.Validatetoken"))
                     config.SecurityCheck = ConfigSetting.GetBoolean("Security.Validatetoken");
             }
-
-            //check in db
             else if (bll.ConfigKeyExists(ConfigKey.LSKey, config.LSKey.Key))
             {
+                //check in db
                 config = bll.ConfigGet(config.LSKey.Key);
             }
             else if (serverUri.Contains("PortalService.svc") || serverUri.Contains("PortalJson.svc"))
@@ -212,6 +212,9 @@ namespace LSOmni.Service
             {
                 throw new LSOmniServiceException(StatusCode.LSKeyInvalid, " Invalid LSRETAIL-KEY");
             }
+
+            if (ConfigSetting.KeyExists("Security.EncrCode"))
+                config.Settings.FirstOrDefault(x => x.Key == ConfigKey.EncrCode.ToString()).Value = ConfigSetting.GetEncrCode();
 
             //Validate securitytoken if not ecommerce
             //TODO: add settings in db for sec token validation

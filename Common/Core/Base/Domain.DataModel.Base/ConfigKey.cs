@@ -22,6 +22,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base
         BOSql = 100,
         BOTimeout = 101,
         BOEncode = 102,
+        BOS2SExpAdjust = 103,
 
         //Proxy setup
         Proxy_Server = 300,
@@ -35,6 +36,8 @@ namespace LSRetail.Omni.Domain.DataModel.Base
         NavAppType = 501,
         Base64MinXmlSizeInKB = 502,
         SkipBase64Conversion = 503,
+        UseSalesPrice = 504,
+        UseCentralWishList = 505,
 
         Central_Token = 510,
         Central_TokenTime = 511,

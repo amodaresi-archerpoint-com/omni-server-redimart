@@ -72,7 +72,7 @@ namespace LSOmni.BLL.Loyalty
 
             if ((request.ShipToAddress == null) || (string.IsNullOrEmpty(request.ShipToAddress.Address1)))
             {
-                if (request.OrderType != OrderType.Sale && request.ShipOrder == false)
+                if (request.ShipOrder == false)
                 {
                     request.ShipToAddress = new Address();
                 }
@@ -121,6 +121,15 @@ namespace LSOmni.BLL.Loyalty
                     Task.WaitAll(ok);
                     if (ok.Result == false)
                         throw new LSOmniServiceException(StatusCode.PaymentAuthError, "Payment Authentication error");
+                }
+            }
+
+            if (config.SettingsBoolGetByKey(ConfigKey.UseCentralWishList) == false)
+            {
+                // not send onelist id to central
+                foreach (OrderLine line in request.OrderLines)
+                {
+                    line.WishListNo = string.Empty;
                 }
             }
 

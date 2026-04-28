@@ -318,7 +318,7 @@ namespace LSOmni.DataAccess.BOConnection.NavWS
                 return new List<ReplDiscountSetup>();
             }
 
-            return LSCWSBase.ReplicateDiscountSetup(batchSize, fullReplication, ref lastKey, ref recordsRemaining);
+            return LSCWSBase.ReplicateDiscountSetup(storeId, batchSize, fullReplication, ref lastKey, ref recordsRemaining);
         }
 
         public virtual List<ReplDiscountValidation> ReplicateDiscountValidations(string appId, string appType, string storeId, int batchSize, bool fullReplication, ref string lastKey, ref string maxKey, ref int recordsRemaining)

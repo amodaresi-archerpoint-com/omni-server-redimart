@@ -203,7 +203,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
             return store;
         }
 
-        public Store StoreLoyGetById(string storeId, bool inclDetails)
+        public Store StoreLoyGetById(string storeId)
         {
             Store store = null;
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -220,7 +220,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
                     {
                         if (reader.Read())
                         {
-                            store = ReaderToLoyStore(reader, inclDetails);
+                            store = ReaderToLoyStore(reader);
                         }
                         reader.Close();
                     }
@@ -230,7 +230,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
             return store;
         }
 
-        public List<Store> StoreLoyGetAll(StoreGetType storeType, bool inclDetails)
+        public List<Store> StoreLoyGetAll(StoreGetType storeType)
         {
             List<Store> stores = new List<Store>();
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -246,6 +246,12 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
                         case StoreGetType.WebStore:
                             type = " WHERE mt.[Web Store]=1";
                             break;
+                        case StoreGetType.Loyalty:
+                            type = " WHERE mt.[Loyalty]=1";
+                            break;
+                        case StoreGetType.Mobile:
+                            type = " WHERE mt.[Mobile]=1";
+                            break;
                     }
 
                     command.CommandText = "SELECT " + sqlcolumns + sqlfrom + type +
@@ -256,7 +262,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
                     {
                         while (reader.Read())
                         {
-                            stores.Add(ReaderToLoyStore(reader, inclDetails));
+                            stores.Add(ReaderToLoyStore(reader));
                         }
                         reader.Close();
                     }
@@ -305,7 +311,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
                     {
                         while (reader.Read())
                         {
-                            list.Add(ReaderToLoyStore(reader, false));
+                            list.Add(ReaderToLoyStore(reader));
                         }
                         reader.Close();
                     }
@@ -586,7 +592,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
             return store;
         }
 
-        private Store ReaderToLoyStore(SqlDataReader reader, bool includeDetails)
+        private Store ReaderToLoyStore(SqlDataReader reader)
         {
             Store store = new Store()
             {
@@ -626,10 +632,6 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
             if (LSCVersion >= new Version("18.4"))
             {
                 store.UseSourcingLocation = SQLHelper.GetBool(reader["Calc Inv for Sourcing Location"]);
-            }
-
-            if (includeDetails)
-            {
                 store.SourcingLocations = GetSourcingLocation(SQLHelper.GetString(reader["No_"]));
             }
             return store;

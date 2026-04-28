@@ -22,85 +22,95 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplItem> GetReplItems(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplItem> list = new List<ReplItem>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplItem line = new ReplItem();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplItem line = new ReplItem();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.Id = data.FieldValue; break;
-                        case 3: line.Description = data.FieldValue; break;
-                        case 8: line.BaseUnitOfMeasure = data.FieldValue; break;
-                        case 10: line.Type = (ItemType)ConvertTo.SafeInt(data.FieldValue); break;
-                        case 18: line.UnitPrice = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 31: line.VendorId = data.FieldValue; break;
-                        case 32: line.VendorItemId = data.FieldValue; break;
-                        case 41: line.GrossWeight = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 43: line.UnitsPerParcel = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 44: line.UnitVolume = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 47: line.TariffNo = data.FieldValue; break;
-                        case 54: line.Blocked = XMLHelper.GetWebBoolInt(data.FieldValue); break;
-                        case 95: line.CountryOfOrigin = data.FieldValue; break;
-                        case 99: line.TaxItemGroupId = data.FieldValue; break;
-                        case 5425: line.SalseUnitOfMeasure = data.FieldValue; break;
-                        case 5426: line.PurchUnitOfMeasure = data.FieldValue; break;
-                        case 5702: line.ItemCategoryCode = data.FieldValue; break;
-                        case 6500: line.ItemTrackingCode = data.FieldValue; break;
-                        case 10000703: line.ProductGroupId = data.FieldValue; break;
-                        case 10000704: line.SpecialGroups = data.FieldValue; break;
-                        case 10001401: line.SeasonCode = data.FieldValue; break;
-                        case 99001463: line.ItemFamilyCode = data.FieldValue; break;
-                        case 99001480: line.ZeroPriceValId = XMLHelper.GetWebBoolInt(data.FieldValue); break;
-                        case 99001484: line.NoDiscountAllowed = XMLHelper.GetWebBoolInt(data.FieldValue); break;
-                        case 99001487: line.KeyingInPrice = XMLHelper.GetWebBoolInt(data.FieldValue); break;
-                        case 99001490: line.ScaleItem = XMLHelper.GetWebBoolInt(data.FieldValue); break;
-                        case 99001491: line.KeyingInQty = XMLHelper.GetWebBoolInt(data.FieldValue); break;
-                        case 10012860: line.Details = ConvertTo.Base64Decode(data.FieldValue); break;
-                        case 10012861: line.BlockedOnPos = XMLHelper.GetWebBoolInt(data.FieldValue); break;
-                        case 10012862: line.BlockPurchaseReturn = XMLHelper.GetWebBoolInt(data.FieldValue); break;
-                        case 10012863: line.BlockedOnECom = XMLHelper.GetWebBoolInt(data.FieldValue); break;
-                        case 10012864: line.BlockDiscount = XMLHelper.GetWebBoolInt(data.FieldValue); break;
-                        case 10012865: line.BlockManualPriceChange = XMLHelper.GetWebBoolInt(data.FieldValue); break;
-                        case 10012866: line.BlockNegativeAdjustment = XMLHelper.GetWebBoolInt(data.FieldValue); break;
-                        case 10012867: line.BlockPositiveAdjustment = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.Id = data.FieldValue; break;
+                            case 3: line.Description = data.FieldValue; break;
+                            case 8: line.BaseUnitOfMeasure = data.FieldValue; break;
+                            case 10: line.Type = (ItemType)ConvertTo.SafeInt(data.FieldValue); break;
+                            case 18: line.UnitPrice = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 31: line.VendorId = data.FieldValue; break;
+                            case 32: line.VendorItemId = data.FieldValue; break;
+                            case 41: line.GrossWeight = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 43: line.UnitsPerParcel = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 44: line.UnitVolume = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 47: line.TariffNo = data.FieldValue; break;
+                            case 54: line.Blocked = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                            case 95: line.CountryOfOrigin = data.FieldValue; break;
+                            case 99: line.TaxItemGroupId = data.FieldValue; break;
+                            case 5425: line.SalseUnitOfMeasure = data.FieldValue; break;
+                            case 5426: line.PurchUnitOfMeasure = data.FieldValue; break;
+                            case 5702: line.ItemCategoryCode = data.FieldValue; break;
+                            case 6500: line.ItemTrackingCode = data.FieldValue; break;
+                            case 10000703: line.ProductGroupId = data.FieldValue; break;
+                            case 10000704: line.SpecialGroups = data.FieldValue; break;
+                            case 10001401: line.SeasonCode = data.FieldValue; break;
+                            case 99001463: line.ItemFamilyCode = data.FieldValue; break;
+                            case 99001480: line.ZeroPriceValId = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                            case 99001484: line.NoDiscountAllowed = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                            case 99001487: line.KeyingInPrice = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                            case 99001490: line.ScaleItem = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                            case 99001491: line.KeyingInQty = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                            case 10012860: line.Details = ConvertTo.Base64Decode(data.FieldValue); break;
+                            case 10012861: line.BlockedOnPos = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                            case 10012862: line.BlockPurchaseReturn = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                            case 10012863: line.BlockedOnECom = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                            case 10012864: line.BlockDiscount = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                            case 10012865: line.BlockManualPriceChange = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                            case 10012866: line.BlockNegativeAdjustment = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                            case 10012867: line.BlockPositiveAdjustment = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplItem line = new ReplItem()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.Id = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplItem line = new ReplItem()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.Id = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -108,61 +118,76 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplPrice> GetReplPrice(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplPrice> list = new List<ReplPrice>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplPrice line = new ReplPrice();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplPrice line = new ReplPrice();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.StoreId = data.FieldValue; break;
-                        case 2: line.ItemId = data.FieldValue; break;
-                        case 3: line.VariantId = data.FieldValue; break;
-                        case 10: line.CustomerDiscountGroup = data.FieldValue; break;
-                        case 11: line.LoyaltySchemeCode = data.FieldValue; break;
-                        case 12: line.CurrencyCode = data.FieldValue; break;
-                        case 19: line.UnitPrice = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 20: line.UnitPriceInclVat = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 21: line.UnitOfMeasure = data.FieldValue; break;
-                        case 30: line.ModifyDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
-                        case 40: line.QtyPerUnitOfMeasure = ConvertTo.SafeDecimal(data.FieldValue); break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.StoreId = data.FieldValue; break;
+                            case 2: line.ItemId = data.FieldValue; break;
+                            case 3: line.VariantId = data.FieldValue; break;
+                            case 10: line.CustomerDiscountGroup = data.FieldValue; break;
+                            case 11: line.LoyaltySchemeCode = data.FieldValue; break;
+                            case 12: line.CurrencyCode = data.FieldValue; break;
+                            case 19: line.UnitPrice = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 20: line.UnitPriceInclVat = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 21: line.UnitOfMeasure = data.FieldValue; break;
+                            case 30: line.ModifyDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case 40: line.QtyPerUnitOfMeasure = ConvertTo.SafeDecimal(data.FieldValue); break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplPrice line = new ReplPrice()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.StoreId = data.FieldValue; break;
+                            case 2: line.ItemId = data.FieldValue; break;
+                            case 3: line.VariantId = data.FieldValue; break;
+                            case 10: line.CustomerDiscountGroup = data.FieldValue; break;
+                            case 11: line.LoyaltySchemeCode = data.FieldValue; break;
+                            case 21: line.UnitOfMeasure = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplPrice line = new ReplPrice()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.ItemId = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -170,75 +195,86 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplPrice> GetReplBasePrice(string ret, string storeId, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplPrice> list = new List<ReplPrice>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                int pType = 0;
-                ReplPrice line = new ReplPrice();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    int pType = 0;
+                    ReplPrice line = new ReplPrice();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.ItemId = data.FieldValue; break;
-                        case 2: line.SaleCode = data.FieldValue; break;
-                        case 3: line.CurrencyCode = data.FieldValue; break;
-                        case 4: line.StartingDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
-                        case 5: line.UnitPrice = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 6: line.PriceInclVat = ConvertTo.SafeBoolean(data.FieldValue); break;
-                        case 11: line.VATPostGroup = data.FieldValue; break;
-                        case 13: pType = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 14: line.MinimumQuantity = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 15: line.EndingDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
-                        case 5400: line.UnitOfMeasure = data.FieldValue; break;
-                        case 5700: line.VariantId = data.FieldValue; break;
-                        case 99001450: line.UnitPriceInclVat = ConvertTo.SafeDecimal(data.FieldValue); break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.ItemId = data.FieldValue; break;
+                            case 2: line.SaleCode = data.FieldValue; break;
+                            case 3: line.CurrencyCode = data.FieldValue; break;
+                            case 4: line.StartingDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case 5: line.UnitPrice = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 6: line.PriceInclVat = ConvertTo.SafeBoolean(data.FieldValue); break;
+                            case 11: line.VATPostGroup = data.FieldValue; break;
+                            case 13: pType = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 14: line.MinimumQuantity = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 15: line.EndingDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case 5400: line.UnitOfMeasure = data.FieldValue; break;
+                            case 5700: line.VariantId = data.FieldValue; break;
+                            case 99001450: line.UnitPriceInclVat = ConvertTo.SafeDecimal(data.FieldValue); break;
+                        }
                     }
+                    line.SetOldPriceType(pType);
+                    line.StoreId = storeId;
+                    list.Add(line);
                 }
-                line.SetOldPriceType(pType);
-                line.StoreId = storeId;
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplPrice line = new ReplPrice()
+                    {
+                        IsDeleted = true,
+                        StoreId = storeId
+                    };
+
+                    int pType = 0;
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.ItemId = data.FieldValue; break;
+                            case 2: line.SaleCode = data.FieldValue; break;
+                            case 3: line.CurrencyCode = data.FieldValue; break;
+                            case 4: line.StartingDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case 13: pType = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 14: line.MinimumQuantity = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 5400: line.UnitOfMeasure = data.FieldValue; break;
+                            case 5700: line.VariantId = data.FieldValue; break;
+                        }
+                    }
+                    line.SetOldPriceType(pType);
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplPrice line = new ReplPrice()
-                {
-                    IsDeleted = true
-                };
-
-                int pType = 0;
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.ItemId = data.FieldValue; break;
-                        case 2: line.SaleCode = data.FieldValue; break;
-                        case 3: line.CurrencyCode = data.FieldValue; break;
-                        case 4: line.StartingDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
-                        case 13: pType = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 14: line.MinimumQuantity = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 5400: line.UnitOfMeasure = data.FieldValue; break;
-                        case 5700: line.VariantId = data.FieldValue; break;
-                    }
-                }
-                line.SetOldPriceType(pType);
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -246,69 +282,163 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplPrice> GetReplPriceListLine(string ret, string storeId, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplPrice> list = new List<ReplPrice>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplPrice line = new ReplPrice();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplPrice line = new ReplPrice();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.PriceListCode = data.FieldValue; break;
-                        case 2: line.LineNumber = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 3: line.SaleType = (PriceType)ConvertTo.SafeInt(data.FieldValue); break;
-                        case 4: line.SaleCode = data.FieldValue; break;
-                        case 8: line.ItemId = data.FieldValue; break;
-                        case 9: line.VariantId = data.FieldValue; break;
-                        case 10: line.CurrencyCode = data.FieldValue; break;
-                        case 12: line.StartingDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
-                        case 13: line.EndingDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
-                        case 14: line.MinimumQuantity = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 15: line.UnitOfMeasure = data.FieldValue; break;
-                        case 17: line.UnitPrice = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 23: line.PriceInclVat = ConvertTo.SafeBoolean(data.FieldValue); break;
-                        case 24: line.VATPostGroup = data.FieldValue; break;
-                        case 30: line.Status = (PriceStatus)ConvertTo.SafeInt(data.FieldValue); break;
-                        case 41: line.UnitPriceInclVat = ConvertTo.SafeDecimal(data.FieldValue); break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.PriceListCode = data.FieldValue; break;
+                            case 2: line.LineNumber = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 3: line.SaleType = (PriceType)ConvertTo.SafeInt(data.FieldValue); break;
+                            case 4: line.SaleCode = data.FieldValue; break;
+                            case 8: line.ItemId = data.FieldValue; break;
+                            case 9: line.VariantId = data.FieldValue; break;
+                            case 10: line.CurrencyCode = data.FieldValue; break;
+                            case 12: line.StartingDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case 13: line.EndingDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case 14: line.MinimumQuantity = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 15: line.UnitOfMeasure = data.FieldValue; break;
+                            case 17: line.UnitPrice = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 23: line.PriceInclVat = ConvertTo.SafeBoolean(data.FieldValue); break;
+                            case 24: line.VATPostGroup = data.FieldValue; break;
+                            case 30: line.Status = (PriceStatus)ConvertTo.SafeInt(data.FieldValue); break;
+                            case 99001450: line.UnitPriceInclVat = ConvertTo.SafeDecimal(data.FieldValue); break;
+                        }
                     }
+                    line.StoreId = storeId;
+                    if (string.IsNullOrEmpty(line.ItemId) == false)
+                        list.Add(line);
                 }
-                line.StoreId = storeId;
-                if (string.IsNullOrEmpty(line.ItemId) == false)
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplPrice line = new ReplPrice()
+                    {
+                        IsDeleted = true,
+                        StoreId = storeId
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.PriceListCode = data.FieldValue; break;
+                            case 2: line.LineNumber = ConvertTo.SafeInt(data.FieldValue); break;
+                        }
+                    }
                     list.Add(line);
-            }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
-            {
-                ReplPrice line = new ReplPrice()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.PriceListCode = data.FieldValue; break;
-                        case 2: line.LineNumber = ConvertTo.SafeInt(data.FieldValue); break;
-                    }
                 }
-                list.Add(line);
+            }
+            finally
+            {
+                result?.Dispose();
+                result = null;
+            }
+            return list;
+        }
+
+        public List<ReplPrice> GetReplPriceListLine2(string ret, string storeId, ref string lastKey, ref int recordsRemaining)
+        {
+            List<ReplPrice> list = new List<ReplPrice>();
+            ReplODataSet result = null;
+
+            try
+            {
+                result = JsonToDataSet(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
+
+                // Insert update records
+                foreach (ReplODataRecord rec in result.DataSet.DataSetUpd.DynDataSet.DataSetRows)
+                {
+                    ReplPrice line = new ReplPrice();
+                    line.StoreId = storeId;
+                    string lcy = string.Empty;
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataSetField fld = result.DataSet.DataSetUpd.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldName)
+                        {
+                            case "Price List Code": line.PriceListCode = data.FieldValue; break;
+                            case "Line No.": line.LineNumber = ConvertTo.SafeInt(data.FieldValue); break;
+                            case "Source Type": line.SaleType = (PriceType)ConvertTo.SafeInt(data.FieldValue); break;
+                            case "Source No.": line.SaleCode = data.FieldValue; break;
+                            case "Asset No.": line.ItemId = data.FieldValue; break;
+                            case "Variant Code": line.VariantId = data.FieldValue; break;
+                            case "Currency Code": line.CurrencyCode = data.FieldValue; break;
+                            case "Starting Date": line.StartingDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case "Ending Date": line.EndingDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case "Minimum Quantity": line.MinimumQuantity = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Unit of Measure Code": line.UnitOfMeasure = data.FieldValue; break;
+                            case "Unit Price": line.UnitPrice = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Price Includes VAT": line.PriceInclVat = ConvertTo.SafeBoolean(data.FieldValue); break;
+                            case "VAT Bus. Posting Gr. (Price)": line.VATPostGroup = data.FieldValue; break;
+                            case "Status": line.Status = (PriceStatus)ConvertTo.SafeInt(data.FieldValue); break;
+                            case "LSC Unit Price Including VAT": line.UnitPriceInclVat = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Priority": line.Priority = ConvertTo.SafeInt(data.FieldValue); break;
+                        }
+                    }
+                    list.Add(line);
+                }
+
+                if (result.DataSet.DataSetDel == null || result.DataSet.DataSetDel.DynDataSet == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.DataSet.DataSetDel.DynDataSet.DataSetRows)
+                {
+                    ReplPrice line = new ReplPrice()
+                    {
+                        IsDeleted = true,
+                        StoreId = storeId
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataSetField fld = result.DataSet.DataSetDel.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldName)
+                        {
+                            case "Price List Code": line.PriceListCode = data.FieldValue; break;
+                            case "Line No.": line.LineNumber = ConvertTo.SafeInt(data.FieldValue); break;
+                        }
+                    }
+                    list.Add(line);
+                }
+            }
+            finally
+            {
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -316,92 +446,116 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplDiscount> GetReplDiscount(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplDiscount> list = new List<ReplDiscount>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplDiscount line = new ReplDiscount(IsJson);
-                line.Type = ReplDiscountType.Multibuy;
-                string p1 = string.Empty;
-                string p2 = string.Empty;
-                string p3 = string.Empty;
-                decimal amt = 0;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                foreach (ReplODataField data in rec.Fields)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
                 {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                    ReplDiscount line = new ReplDiscount(IsJson);
+                    line.Type = ReplDiscountType.Multibuy;
+                    string p1 = string.Empty;
+                    string p2 = string.Empty;
+                    string p3 = string.Empty;
+                    decimal amt = 0;
 
-                    switch (fld.FieldNo)
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.StoreId = data.FieldValue; break;
-                        case 2: line.PriorityNo = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 3: line.ItemId = data.FieldValue; break;
-                        case 4: line.VariantId = data.FieldValue; break;
-                        case 10: line.CustomerDiscountGroup = data.FieldValue; break;
-                        case 11: line.LoyaltySchemeCode = data.FieldValue; break;
-                        case 12: line.FromDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
-                        case 13: line.ToDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
-                        case 14: line.MinimumQuantity = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 20: line.DiscountValue = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 21: line.UnitOfMeasureId = data.FieldValue; break;
-                        case 23: line.OfferNo = data.FieldValue; break;
-                        case 30: line.ModifyDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
-                        case 40: line.Type = (ReplDiscountType)ConvertTo.SafeInt(data.FieldValue); break;
-                        case 41: line.Description = data.FieldValue; break;
-                        case 42: line.DiscountValueType = (DiscountValueType)ConvertTo.SafeInt(data.FieldValue); break;
-                        case 43: p1 = data.FieldValue; break;
-                        case 44: p2 = data.FieldValue; break;
-                        case 45: p3 = data.FieldValue; break;
-                        case 46: line.ValidationPeriodId = data.FieldValue; break;
-                        case 47: amt = ConvertTo.SafeDecimal(data.FieldValue); break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.StoreId = data.FieldValue; break;
+                            case 2: line.PriorityNo = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 3: line.ItemId = data.FieldValue; break;
+                            case 4: line.VariantId = data.FieldValue; break;
+                            case 10: line.CustomerDiscountGroup = data.FieldValue; break;
+                            case 11: line.LoyaltySchemeCode = data.FieldValue; break;
+                            case 12: line.FromDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case 13: line.ToDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case 14: line.MinimumQuantity = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 20: line.DiscountValue = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 21: line.UnitOfMeasureId = data.FieldValue; break;
+                            case 23: line.OfferNo = data.FieldValue; break;
+                            case 30: line.ModifyDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case 40: line.Type = (ReplDiscountType)ConvertTo.SafeInt(data.FieldValue); break;
+                            case 41: line.Description = data.FieldValue; break;
+                            case 42: line.DiscountValueType = (DiscountValueType)ConvertTo.SafeInt(data.FieldValue); break;
+                            case 43: p1 = data.FieldValue; break;
+                            case 44: p2 = data.FieldValue; break;
+                            case 45: p3 = data.FieldValue; break;
+                            case 46: line.ValidationPeriodId = data.FieldValue; break;
+                            case 47: amt = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 50: line.Exclude = ConvertTo.SafeBoolean(data.FieldValue); break;
+                        }
                     }
+
+                    line.Details = p1;
+                    if (string.IsNullOrEmpty(p2) == false)
+                        line.Details += "\r\n" + p2;
+                    if (string.IsNullOrEmpty(p3) == false)
+                        line.Details += "\r\n" + p3;
+
+                    if (line.Type == ReplDiscountType.DiscOffer)
+                    {
+                        line.DiscountValueType = DiscountValueType.Percent;
+                        if (amt > 0)
+                        {
+                            line.DiscountValueType = DiscountValueType.Amount;
+                            line.DiscountValue = amt;
+                        }
+                    }
+
+                    if (string.IsNullOrEmpty(line.OfferNo) == false)
+                        list.Add(line);
                 }
 
-                line.Details = p1;
-                if (string.IsNullOrEmpty(p2) == false)
-                    line.Details += "\r\n" + p2;
-                if (string.IsNullOrEmpty(p3) == false)
-                    line.Details += "\r\n" + p3;
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
 
-                if (amt > 0 && line.Type == ReplDiscountType.DiscOffer)
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
                 {
-                    line.DiscountValueType = DiscountValueType.Amount;
-                    line.DiscountValue = amt;
-                }
+                    ReplDiscount line = new ReplDiscount(IsJson)
+                    {
+                        IsDeleted = true
+                    };
 
-                if (string.IsNullOrEmpty(line.OfferNo) == false)
-                    list.Add(line);
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.StoreId = data.FieldValue; break;
+                            case 2: line.PriorityNo = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 3: line.ItemId = data.FieldValue; break;
+                            case 4: line.VariantId = data.FieldValue; break;
+                            case 10: line.CustomerDiscountGroup = data.FieldValue; break;
+                            case 11: line.LoyaltySchemeCode = data.FieldValue; break;
+                            case 12: line.FromDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case 13: line.ToDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case 14: line.MinimumQuantity = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 23: line.OfferNo = data.FieldValue; break;
+                        }
+                    }
+                    if (string.IsNullOrEmpty(line.OfferNo) == false)
+                        list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplDiscount line = new ReplDiscount(IsJson)
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 23: line.OfferNo = data.FieldValue; break;
-                    }
-                }
-                if (string.IsNullOrEmpty(line.OfferNo) == false)
-                    list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -409,77 +563,96 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplDiscount> GetReplMixMatch(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplDiscount> list = new List<ReplDiscount>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplDiscount line = new ReplDiscount(IsJson);
-                string p1 = string.Empty;
-                string p2 = string.Empty;
-                string p3 = string.Empty;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                foreach (ReplODataField data in rec.Fields)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
                 {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                    ReplDiscount line = new ReplDiscount(IsJson);
+                    string p1 = string.Empty;
+                    string p2 = string.Empty;
+                    string p3 = string.Empty;
 
-                    switch (fld.FieldNo)
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.StoreId = data.FieldValue; break;
-                        case 2: line.ItemId = data.FieldValue; break;
-                        case 3: line.VariantId = data.FieldValue; break;
-                        case 10: line.CustomerDiscountGroup = data.FieldValue; break;
-                        case 11: line.LoyaltySchemeCode = data.FieldValue; break;
-                        case 12: line.FromDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
-                        case 13: line.ToDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
-                        case 20: line.OfferNo = data.FieldValue; break;
-                        case 30: line.ModifyDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
-                        case 40: line.Type = (ReplDiscountType)ConvertTo.SafeInt(data.FieldValue); break;
-                        case 41: line.Description = data.FieldValue; break;
-                        case 42: line.PriorityNo = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 43: p1 = data.FieldValue; break;
-                        case 44: p2 = data.FieldValue; break;
-                        case 45: p3 = data.FieldValue; break;
-                        case 46: line.ValidationPeriodId = data.FieldValue; break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.StoreId = data.FieldValue; break;
+                            case 2: line.ItemId = data.FieldValue; break;
+                            case 3: line.VariantId = data.FieldValue; break;
+                            case 10: line.CustomerDiscountGroup = data.FieldValue; break;
+                            case 11: line.LoyaltySchemeCode = data.FieldValue; break;
+                            case 12: line.FromDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case 13: line.ToDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case 20: line.OfferNo = data.FieldValue; break;
+                            case 30: line.ModifyDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case 40: line.Type = (ReplDiscountType)ConvertTo.SafeInt(data.FieldValue); break;
+                            case 41: line.Description = data.FieldValue; break;
+                            case 42: line.PriorityNo = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 43: p1 = data.FieldValue; break;
+                            case 44: p2 = data.FieldValue; break;
+                            case 45: p3 = data.FieldValue; break;
+                            case 46: line.ValidationPeriodId = data.FieldValue; break;
+                            case 50: line.Exclude = ConvertTo.SafeBoolean(data.FieldValue); break;
+                        }
                     }
+
+                    line.Details = p1;
+                    if (string.IsNullOrEmpty(p2) == false)
+                        line.Details += "\r\n" + p2;
+                    if (string.IsNullOrEmpty(p3) == false)
+                        line.Details += "\r\n" + p3;
+
+                    list.Add(line);
                 }
 
-                line.Details = p1;
-                if (string.IsNullOrEmpty(p2) == false)
-                    line.Details += "\r\n" + p2;
-                if (string.IsNullOrEmpty(p3) == false)
-                    line.Details += "\r\n" + p3;
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
 
-                list.Add(line);
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplDiscount line = new ReplDiscount(IsJson)
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.StoreId = data.FieldValue; break;
+                            case 2: line.ItemId = data.FieldValue; break;
+                            case 3: line.VariantId = data.FieldValue; break;
+                            case 10: line.CustomerDiscountGroup = data.FieldValue; break;
+                            case 11: line.LoyaltySchemeCode = data.FieldValue; break;
+                            case 12: line.FromDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case 13: line.ToDate = ConvertTo.SafeJsonDate(ConvertTo.SafeDateTime(data.FieldValue), IsJson); break;
+                            case 20: line.OfferNo = data.FieldValue; break;
+                            case 42: line.PriorityNo = ConvertTo.SafeInt(data.FieldValue); break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplDiscount line = new ReplDiscount(IsJson)
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.ItemId = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -487,137 +660,148 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplDiscountSetup> GetReplDiscountSetup(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplDiscountSetup> list = new List<ReplDiscountSetup>();
-            ReplODataSet result = JsonToDataSet(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplODataSet result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.DataSet.DataSetUpd.DynDataSet.DataSetRows)
+            try
             {
-                ReplDiscountSetup line = new ReplDiscountSetup(IsJson);
-                string pop1 = string.Empty;
-                string pop2 = string.Empty;
-                string pop3 = string.Empty;
-                bool has1 = false;
-                bool has2 = false;
-                bool has3 = false;
-                bool has4 = false;
+                result = JsonToDataSet(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                foreach (ReplODataField data in rec.Fields)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.DataSet.DataSetUpd.DynDataSet.DataSetRows)
                 {
-                    ReplODataSetField fld = result.DataSet.DataSetUpd.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                    ReplDiscountSetup line = new ReplDiscountSetup(IsJson);
+                    string pop1 = string.Empty;
+                    string pop2 = string.Empty;
+                    string pop3 = string.Empty;
+                    bool has1 = false;
+                    bool has2 = false;
+                    bool has3 = false;
+                    bool has4 = false;
 
-                    switch (fld.FieldName)
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case "No.":
-                            if (has1 == false)
-                                line.Number = string.IsNullOrEmpty(line.Number) ? data.FieldValue : line.Number; 
-                            has1 = true;
-                            break;
-                        case "Description":
-                            if (has2)
-                                line.Description = data.FieldValue;
-                            has2 = true;
-                            break;
-                        case "Type":
-                            if (has3)
-                                line.Type = (ReplDiscountType)ConvertTo.SafeInt(data.FieldValue);
-                            else
-                                line.LineType = (ReplDiscountLineType)ConvertTo.SafeInt(data.FieldValue);
-                            has3 = true;
-                            break;
-                        case "Member Points":
-                            if (has4 == false)
-                                line.MemberPoints = ConvertTo.SafeDecimal(data.FieldValue);
-                            has4 = true;
-                            break;
+                        ReplODataSetField fld = result.DataSet.DataSetUpd.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
 
-                        case "Offer No.": line.OfferNo = data.FieldValue; break;
-                        case "Line No.": line.LineNumber = ConvertTo.SafeInt(data.FieldValue); break;
-                        case "Variant Code": line.VariantId = data.FieldValue; break;
-                        case "Variant Type": line.VariantType = ConvertTo.SafeInt(data.FieldValue); break;
-                        case "Standard Price Including VAT": line.StandardPriceInclVAT = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "Standard Price": line.StandardPrice = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "Split Deal Price/Disc. %": line.SplitDealPriceDiscount = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "Deal Price/Disc. %": line.DealPriceDiscount = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "Price Group": line.LinePriceGroup = data.FieldValue; break;
-                        case "Head Price Group": line.PriceGroup = data.FieldValue; break;
-                        case "Currency Code": line.CurrencyCode = data.FieldValue; break;
-                        case "Unit of Measure": line.UnitOfMeasureId = data.FieldValue; break;
-                        case "Prod. Group Category": line.ProductItemCategory = data.FieldValue; break;
-                        case "Valid From Before Exp. Date": line.ValidFromBeforeExpDate = data.FieldValue; break;
-                        case "Valid To Before Exp. Date": line.ValidToBeforeExpDate = data.FieldValue; break;
-                        case "Line Group": line.LineGroup = data.FieldValue; break;
-                        case "No. of Items Needed": line.NumberOfItemNeeded = ConvertTo.SafeInt(data.FieldValue); break;
-                        case "Disc. Type": line.IsPercentage = ConvertTo.SafeBoolean(data.FieldValue); break;
-                        case "Discount Amount": line.LineDiscountAmount = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "Offer Price": line.OfferPrice = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "Offer Price Including VAT": line.OfferPriceInclVAT = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "Discount Amount Including VAT": line.LineDiscountAmountInclVAT = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "Trigger Pop-up on POS": line.TriggerPopUp = ConvertTo.SafeBoolean(data.FieldValue); break;
-                        case "Exclude": line.Exclude = ConvertTo.SafeBoolean(data.FieldValue); break;
-                        case "Status": line.Enabled = ConvertTo.SafeBoolean(data.FieldValue); break;
-                        case "Priority": line.PriorityNo = ConvertTo.SafeInt(data.FieldValue); break;
-                        case "Validation Period ID": line.ValidationPeriodId = data.FieldValue; break;
-                        case "Discount Type": line.DiscountValueType = (DiscountValueType)ConvertTo.SafeInt(data.FieldValue); break;
-                        case "Deal Price Value": line.DealPriceValue = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "Discount % Value": line.DiscountValue = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "Discount Amount Value": line.DiscountAmountValue = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "Customer Disc. Group": line.CustomerDiscountGroup = data.FieldValue; break;
-                        case "Amount to Trigger": line.AmountToTrigger = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "Member Value": line.LoyaltySchemeCode = data.FieldValue; break;
-                        case "Pop-up Line 1": pop1 = data.FieldValue; break;
-                        case "Pop-up Line 2": pop2 = data.FieldValue; break;
-                        case "Pop-up Line 3": pop3 = data.FieldValue; break;
-                        case "Coupon Code": line.CouponCode = data.FieldValue; break;
-                        case "Coupon Qty Needed": line.CouponQtyNeeded = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "Member Type": line.MemberType = (ReplDiscMemberType)ConvertTo.SafeInt(data.FieldValue); break;
-                        case "Member Attribute": line.MemberAttribute = data.FieldValue; break;
-                        case "Maximum Discount Amount": line.MaxDiscountAmount = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "Tender Type Code": line.TenderTypeCode = data.FieldValue; break;
-                        case "Tender Type Value": line.TenderTypeValue = data.FieldValue; break;
-                        case "Prompt for Action": line.PromptForAction = ConvertTo.SafeBoolean(data.FieldValue); break;
-                        case "Tender Offer %": line.TenderOffer = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "Tender Offer Amount": line.TenderOfferAmount = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "Store Group Codes": line.StoreGroupCodes = data.FieldValue; break;
+                        switch (fld.FieldName)
+                        {
+                            case "No.":
+                                if (has1 == false)
+                                    line.Number = string.IsNullOrEmpty(line.Number) ? data.FieldValue : line.Number;
+                                has1 = true;
+                                break;
+                            case "Description":
+                                if (has2)
+                                    line.Description = data.FieldValue;
+                                has2 = true;
+                                break;
+                            case "Type":
+                                if (has3)
+                                    line.Type = (ReplDiscountType)ConvertTo.SafeInt(data.FieldValue);
+                                else
+                                    line.LineType = (ReplDiscountLineType)ConvertTo.SafeInt(data.FieldValue);
+                                has3 = true;
+                                break;
+                            case "Member Points":
+                                if (has4 == false)
+                                    line.MemberPoints = ConvertTo.SafeDecimal(data.FieldValue);
+                                has4 = true;
+                                break;
+
+                            case "Offer No.": line.OfferNo = data.FieldValue; break;
+                            case "Line No.": line.LineNumber = ConvertTo.SafeInt(data.FieldValue); break;
+                            case "Variant Code": line.VariantId = data.FieldValue; break;
+                            case "Variant Type": line.VariantType = ConvertTo.SafeInt(data.FieldValue); break;
+                            case "Standard Price Including VAT": line.StandardPriceInclVAT = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Standard Price": line.StandardPrice = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Split Deal Price/Disc. %": line.SplitDealPriceDiscount = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Deal Price/Disc. %": line.DealPriceDiscount = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Price Group": line.LinePriceGroup = data.FieldValue; break;
+                            case "Head Price Group": line.PriceGroup = data.FieldValue; break;
+                            case "Currency Code": line.CurrencyCode = data.FieldValue; break;
+                            case "Unit of Measure": line.UnitOfMeasureId = data.FieldValue; break;
+                            case "Prod. Group Category": line.ProductItemCategory = data.FieldValue; break;
+                            case "Valid From Before Exp. Date": line.ValidFromBeforeExpDate = data.FieldValue; break;
+                            case "Valid To Before Exp. Date": line.ValidToBeforeExpDate = data.FieldValue; break;
+                            case "Line Group": line.LineGroup = data.FieldValue; break;
+                            case "No. of Items Needed": line.NumberOfItemNeeded = ConvertTo.SafeInt(data.FieldValue); break;
+                            case "Disc. Type": line.IsPercentage = ConvertTo.SafeBoolean(data.FieldValue); break;
+                            case "Discount Amount": line.LineDiscountAmount = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Offer Price": line.OfferPrice = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Offer Price Including VAT": line.OfferPriceInclVAT = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Discount Amount Including VAT": line.LineDiscountAmountInclVAT = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Trigger Pop-up on POS": line.TriggerPopUp = ConvertTo.SafeBoolean(data.FieldValue); break;
+                            case "Exclude": line.Exclude = ConvertTo.SafeBoolean(data.FieldValue); break;
+                            case "Status": line.Enabled = ConvertTo.SafeBoolean(data.FieldValue); break;
+                            case "Priority": line.PriorityNo = ConvertTo.SafeInt(data.FieldValue); break;
+                            case "Validation Period ID": line.ValidationPeriodId = data.FieldValue; break;
+                            case "Discount Type": line.DiscountValueType = (DiscountValueType)ConvertTo.SafeInt(data.FieldValue); break;
+                            case "Deal Price Value": line.DealPriceValue = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Discount % Value": line.DiscountValue = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Discount Amount Value": line.DiscountAmountValue = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Customer Disc. Group": line.CustomerDiscountGroup = data.FieldValue; break;
+                            case "Amount to Trigger": line.AmountToTrigger = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Member Value": line.LoyaltySchemeCode = data.FieldValue; break;
+                            case "Pop-up Line 1": pop1 = data.FieldValue; break;
+                            case "Pop-up Line 2": pop2 = data.FieldValue; break;
+                            case "Pop-up Line 3": pop3 = data.FieldValue; break;
+                            case "Coupon Code": line.CouponCode = data.FieldValue; break;
+                            case "Coupon Qty Needed": line.CouponQtyNeeded = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Member Type": line.MemberType = (ReplDiscMemberType)ConvertTo.SafeInt(data.FieldValue); break;
+                            case "Member Attribute": line.MemberAttribute = data.FieldValue; break;
+                            case "Member Attribute Value": line.MemberAttributeValue = data.FieldValue; break;
+                            case "Maximum Discount Amount": line.MaxDiscountAmount = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Tender Type Code": line.TenderTypeCode = data.FieldValue; break;
+                            case "Tender Type Value": line.TenderTypeValue = data.FieldValue; break;
+                            case "Prompt for Action": line.PromptForAction = ConvertTo.SafeBoolean(data.FieldValue); break;
+                            case "Tender Offer %": line.TenderOffer = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Tender Offer Amount": line.TenderOfferAmount = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "Store Group Codes": line.StoreGroupCodes = data.FieldValue; break;
+                        }
                     }
+
+                    line.Details = pop1;
+                    if (string.IsNullOrEmpty(pop2) == false)
+                        line.Details += "\r\n" + pop2;
+                    if (string.IsNullOrEmpty(pop3) == false)
+                        line.Details += "\r\n" + pop3;
+
+                    list.Add(line);
                 }
 
-                line.Details = pop1;
-                if (string.IsNullOrEmpty(pop2) == false)
-                    line.Details += "\r\n" + pop2;
-                if (string.IsNullOrEmpty(pop3) == false)
-                    line.Details += "\r\n" + pop3;
+                if (result.DataSet.DataSetDel == null || result.DataSet.DataSetDel.DynDataSet == null)
+                    return list;
 
-                list.Add(line);
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.DataSet.DataSetDel.DynDataSet.DataSetRows)
+                {
+                    ReplDiscountSetup line = new ReplDiscountSetup(IsJson)
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataSetField fld = result.DataSet.DataSetDel.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldName)
+                        {
+                            case "Offer No.": line.OfferNo = data.FieldValue; break;
+                            case "Line No.": line.LineNumber = ConvertTo.SafeInt(data.FieldValue); break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.DataSet.DataSetDel == null || result.DataSet.DataSetDel.DynDataSet == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.DataSet.DataSetDel.DynDataSet.DataSetRows)
+            finally
             {
-                ReplDiscountSetup line = new ReplDiscountSetup(IsJson)
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataSetField fld = result.DataSet.DataSetDel.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldName)
-                    {
-                        case "Offer No.": line.OfferNo = data.FieldValue; break;
-                        case "Line No.": line.LineNumber = ConvertTo.SafeInt(data.FieldValue); break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -625,59 +809,69 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplImage> GetReplImage(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplImage> list = new List<ReplImage>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplImage line = new ReplImage();
-                int w = 0;
-                int h = 0;
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplImage line = new ReplImage();
+                    int w = 0;
+                    int h = 0;
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.Id = data.FieldValue; break;
-                        case 2: line.Description = data.FieldValue; break;
-                        case 10: line.MediaId = data.FieldValue.Replace("{", "").Replace("}", ""); break;
-                        case 11: line.Image64 = data.FieldValue; break;
-                        case 12: h = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 13: w = ConvertTo.SafeInt(data.FieldValue); break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.Id = data.FieldValue; break;
+                            case 2: line.Description = data.FieldValue; break;
+                            case 10: line.MediaId = data.FieldValue.Replace("{", "").Replace("}", ""); break;
+                            case 11: line.Image64 = data.FieldValue; break;
+                            case 12: h = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 13: w = ConvertTo.SafeInt(data.FieldValue); break;
+                        }
                     }
+                    line.Size = new ImageSize(w, h);
+                    list.Add(line);
                 }
-                line.Size = new ImageSize(w, h);
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplImage line = new ReplImage()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.Id = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplImage line = new ReplImage()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.Id = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -685,61 +879,71 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplImageLink> GetReplImageLink(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplImageLink> list = new List<ReplImageLink>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplImageLink line = new ReplImageLink();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplImageLink line = new ReplImageLink();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 10: line.ImageId = data.FieldValue; break;
-                        case 11: line.DisplayOrder = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 20: line.TableName = data.FieldValue; break;
-                        case 21: line.KeyValue = data.FieldValue; break;
-                        case 22: line.Description = data.FieldValue; break;
-                        case 31: line.ImageDescription = data.FieldValue; break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 10: line.ImageId = data.FieldValue; break;
+                            case 11: line.DisplayOrder = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 20: line.TableName = data.FieldValue; break;
+                            case 21: line.KeyValue = data.FieldValue; break;
+                            case 22: line.Description = data.FieldValue; break;
+                            case 31: line.ImageDescription = data.FieldValue; break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplImageLink line = new ReplImageLink()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1:
+                                string[] recId = data.FieldValue.Split(':');
+                                line.TableName = recId[0].Trim();
+                                line.KeyValue = recId[1].Trim();
+                                break;
+                            case 10: line.ImageId = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplImageLink line = new ReplImageLink()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1:
-                            string[] recId = data.FieldValue.Split(':');
-                            line.TableName = recId[0].Trim();
-                            line.KeyValue = recId[1].Trim();
-                            break;
-                        case 10: line.ImageId = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -747,70 +951,83 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplItemModifier> GetReplModifier(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplItemModifier> list = new List<ReplItemModifier>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplItemModifier line = new ReplItemModifier();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplItemModifier line = new ReplItemModifier();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.Id = data.FieldValue; break;
-                        case 2: line.Code = data.FieldValue; break;
-                        case 3: line.SubCode = data.FieldValue; break;
-                        case 10: line.ExplanatoryHeaderText = data.FieldValue; break;
-                        case 11: line.Prompt = data.FieldValue; break;
-                        case 12: line.GroupMinSelection = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 13: line.GroupMaxSelection = ConvertTo.SafeInt(data.FieldValue); break;
-                        //case 30: line.ItemNo = data.FieldValue; break;
-                        case 31: line.VariantCode = data.FieldValue; break;
-                        case 32: line.Description = data.FieldValue; break;
-                        case 33: line.MinSelection = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 34: line.MaxSelection = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 35: line.AlwaysCharge = (ItemModifierPriceHandling)ConvertTo.SafeInt(data.FieldValue); break;
-                        case 36: line.PriceType = (ItemModifierPriceType)ConvertTo.SafeInt(data.FieldValue); break;
-                        case 37: line.AmountPercent = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 38: line.UnitOfMeasure = data.FieldValue; break;
-                        //case 39: line.QtrPerUOM = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 40: line.TimeModifierMinutes = ConvertTo.SafeDecimal(data.FieldValue); break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.Id = data.FieldValue; break;
+                            case 2: line.Code = data.FieldValue; break;
+                            case 3: line.SubCode = data.FieldValue; break;
+                            case 10: line.ExplanatoryHeaderText = data.FieldValue; break;
+                            case 11: line.Prompt = data.FieldValue; break;
+                            case 12: line.GroupMinSelection = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 13: line.GroupMaxSelection = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 14: line.UsageCategory = (ItemUsageCategory)ConvertTo.SafeInt(data.FieldValue); break;
+                            case 15: line.Type = (ItemModifierType)ConvertTo.SafeInt(data.FieldValue); break;
+                            case 16: line.TriggerFunction = (ItemTriggerFunction)ConvertTo.SafeInt(data.FieldValue); break;
+                            case 30: line.TriggerCode = data.FieldValue; break;
+                            case 31: line.VariantCode = data.FieldValue; break;
+                            case 32: line.Description = data.FieldValue; break;
+                            case 33: line.MinSelection = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 34: line.MaxSelection = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 35: line.AlwaysCharge = (ItemModifierPriceHandling)ConvertTo.SafeInt(data.FieldValue); break;
+                            case 36: line.PriceType = (ItemModifierPriceType)ConvertTo.SafeInt(data.FieldValue); break;
+                            case 37: line.AmountPercent = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 38: line.UnitOfMeasure = data.FieldValue; break;
+                            //case 39: line.QtrPerUOM = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 40: line.TimeModifierMinutes = ConvertTo.SafeDecimal(data.FieldValue); break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplItemModifier line = new ReplItemModifier()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.Id = data.FieldValue; break;
+                            case 2: line.Code = data.FieldValue; break;
+                            case 3: line.SubCode = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplItemModifier line = new ReplItemModifier()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.Id = data.FieldValue; break;
-                        case 2: line.Code = data.FieldValue; break;
-                        case 3: line.SubCode = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -818,60 +1035,70 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplItemRecipe> GetReplRecipe(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplItemRecipe> list = new List<ReplItemRecipe>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplItemRecipe line = new ReplItemRecipe();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplItemRecipe line = new ReplItemRecipe();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.RecipeNo = data.FieldValue; break;
-                        case 2: line.LineNo = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 6: line.Description = data.FieldValue; break;
-                        case 7: line.UnitOfMeasure = data.FieldValue; break;
-                        case 8: line.QuantityPer = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 10012113: line.ItemNo = data.FieldValue; break;
-                        case 10012115: line.Exclusion = ConvertTo.SafeBoolean(data.FieldValue); break;
-                        case 10012116: line.ExclusionPrice = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 10012860: line.ImageId = data.FieldValue; break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.RecipeNo = data.FieldValue; break;
+                            case 2: line.LineNo = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 6: line.Description = data.FieldValue; break;
+                            case 7: line.UnitOfMeasure = data.FieldValue; break;
+                            case 8: line.QuantityPer = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 10012113: line.ItemNo = data.FieldValue; break;
+                            case 10012115: line.Exclusion = ConvertTo.SafeBoolean(data.FieldValue); break;
+                            case 10012116: line.ExclusionPrice = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 10012860: line.ImageId = data.FieldValue; break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplItemRecipe line = new ReplItemRecipe()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.RecipeNo = data.FieldValue; break;
+                            case 2: line.LineNo = ConvertTo.SafeInt(data.FieldValue); break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplItemRecipe line = new ReplItemRecipe()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.RecipeNo = data.FieldValue; break;
-                        case 2: line.LineNo = ConvertTo.SafeInt(data.FieldValue); break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -879,55 +1106,65 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplBarcode> GetReplBarcode(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplBarcode> list = new List<ReplBarcode>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplBarcode line = new ReplBarcode();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplBarcode line = new ReplBarcode();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.ItemId = data.FieldValue; break;
-                        case 10: line.Id = data.FieldValue; break;
-                        case 25: line.Description = data.FieldValue; break;
-                        case 110: line.VariantId = data.FieldValue; break;
-                        case 200: line.UnitOfMeasure = data.FieldValue; break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.ItemId = data.FieldValue; break;
+                            case 10: line.Id = data.FieldValue; break;
+                            case 25: line.Description = data.FieldValue; break;
+                            case 110: line.VariantId = data.FieldValue; break;
+                            case 200: line.UnitOfMeasure = data.FieldValue; break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplBarcode line = new ReplBarcode()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 10: line.Id = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplBarcode line = new ReplBarcode()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 10: line.Id = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -935,65 +1172,75 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplItemVariantRegistration> GetReplItemVariantReg(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplItemVariantRegistration> list = new List<ReplItemVariantRegistration>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplItemVariantRegistration line = new ReplItemVariantRegistration();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplItemVariantRegistration line = new ReplItemVariantRegistration();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.ItemId = data.FieldValue; break;
-                        case 2: line.FrameworkCode = data.FieldValue; break;
-                        case 10: line.VariantDimension1 = data.FieldValue; break;
-                        case 11: line.VariantDimension2 = data.FieldValue; break;
-                        case 12: line.VariantDimension3 = data.FieldValue; break;
-                        case 13: line.VariantDimension4 = data.FieldValue; break;
-                        case 14: line.VariantDimension5 = data.FieldValue; break;
-                        case 15: line.VariantDimension6 = data.FieldValue; break;
-                        case 20: line.VariantId = data.FieldValue; break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.ItemId = data.FieldValue; break;
+                            case 2: line.FrameworkCode = data.FieldValue; break;
+                            case 10: line.VariantDimension1 = data.FieldValue; break;
+                            case 11: line.VariantDimension2 = data.FieldValue; break;
+                            case 12: line.VariantDimension3 = data.FieldValue; break;
+                            case 13: line.VariantDimension4 = data.FieldValue; break;
+                            case 14: line.VariantDimension5 = data.FieldValue; break;
+                            case 15: line.VariantDimension6 = data.FieldValue; break;
+                            case 20: line.VariantId = data.FieldValue; break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplItemVariantRegistration line = new ReplItemVariantRegistration()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.ItemId = data.FieldValue; break;
+                            case 10: line.VariantDimension1 = data.FieldValue; break;
+                            case 11: line.VariantDimension2 = data.FieldValue; break;
+                            case 12: line.VariantDimension3 = data.FieldValue; break;
+                            case 13: line.VariantDimension4 = data.FieldValue; break;
+                            case 14: line.VariantDimension5 = data.FieldValue; break;
+                            case 15: line.VariantDimension6 = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplItemVariantRegistration line = new ReplItemVariantRegistration()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.ItemId = data.FieldValue; break;
-                        case 10: line.VariantDimension1 = data.FieldValue; break;
-                        case 11: line.VariantDimension2 = data.FieldValue; break;
-                        case 12: line.VariantDimension3 = data.FieldValue; break;
-                        case 13: line.VariantDimension4 = data.FieldValue; break;
-                        case 14: line.VariantDimension5 = data.FieldValue; break;
-                        case 15: line.VariantDimension6 = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -1001,69 +1248,79 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplItemVariantRegistration> GetReplItemVariantWithStatus(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplItemVariantRegistration> list = new List<ReplItemVariantRegistration>();
-            ReplODataSet result = JsonToDataSet(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplODataSet result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.DataSet.DataSetUpd.DynDataSet.DataSetRows)
+            try
             {
-                ReplItemVariantRegistration line = new ReplItemVariantRegistration();
-                string lcy = string.Empty;
+                result = JsonToDataSet(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                foreach (ReplODataField data in rec.Fields)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.DataSet.DataSetUpd.DynDataSet.DataSetRows)
                 {
-                    ReplODataSetField fld = result.DataSet.DataSetUpd.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                    ReplItemVariantRegistration line = new ReplItemVariantRegistration();
+                    string lcy = string.Empty;
 
-                    switch (fld.FieldName)
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case "Item No.": line.ItemId = data.FieldValue; break;
-                        case "Framework Code": line.FrameworkCode = data.FieldValue; break;
-                        case "Variant Dimension 1": line.VariantDimension1 = data.FieldValue; break;
-                        case "Variant Dimension 2": line.VariantDimension2 = data.FieldValue; break;
-                        case "Variant Dimension 3": line.VariantDimension3 = data.FieldValue; break;
-                        case "Variant Dimension 4": line.VariantDimension4 = data.FieldValue; break;
-                        case "Variant Dimension 5": line.VariantDimension5 = data.FieldValue; break;
-                        case "Variant Dimension 6": line.VariantDimension6 = data.FieldValue; break;
-                        case "Variant": line.VariantId = data.FieldValue; break;
-                        case "Block Sale on POS": line.BlockedOnPos = XMLHelper.GetWebBoolInt(data.FieldValue); break;
-                        case "Blocked on eCommerce": line.BlockedOnECom = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                        ReplODataSetField fld = result.DataSet.DataSetUpd.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldName)
+                        {
+                            case "Item No.": line.ItemId = data.FieldValue; break;
+                            case "Framework Code": line.FrameworkCode = data.FieldValue; break;
+                            case "Variant Dimension 1": line.VariantDimension1 = data.FieldValue; break;
+                            case "Variant Dimension 2": line.VariantDimension2 = data.FieldValue; break;
+                            case "Variant Dimension 3": line.VariantDimension3 = data.FieldValue; break;
+                            case "Variant Dimension 4": line.VariantDimension4 = data.FieldValue; break;
+                            case "Variant Dimension 5": line.VariantDimension5 = data.FieldValue; break;
+                            case "Variant Dimension 6": line.VariantDimension6 = data.FieldValue; break;
+                            case "Variant": line.VariantId = data.FieldValue; break;
+                            case "Block Sale on POS": line.BlockedOnPos = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                            case "Blocked on eCommerce": line.BlockedOnECom = XMLHelper.GetWebBoolInt(data.FieldValue); break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.DataSet.DataSetDel == null || result.DataSet.DataSetDel.DynDataSet == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.DataSet.DataSetDel.DynDataSet.DataSetRows)
+                {
+                    ReplItemVariantRegistration line = new ReplItemVariantRegistration()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataSetField fld = result.DataSet.DataSetDel.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldName)
+                        {
+                            case "Item No.": line.ItemId = data.FieldValue; break;
+                            case "Variant Dimension 1": line.VariantDimension1 = data.FieldValue; break;
+                            case "Variant Dimension 2": line.VariantDimension2 = data.FieldValue; break;
+                            case "Variant Dimension 3": line.VariantDimension3 = data.FieldValue; break;
+                            case "Variant Dimension 4": line.VariantDimension4 = data.FieldValue; break;
+                            case "Variant Dimension 5": line.VariantDimension5 = data.FieldValue; break;
+                            case "Variant Dimension 6": line.VariantDimension6 = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.DataSet.DataSetDel == null || result.DataSet.DataSetDel.DynDataSet == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.DataSet.DataSetDel.DynDataSet.DataSetRows)
+            finally
             {
-                ReplItemVariantRegistration line = new ReplItemVariantRegistration()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataSetField fld = result.DataSet.DataSetDel.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldName)
-                    {
-                        case "Item No.": line.ItemId = data.FieldValue; break;
-                        case "Variant Dimension 1": line.VariantDimension1 = data.FieldValue; break;
-                        case "Variant Dimension 2": line.VariantDimension2 = data.FieldValue; break;
-                        case "Variant Dimension 3": line.VariantDimension3 = data.FieldValue; break;
-                        case "Variant Dimension 4": line.VariantDimension4 = data.FieldValue; break;
-                        case "Variant Dimension 5": line.VariantDimension5 = data.FieldValue; break;
-                        case "Variant Dimension 6": line.VariantDimension6 = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -1071,55 +1328,65 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplItemVariant> GetReplItemVariant(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplItemVariant> list = new List<ReplItemVariant>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplItemVariant line = new ReplItemVariant();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplItemVariant line = new ReplItemVariant();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.VariantId = data.FieldValue; break;
-                        case 2: line.ItemId = data.FieldValue; break;
-                        case 3: line.Description = data.FieldValue; break;
-                        case 4: line.Description2 = data.FieldValue; break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.VariantId = data.FieldValue; break;
+                            case 2: line.ItemId = data.FieldValue; break;
+                            case 3: line.Description = data.FieldValue; break;
+                            case 4: line.Description2 = data.FieldValue; break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplItemVariant line = new ReplItemVariant()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.VariantId = data.FieldValue; break;
+                            case 2: line.ItemId = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplItemVariant line = new ReplItemVariant()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.VariantId = data.FieldValue; break;
-                        case 2: line.ItemId = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -1127,58 +1394,68 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplLoyVendorItemMapping> GetReplVendorItem(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplLoyVendorItemMapping> list = new List<ReplLoyVendorItemMapping>();
-            ReplODataSet result = JsonToDataSet(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplODataSet result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.DataSet.DataSetUpd.DynDataSet.DataSetRows)
+            try
             {
-                ReplLoyVendorItemMapping line = new ReplLoyVendorItemMapping();
-                line.IsFeaturedProduct = true;
-                line.DisplayOrder = 1;
-                string lcy = string.Empty;
+                result = JsonToDataSet(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                foreach (ReplODataField data in rec.Fields)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.DataSet.DataSetUpd.DynDataSet.DataSetRows)
                 {
-                    ReplODataSetField fld = result.DataSet.DataSetUpd.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                    ReplLoyVendorItemMapping line = new ReplLoyVendorItemMapping();
+                    line.IsFeaturedProduct = true;
+                    line.DisplayOrder = 1;
+                    string lcy = string.Empty;
 
-                    switch (fld.FieldName)
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case "ItemNo": line.NavProductId = data.FieldValue; break;
-                        case "VendorNo": line.NavManufacturerId = data.FieldValue; break;
-                        case "VendorItemNo": line.NavManufacturerItemId = data.FieldValue; break;
+                        ReplODataSetField fld = result.DataSet.DataSetUpd.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldName)
+                        {
+                            case "ItemNo": line.NavProductId = data.FieldValue; break;
+                            case "VendorNo": line.NavManufacturerId = data.FieldValue; break;
+                            case "VendorItemNo": line.NavManufacturerItemId = data.FieldValue; break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.DataSet.DataSetDel == null || result.DataSet.DataSetDel.DynDataSet == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.DataSet.DataSetDel.DynDataSet.DataSetRows)
+                {
+                    ReplLoyVendorItemMapping line = new ReplLoyVendorItemMapping()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataSetField fld = result.DataSet.DataSetDel.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldName)
+                        {
+                            case "ItemNo": line.NavProductId = data.FieldValue; break;
+                            case "VendorNo": line.NavManufacturerId = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.DataSet.DataSetDel == null || result.DataSet.DataSetDel.DynDataSet == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.DataSet.DataSetDel.DynDataSet.DataSetRows)
+            finally
             {
-                ReplLoyVendorItemMapping line = new ReplLoyVendorItemMapping()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataSetField fld = result.DataSet.DataSetDel.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldName)
-                    {
-                        case "ItemNo": line.NavProductId = data.FieldValue; break;
-                        case "VendorNo": line.NavManufacturerId = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -1187,53 +1464,63 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplUnitOfMeasure> GetReplUOM(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplUnitOfMeasure> list = new List<ReplUnitOfMeasure>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplUnitOfMeasure line = new ReplUnitOfMeasure();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplUnitOfMeasure line = new ReplUnitOfMeasure();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.Id = data.FieldValue; break;
-                        case 2: line.Description = data.FieldValue; break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.Id = data.FieldValue; break;
+                            case 2: line.Description = data.FieldValue; break;
+                        }
                     }
+                    line.ShortDescription = line.Description;
+                    list.Add(line);
                 }
-                line.ShortDescription = line.Description;
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplUnitOfMeasure line = new ReplUnitOfMeasure()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.Id = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplUnitOfMeasure line = new ReplUnitOfMeasure()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.Id = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -1241,62 +1528,72 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplExtendedVariantValue> GetReplExtVariants(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplExtendedVariantValue> list = new List<ReplExtendedVariantValue>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplExtendedVariantValue line = new ReplExtendedVariantValue();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplExtendedVariantValue line = new ReplExtendedVariantValue();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.ItemId = data.FieldValue; break;
-                        case 5: line.FrameworkCode = data.FieldValue; break;
-                        case 9: line.Code = data.FieldValue; break;
-                        case 10: line.Dimensions = data.FieldValue; break;
-                        case 11: line.Value = data.FieldValue; break;
-                        case 16: line.LogicalOrder = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 23: line.ValueDescription = data.FieldValue; break;
-                        case 40: line.DimensionLogicalOrder = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 41: line.CodeDescription = data.FieldValue; break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.ItemId = data.FieldValue; break;
+                            case 5: line.FrameworkCode = data.FieldValue; break;
+                            case 9: line.Code = data.FieldValue; break;
+                            case 10: line.Dimensions = data.FieldValue; break;
+                            case 11: line.Value = data.FieldValue; break;
+                            case 16: line.LogicalOrder = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 23: line.ValueDescription = data.FieldValue; break;
+                            case 40: line.DimensionLogicalOrder = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 41: line.CodeDescription = data.FieldValue; break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplExtendedVariantValue line = new ReplExtendedVariantValue()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.ItemId = data.FieldValue; break;
+                            case 5: line.FrameworkCode = data.FieldValue; break;
+                            case 9: line.Code = data.FieldValue; break;
+                            case 11: line.Value = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplExtendedVariantValue line = new ReplExtendedVariantValue()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.ItemId = data.FieldValue; break;
-                        case 5: line.FrameworkCode = data.FieldValue; break;
-                        case 9: line.Code = data.FieldValue; break;
-                        case 11: line.Value = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -1304,61 +1601,71 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplItemUnitOfMeasure> GetReplItemUOM(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplItemUnitOfMeasure> list = new List<ReplItemUnitOfMeasure>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplItemUnitOfMeasure line = new ReplItemUnitOfMeasure();
-                line.QtyPrUOM = 1;
-                line.Order = 1;
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplItemUnitOfMeasure line = new ReplItemUnitOfMeasure();
+                    line.QtyPrUOM = 1;
+                    line.Order = 1;
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.ItemId = data.FieldValue; break;
-                        case 2: line.Code = data.FieldValue; break;
-                        case 3: line.QtyPrUOM = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 99001455: line.CountAsOne = ConvertTo.SafeBoolean(data.FieldValue); break;
-                        case 99001456: line.Selection = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 99001457: line.Order = ConvertTo.SafeInt(data.FieldValue); break;
-                        //case 0: line.Description = data.FieldValue; break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.ItemId = data.FieldValue; break;
+                            case 2: line.Code = data.FieldValue; break;
+                            case 3: line.QtyPrUOM = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 99001455: line.CountAsOne = ConvertTo.SafeBoolean(data.FieldValue); break;
+                            case 99001456: line.Selection = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 99001457: line.Order = ConvertTo.SafeInt(data.FieldValue); break;
+                                //case 0: line.Description = data.FieldValue; break;
+                        }
                     }
+                    line.ShortDescription = line.Code;
+                    list.Add(line);
                 }
-                line.ShortDescription = line.Code;
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplItemUnitOfMeasure line = new ReplItemUnitOfMeasure()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.ItemId = data.FieldValue; break;
+                            case 2: line.Code = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplItemUnitOfMeasure line = new ReplItemUnitOfMeasure()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.ItemId = data.FieldValue; break;
-                        case 2: line.Code = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -1366,62 +1673,72 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplItemUnitOfMeasure> GetReplItemUOM2(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplItemUnitOfMeasure> list = new List<ReplItemUnitOfMeasure>();
-            ReplODataSet result = JsonToDataSet(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplODataSet result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.DataSet.DataSetUpd.DynDataSet.DataSetRows)
+            try
             {
-                ReplItemUnitOfMeasure line = new ReplItemUnitOfMeasure();
-                string lcy = string.Empty;
+                result = JsonToDataSet(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                foreach (ReplODataField data in rec.Fields)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.DataSet.DataSetUpd.DynDataSet.DataSetRows)
                 {
-                    ReplODataSetField fld = result.DataSet.DataSetUpd.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                    ReplItemUnitOfMeasure line = new ReplItemUnitOfMeasure();
+                    string lcy = string.Empty;
 
-                    switch (fld.FieldName)
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case "Item No.": line.ItemId = data.FieldValue; break;
-                        case "Code": line.Code = data.FieldValue; break;
-                        case "Qty. per Unit of Measure": line.QtyPrUOM = ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case "LSC Count as 1 on Receipt": line.CountAsOne = ConvertTo.SafeBoolean(data.FieldValue); break;
-                        case "LSC POS Selection": line.Selection = ConvertTo.SafeInt(data.FieldValue); break;
-                        case "LSC Order": line.Order = ConvertTo.SafeInt(data.FieldValue); break;
-                        case "LSC Ecom Selection": line.EComSelection = ConvertTo.SafeInt(data.FieldValue); break;
-                        case "Description": line.Description = data.FieldValue; break;
+                        ReplODataSetField fld = result.DataSet.DataSetUpd.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldName)
+                        {
+                            case "Item No.": line.ItemId = data.FieldValue; break;
+                            case "Code": line.Code = data.FieldValue; break;
+                            case "Qty. per Unit of Measure": line.QtyPrUOM = ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case "LSC Count as 1 on Receipt": line.CountAsOne = ConvertTo.SafeBoolean(data.FieldValue); break;
+                            case "LSC POS Selection": line.Selection = ConvertTo.SafeInt(data.FieldValue); break;
+                            case "LSC Order": line.Order = ConvertTo.SafeInt(data.FieldValue); break;
+                            case "LSC Ecom Selection": line.EComSelection = ConvertTo.SafeInt(data.FieldValue); break;
+                            case "Description": line.Description = data.FieldValue; break;
+                        }
                     }
+                    line.ShortDescription = line.Code;
+                    list.Add(line);
                 }
-                line.ShortDescription = line.Code;
-                list.Add(line);
+
+                if (result.DataSet.DataSetDel == null || result.DataSet.DataSetDel.DynDataSet == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.DataSet.DataSetDel.DynDataSet.DataSetRows)
+                {
+                    ReplItemUnitOfMeasure line = new ReplItemUnitOfMeasure()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataSetField fld = result.DataSet.DataSetDel.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldName)
+                        {
+                            case "Item No.": line.ItemId = data.FieldValue; break;
+                            case "Code": line.Code = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.DataSet.DataSetDel == null || result.DataSet.DataSetDel.DynDataSet == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.DataSet.DataSetDel.DynDataSet.DataSetRows)
+            finally
             {
-                ReplItemUnitOfMeasure line = new ReplItemUnitOfMeasure()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataSetField fld = result.DataSet.DataSetDel.DynDataSet.DataSetFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldName)
-                    {
-                        case "Item No.": line.ItemId = data.FieldValue; break;
-                        case "Code": line.Code = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -1429,54 +1746,64 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplProductGroup> GetReplProductGroup(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplProductGroup> list = new List<ReplProductGroup>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplProductGroup line = new ReplProductGroup();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplProductGroup line = new ReplProductGroup();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.ItemCategoryID = data.FieldValue; break;
-                        case 2: line.Id = data.FieldValue; break;
-                        case 3: line.Description = data.FieldValue; break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.ItemCategoryID = data.FieldValue; break;
+                            case 2: line.Id = data.FieldValue; break;
+                            case 3: line.Description = data.FieldValue; break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplProductGroup line = new ReplProductGroup()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.ItemCategoryID = data.FieldValue; break;
+                            case 2: line.Id = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplProductGroup line = new ReplProductGroup()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.ItemCategoryID = data.FieldValue; break;
-                        case 2: line.Id = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -1484,52 +1811,62 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplItemCategory> GetReplItemCategory(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplItemCategory> list = new List<ReplItemCategory>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplItemCategory line = new ReplItemCategory();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplItemCategory line = new ReplItemCategory();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.Id = data.FieldValue; break;
-                        case 3: line.Description = data.FieldValue; break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.Id = data.FieldValue; break;
+                            case 3: line.Description = data.FieldValue; break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplItemCategory line = new ReplItemCategory()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.Id = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplItemCategory line = new ReplItemCategory()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.Id = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -1537,59 +1874,69 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplItemLocation> GetReplItemLocation(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplItemLocation> list = new List<ReplItemLocation>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplItemLocation line = new ReplItemLocation();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplItemLocation line = new ReplItemLocation();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.ItemId = data.FieldValue; break;
-                        case 2: line.StoreId = data.FieldValue; break;
-                        case 5: line.SectionCode = data.FieldValue; break;
-                        case 6: line.SectionDescription = data.FieldValue; break;
-                        case 10: line.ShelfCode = data.FieldValue; break;
-                        case 11: line.ShelfDescription = data.FieldValue; break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.ItemId = data.FieldValue; break;
+                            case 2: line.StoreId = data.FieldValue; break;
+                            case 5: line.SectionCode = data.FieldValue; break;
+                            case 6: line.SectionDescription = data.FieldValue; break;
+                            case 10: line.ShelfCode = data.FieldValue; break;
+                            case 11: line.ShelfDescription = data.FieldValue; break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplItemLocation line = new ReplItemLocation()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.ItemId = data.FieldValue; break;
+                            case 2: line.StoreId = data.FieldValue; break;
+                            case 5: line.SectionCode = data.FieldValue; break;
+                            case 10: line.ShelfCode = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplItemLocation line = new ReplItemLocation()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.ItemId = data.FieldValue; break;
-                        case 2: line.StoreId = data.FieldValue; break;
-                        case 5: line.SectionCode = data.FieldValue; break;
-                        case 10: line.ShelfCode = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -1597,54 +1944,64 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplAttribute> GetReplAttribute(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplAttribute> list = new List<ReplAttribute>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplAttribute line = new ReplAttribute();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplAttribute line = new ReplAttribute();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.Code = data.FieldValue; break;
-                        case 5: line.Description = data.FieldValue; break;
-                        case 20: line.ValueType = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 21: line.DefaultValue = data.FieldValue; break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.Code = data.FieldValue; break;
+                            case 5: line.Description = data.FieldValue; break;
+                            case 20: line.ValueType = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 21: line.DefaultValue = data.FieldValue; break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplAttribute line = new ReplAttribute()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.Code = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplAttribute line = new ReplAttribute()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.Code = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -1652,63 +2009,73 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplAttributeValue> GetReplAttributeValue(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplAttributeValue> list = new List<ReplAttributeValue>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplAttributeValue line = new ReplAttributeValue();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplAttributeValue line = new ReplAttributeValue();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.LinkField1 = data.FieldValue; break;
-                        case 2: line.Code = data.FieldValue; break;
-                        case 3: line.Value = data.FieldValue; break;
-                        case 4: line.Sequence = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 5: line.LinkType = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 6: line.LinkField2 = data.FieldValue; break;
-                        case 7: line.LinkField3 = data.FieldValue; break;
-                        case 8: line.NumbericValue = ConvertTo.SafeDecimal(data.FieldValue); break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.LinkField1 = data.FieldValue; break;
+                            case 2: line.Code = data.FieldValue; break;
+                            case 3: line.Value = data.FieldValue; break;
+                            case 4: line.Sequence = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 5: line.LinkType = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 6: line.LinkField2 = data.FieldValue; break;
+                            case 7: line.LinkField3 = data.FieldValue; break;
+                            case 8: line.NumbericValue = ConvertTo.SafeDecimal(data.FieldValue); break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplAttributeValue line = new ReplAttributeValue()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.LinkField1 = data.FieldValue; break;
+                            case 2: line.Code = data.FieldValue; break;
+                            case 4: line.Sequence = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 5: line.LinkType = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 6: line.LinkField2 = data.FieldValue; break;
+                            case 7: line.LinkField3 = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplAttributeValue line = new ReplAttributeValue()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.LinkField1 = data.FieldValue; break;
-                        case 2: line.Code = data.FieldValue; break;
-                        case 4: line.Sequence = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 5: line.LinkType = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 6: line.LinkField2 = data.FieldValue; break;
-                        case 7: line.LinkField3 = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -1716,54 +2083,64 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplAttributeOptionValue> GetReplAttributeOptionValue(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplAttributeOptionValue> list = new List<ReplAttributeOptionValue>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplAttributeOptionValue line = new ReplAttributeOptionValue();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplAttributeOptionValue line = new ReplAttributeOptionValue();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.Code = data.FieldValue; break;
-                        case 2: line.Sequence = ConvertTo.SafeInt(data.FieldValue); break;
-                        case 3: line.Value = data.FieldValue; break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.Code = data.FieldValue; break;
+                            case 2: line.Sequence = ConvertTo.SafeInt(data.FieldValue); break;
+                            case 3: line.Value = data.FieldValue; break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplAttributeOptionValue line = new ReplAttributeOptionValue()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.Code = data.FieldValue; break;
+                            case 2: line.Sequence = ConvertTo.SafeInt(data.FieldValue); break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplAttributeOptionValue line = new ReplAttributeOptionValue()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.Code = data.FieldValue; break;
-                        case 2: line.Sequence = ConvertTo.SafeInt(data.FieldValue); break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -1771,57 +2148,67 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplDataTranslation> GetReplHtml(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplDataTranslation> list = new List<ReplDataTranslation>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplDataTranslation line = new ReplDataTranslation();
-                line.TranslationId = "T0010001410-F0000000020";
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                foreach (ReplODataField data in rec.Fields)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
                 {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                    ReplDataTranslation line = new ReplDataTranslation();
+                    line.TranslationId = "T0010001410-F0000000020";
 
-                    switch (fld.FieldNo)
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 1: line.Key = data.FieldValue; break;
-                        case 20: line.Text = ConvertTo.Base64Decode(data.FieldValue); break;
-                        case 30: line.LanguageCode = data.FieldValue; break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.Key = data.FieldValue; break;
+                            case 20: line.Text = ConvertTo.Base64Decode(data.FieldValue); break;
+                            case 30: line.LanguageCode = data.FieldValue; break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplDataTranslation line = new ReplDataTranslation()
+                    {
+                        IsDeleted = true,
+                        TranslationId = "T0010001410-F0000000020"
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 1: line.Key = data.FieldValue; break;
+                            case 30: line.LanguageCode = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplDataTranslation line = new ReplDataTranslation()
-                {
-                    IsDeleted = true,
-                    TranslationId = "T0010001410-F0000000020"
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 1: line.Key = data.FieldValue; break;
-                        case 30: line.LanguageCode = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
@@ -1829,94 +2216,115 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
         public List<ReplInvStatus> GetReplInvStatus(string ret, ref string lastKey, ref int recordsRemaining)
         {
             List<ReplInvStatus> list = new List<ReplInvStatus>();
-            ReplOTableData result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
-            if (result == null)
-                return list;
+            ReplOTableData result = null;
 
-            // Insert update records
-            foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+            try
             {
-                ReplInvStatus line = new ReplInvStatus();
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
+                result = JsonToTableData(ret, ref lastKey, ref recordsRemaining);
+                if (result == null)
+                    return list;
 
-                    switch (fld.FieldNo)
+                // Insert update records
+                foreach (ReplODataRecord rec in result.TableData.TableDataUpd.RecRefJson.Records)
+                {
+                    ReplInvStatus line = new ReplInvStatus();
+                    foreach (ReplODataField data in rec.Fields)
                     {
-                        case 10: line.ItemId = data.FieldValue; break;
-                        case 15: line.VariantId = data.FieldValue; break;
-                        case 25: line.StoreId = data.FieldValue; break;
-                        case 120: line.Quantity += ConvertTo.SafeDecimal(data.FieldValue); break;
-                        case 123: 
-                            if (LSCVersion < new Version("24.0"))
-                                line.Quantity += ConvertTo.SafeDecimal(data.FieldValue); 
-                            break;
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 10: line.ItemId = data.FieldValue; break;
+                            case 15: line.VariantId = data.FieldValue; break;
+                            case 25: line.StoreId = data.FieldValue; break;
+                            case 120: line.Quantity += ConvertTo.SafeDecimal(data.FieldValue); break;
+                            case 123:
+                                if (LSCVersion < new Version("24.0"))
+                                    line.Quantity += ConvertTo.SafeDecimal(data.FieldValue);
+                                break;
+                        }
                     }
+                    list.Add(line);
                 }
-                list.Add(line);
+
+                if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
+                    return list;
+
+                // Deleted Action Records
+                foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+                {
+                    ReplInvStatus line = new ReplInvStatus()
+                    {
+                        IsDeleted = true
+                    };
+
+                    foreach (ReplODataField data in rec.Fields)
+                    {
+                        ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
+                        if (fld == null)
+                            continue;
+
+                        switch (fld.FieldNo)
+                        {
+                            case 10: line.ItemId = data.FieldValue; break;
+                        }
+                    }
+                    list.Add(line);
+                }
             }
-
-            if (result.TableData.TableDataDel == null || result.TableData.TableDataDel.RecRefJson == null)
-                return list;
-
-            // Deleted Action Records
-            foreach (ReplODataRecord rec in result.TableData.TableDataDel.RecRefJson.Records)
+            finally
             {
-                ReplInvStatus line = new ReplInvStatus()
-                {
-                    IsDeleted = true
-                };
-
-                foreach (ReplODataField data in rec.Fields)
-                {
-                    ReplODataRecordField fld = result.TableData.TableDataUpd.RecRefJson.RecordFields.Find(f => f.FieldIndex == data.FieldIndex);
-                    if (fld == null)
-                        continue;
-
-                    switch (fld.FieldNo)
-                    {
-                        case 10: line.ItemId = data.FieldValue; break;
-                    }
-                }
-                list.Add(line);
+                result?.Dispose();
+                result = null;
             }
             return list;
         }
 
-        public LoyItem GetItem(string ret, bool inclDetail)
+        public LoyItem GetItem(string ret, bool inclDetail, out string resCode, out string resErr)
         {
-            WSODataCollection result = JsonToWSOData(ret, "ItemInfo");
-            if (result == null)
-                return null;
+            LoyItem item;
+            WSODataCollection result = null;
 
-            // get data
-            LoyItem item = LoadItem(result.GetDataSet(27));
-            if (item == null)
-                return item;
-
-            item.Details = LoadItemHtml(result.GetDataSet(10001410));
-            item.SpecialGroups = LoadItemSpecialGroup(result.GetDataSet(10000736));
-            item.Images = LoadImage(result.GetDataSet(99009064), item.Id);
-            xItemStatus stat = LoadStatus(result.GetDataSet(10001404), item.Id, string.Empty);
-            if (stat != null)
+            try
             {
-                item.BlockDiscount = stat.blockDiscount;
-                item.BlockManualPriceChange = stat.blockManPrice;
-                item.AllowedToSell = stat.blockPOS;
+                result = JsonToWSOData(ret, "ItemInfo", out resCode, out resErr);
+                if (result == null)
+                    return null;
+
+                // get data
+                item = LoadItem(result.GetDataSet(27));
+                if (item == null)
+                    return item;
+
+                item.Details = LoadItemHtml(result.GetDataSet(10001410));
+                item.SpecialGroups = LoadItemSpecialGroup(result.GetDataSet(10000736));
+                item.Images = LoadImage(result.GetDataSet(99009064), item.Id);
+                xItemStatus stat = LoadStatus(result.GetDataSet(10001404), item.Id, string.Empty);
+                if (stat != null)
+                {
+                    item.BlockDiscount = stat.blockDiscount;
+                    item.BlockManualPriceChange = stat.blockManPrice;
+                    item.AllowedToSell = stat.blockPOS;
+                }
+
+                if (inclDetail)
+                {
+                    item.Prices = LoadItemPrice(result.GetDataSet(10012861));
+                    item.Locations = LoadItemLocation(result);
+                    item.UnitOfMeasures = LoadItemUOM(result);
+                    item.VariantsRegistration = LoadItemVarReg(result);
+                    item.VariantsExt = LoadItemExtVar(result.GetDataSet(10001413));
+                    item.ItemAttributes = LoadItemAttribute(result);
+                    item.Recipes = LoadItemRecipe(result);
+                    item.Modifiers = LoadItemModify(result);
+                }
             }
-
-            if (inclDetail)
+            finally
             {
-                item.Prices = LoadItemPrice(result.GetDataSet(10012861));
-                item.Locations = LoadItemLocation(result);
-                item.UnitOfMeasures = LoadItemUOM(result);
-                item.VariantsRegistration = LoadItemVarReg(result);
-                item.VariantsExt = LoadItemExtVar(result.GetDataSet(10001413));
-                item.ItemAttributes = LoadItemAttribute(result);
-                item.Recipes = LoadItemRecipe(result);
-                item.Modifiers = LoadItemModify(result);
+                result?.Dispose();
+                result = null;
             }
             return item;
         }
@@ -1980,7 +2388,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                         case "Net Unit Price": rec.NetAmt = ConvertTo.SafeDecimal(col.FieldValue); break;
                         case "Unit Price":
                             rec.Amount = col.FieldValue;
-                            rec.Amt = ConvertTo.SafeDecimal(col.FieldValue); 
+                            rec.Amt = ConvertTo.SafeDecimal(col.FieldValue);
                             break;
                     }
                 }
@@ -2063,7 +2471,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                     Code = var.Code,
                     Dimension = var.Dimension
                 };
-                
+
                 foreach (VariantExt val in tmpList.FindAll(x => (string.IsNullOrEmpty(x.tmpValue) == false) && x.Dimension == rec.Dimension))
                 {
                     rec.Values.Add(new DimValue()
@@ -2278,6 +2686,52 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
             return list.FindAll(x => x.Location == keyValue);
         }
 
+        public ImageView GetImage(string ret, out string resCode, out string resErr)
+        {
+            ImageView rec;
+            WSODataCollection result = null;
+
+            try
+            {
+                result = JsonToWSOData(ret, "ImageInfo", out resCode, out resErr);
+                if (result == null)
+                    return null;
+
+                ReplODataSetRecRef dynDataSet = result.GetDataSet(2000000184);
+                if (dynDataSet == null || dynDataSet.DataSetRows.Count == 0)
+                    return null;
+
+                ReplODataRecord row = dynDataSet.DataSetRows[0];
+                rec = new ImageView();
+
+                int height = 0;
+                int width = 0;
+                foreach (ReplODataField col in row.Fields)
+                {
+                    ReplODataSetField fld = dynDataSet.DataSetFields.Find(f => f.FieldIndex == col.FieldIndex);
+                    if (fld == null)
+                        continue;
+
+                    switch (fld.FieldName)
+                    {
+                        case "ID": rec.MediaId = new Guid(col.FieldValue); break;
+                        case "Height": height = ConvertTo.SafeInt(col.FieldValue); break;
+                        case "Width": width = ConvertTo.SafeInt(col.FieldValue); break;
+                        case "Content": rec.ImgBytes = Convert.FromBase64String(col.FieldValue); break;
+                    }
+                }
+
+                rec.ImgSize = new ImageSize(width, height, false);
+            }
+            finally
+            {
+                result?.Dispose();
+                result = null;
+            }
+            return rec;
+        }
+
+
         private class xItemStatus
         {
             public string itemNo;
@@ -2455,7 +2909,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                     mod.UsageCategory = recMain.UsageCategory;
                     mod.Type = recMain.Type;
                     mod.MinSelection = ConvertTo.SafeInt(LoadInfoSelection(result.GetDataSet(99001482), 1, mod.TriggerCode));
-                    mod.MaxSelection =  ConvertTo.SafeInt(LoadInfoSelection(result.GetDataSet(99001482), 2, mod.TriggerCode));
+                    mod.MaxSelection = ConvertTo.SafeInt(LoadInfoSelection(result.GetDataSet(99001482), 2, mod.TriggerCode));
                     mod.GroupMinSelection = ConvertTo.SafeInt(LoadInfoSelection(result.GetDataSet(99001482), 1, mod.Code));
                     mod.GroupMaxSelection = ConvertTo.SafeInt(LoadInfoSelection(result.GetDataSet(99001482), 2, mod.Code));
                     mod.ExplanatoryHeaderText = LoadInfoSelection(result.GetDataSet(99001482), 3, mod.Code);
@@ -2546,77 +3000,87 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.JMapping
                 {
                     case 1:
                         return rowMin;
-                    case 2: 
+                    case 2:
                         return rowMax;
-                    case 3: 
+                    case 3:
                         return rowText;
-                    case 4: 
+                    case 4:
                         return rowPrompt;
                 }
             }
             return string.Empty;
         }
 
-        public List<ProactiveDiscount> GetDiscount(string ret, string storeId)
+        public List<ProactiveDiscount> GetDiscount(string ret, string storeId, out string resCode, out string resErr)
         {
             List<ProactiveDiscount> list = new List<ProactiveDiscount>();
-            WSODataCollection result = JsonToWSOData(ret, "DiscountInfo");
-            if (result == null)
-                return list;
+            WSODataCollection result = null;
 
-            // get data
-            list = LoadDiscount(result.GetDataSet(10012862));
-            List<ProactiveDiscount> mixmatch = LoadDiscount(result.GetDataSet(10012876));
-            List<LSKey> benefits = LoadBenefit(result.GetDataSet(99001650));
-
-            list.AddRange(mixmatch.FindAll(m => m.CustomerDiscGroup != "--EXT--"));
-            if (list == null)
-                return list;
-
-            List<ProactiveDiscount> perdis = LoadDiscount(result.GetDataSet(99001453));
-            List<ReplPrice> prices = LoadPrice(result.GetDataSet(10012861));
-
-            foreach (ProactiveDiscount disc in list)
+            try
             {
-                ProactiveDiscount pDisc = perdis.Find(r => r.Id == disc.Id);
-                if (pDisc == null) 
-                    continue;
+                result = JsonToWSOData(ret, "DiscountInfo", out resCode, out resErr);
+                if (result == null)
+                    return list;
 
-                disc.PopUpLine1 = pDisc.PopUpLine1;
-                disc.PopUpLine2 = pDisc.PopUpLine2;
-                disc.PopUpLine3 = pDisc.PopUpLine3;
-                disc.Priority = pDisc.Priority;
-                disc.Description = pDisc.Description;
+                // get data
+                list = LoadDiscount(result.GetDataSet(10012862));
+                List<ProactiveDiscount> mixmatch = LoadDiscount(result.GetDataSet(10012876));
+                List<LSKey> benefits = LoadBenefit(result.GetDataSet(99001650));
 
-                if (disc.Type == ProactiveDiscountType.MixMatch)
+                list.AddRange(mixmatch.FindAll(m => m.CustomerDiscGroup != "--EXT--"));
+                if (list == null)
+                    return list;
+
+                List<ProactiveDiscount> perdis = LoadDiscount(result.GetDataSet(99001453));
+                List<ReplPrice> prices = LoadPrice(result.GetDataSet(10012861));
+
+                foreach (ProactiveDiscount disc in list)
                 {
-                    disc.Percentage = pDisc.Percentage;
-                    
-                    List<LSKey> ben = benefits.FindAll(b => b.Key == disc.Id);
-                    disc.BenefitItemIds = new List<string>();
-                    foreach (LSKey key in ben)
+                    ProactiveDiscount pDisc = perdis.Find(r => r.Id == disc.Id);
+                    if (pDisc == null)
+                        continue;
+
+                    disc.PopUpLine1 = pDisc.PopUpLine1;
+                    disc.PopUpLine2 = pDisc.PopUpLine2;
+                    disc.PopUpLine3 = pDisc.PopUpLine3;
+                    disc.Priority = pDisc.Priority;
+                    disc.Description = pDisc.Description;
+
+                    if (disc.Type == ProactiveDiscountType.MixMatch)
                     {
-                        disc.BenefitItemIds.Add(key.Description);
+                        disc.Percentage = pDisc.Percentage;
+
+                        List<LSKey> ben = benefits.FindAll(b => b.Key == disc.Id);
+                        disc.BenefitItemIds = new List<string>();
+                        foreach (LSKey key in ben)
+                        {
+                            disc.BenefitItemIds.Add(key.Description);
+                        }
+
+                        List<ProactiveDiscount> extItems = mixmatch.FindAll(e => e.Id == disc.Id && (e.LoyaltySchemeCode == string.Empty || e.LoyaltySchemeCode == disc.LoyaltySchemeCode) && e.CustomerDiscGroup == "--EXT--");
+                        disc.ItemIds = new List<string>();
+                        foreach (ProactiveDiscount d in extItems)
+                        {
+                            disc.ItemIds.Add(d.ItemId);
+                        }
+                        disc.ItemIds.Remove(disc.ItemId);
                     }
 
-                    List<ProactiveDiscount> extItems = mixmatch.FindAll(e => e.Id == disc.Id && (e.LoyaltySchemeCode == string.Empty || e.LoyaltySchemeCode == disc.LoyaltySchemeCode) && e.CustomerDiscGroup == "--EXT--");
-                    disc.ItemIds = new List<string>();
-                    foreach (ProactiveDiscount d in extItems)
+                    if (disc.Type == ProactiveDiscountType.DiscOffer)
                     {
-                        disc.ItemIds.Add(d.ItemId);
-                    }
-                    disc.ItemIds.Remove(disc.ItemId);
-                }
-
-                if (disc.Type == ProactiveDiscountType.DiscOffer)
-                {
-                    ReplPrice price = prices.Find(p => p.StoreId == storeId && p.ItemId == disc.ItemId && (p.VariantId == disc.VariantId || p.VariantId == string.Empty));
-                    if (price != null)
-                    {
-                        disc.Price = price.UnitPrice;
-                        disc.PriceWithDiscount = disc.Price * (1 - disc.Percentage / 100);
+                        ReplPrice price = prices.Find(p => p.StoreId == storeId && p.ItemId == disc.ItemId && (p.VariantId == disc.VariantId || p.VariantId == string.Empty));
+                        if (price != null)
+                        {
+                            disc.Price = price.UnitPrice;
+                            disc.PriceWithDiscount = disc.Price * (1 - disc.Percentage / 100);
+                        }
                     }
                 }
+            }
+            finally
+            {
+                result?.Dispose();
+                result = null;
             }
             return list;
         }

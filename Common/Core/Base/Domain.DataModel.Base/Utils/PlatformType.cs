@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace LSRetail.Omni.Domain.DataModel.Base.Utils
 {
     public enum PlatformType

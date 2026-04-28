@@ -38,14 +38,22 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Log
     [DataContract(Namespace = "http://lsretail.com/LSOmniService/Base/2017")]
     public class Log
     {
+        private string message;
+
         [DataMember]
         public int ID { get; set; }
         [DataMember]
         public LogLevel LogLevel { get; set; }
         [DataMember]
         public LogType LogType { get; set; }
+
         [DataMember]
-        public string Message { get; set; }
+        public string Message
+        {
+            get => message;
+            set => message = value.TrimEnd();
+        }
+
         [DataMember]
         public string Stacktrace { get; set; }
         [DataMember(IsRequired = false, EmitDefaultValue = false)]
@@ -53,6 +61,14 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Log
 
         public Log() : this(0)
         {
+        }
+
+        public Log(Exception ex) : this(0)
+        {
+            Stacktrace = ex.StackTrace;
+            Message = ex.Message;
+            LogLevel = LogLevel.Error;
+            LogType = LogType.App;
         }
 
         public Log(int id)

@@ -62,6 +62,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
 
                 actions = LoadActions(fullReplication, TABLEID, batchSize, ref mainlastkey, ref recordsRemaining);
 
+                // get item status
                 recordsRemaining += GetRecordCount(10001404, tmplastkey, string.Empty, keys, ref maxKey);
                 List<JscActions> itemact = LoadActions(fullReplication, 10001404, batchSize, ref tmplastkey, ref recordsRemaining);
                 if (Convert.ToInt32(tmplastkey) > Convert.ToInt32(mainlastkey))

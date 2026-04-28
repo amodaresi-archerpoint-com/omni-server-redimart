@@ -37,6 +37,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
             SourcingLocations = new List<SourcingLocation>();
             HospSalesTypes = new List<SalesType>();
             Attributes = new List<RetailAttribute>();
+            HospTypes = new List<HospitalityType>();
         }
 
         public Store()
@@ -61,6 +62,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
                 SourcingLocations?.Clear();
                 Attributes?.Clear();
                 HospSalesTypes?.Clear();
+                HospTypes?.Clear();
             }
         }
 
@@ -91,6 +93,8 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
         public bool UseSourcingLocation { get; set; }
         [DataMember]
         public List<SalesType> HospSalesTypes { get; set; }
+        [DataMember]
+        public List<HospitalityType> HospTypes { get; set; }
         [DataMember]
         public List<SourcingLocation> SourcingLocations { get; set; }
         [DataMember]
@@ -377,6 +381,11 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
             return d;
         }
 
+        public void PopulateDistanceToStore(Position position)
+        {
+            Distance = CalculateDistance(position, new Position(){Latitude = Latitude, Longitude = Longitude}, DistanceType.Kilometers);
+        }
+
         /// Convert to Radians.  
         private double toRadian(double val)
         {
@@ -403,7 +412,15 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
         [EnumMember]
         ClickAndCollect,
         [EnumMember]
-        WebStore
+        WebStore,
+        [EnumMember]
+        Search,
+        [EnumMember]
+        Restaurant,
+        [EnumMember]
+        Loyalty,
+        [EnumMember]
+        Mobile
     }
 
     [DataContract(Namespace = "http://lsretail.com/LSOmniService/Base/2017")]
@@ -417,6 +434,29 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
         public bool CanCollect { get; set; }
         [DataMember]
         public string Description { get; set; }
+
+        public string StoreNo { get; set; }
+    }
+
+    [DataContract(Namespace = "http://lsretail.com/LSOmniService/Base/2017")]
+    public class HospitalityType
+    {
+        [DataMember]
+        public string SalesType { get; set; }
+        [DataMember]
+        public int Sequence { get; set; }
+        [DataMember]
+        public decimal Tip1Percentage { get; set; }
+        [DataMember]
+        public decimal Tip2Percentage { get; set; }
+        [DataMember]
+        public decimal Tip3Percentage { get; set; }
+        [DataMember]
+        public bool TipInclTax { get; set; }
+        [DataMember]
+        public string IncomeAccount1 { get; set; }
+        [DataMember]
+        public string IncomeAccount2 { get; set; }
 
         public string StoreNo { get; set; }
     }

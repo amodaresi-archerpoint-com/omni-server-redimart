@@ -130,6 +130,10 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Replication
         public string CustomerDiscountGroup { get; set; }
         [DataMember]
         public string LoyaltySchemeCode { get; set; }
+        [DataMember]
+        public string MemberAttribute { get; set; }
+        [DataMember]
+        public string MemberAttributeValue { get; set; }
         [DataMember(IsRequired = false, EmitDefaultValue = false)]
         public DateTime FromDate { get; set; }
         [DataMember(IsRequired = false, EmitDefaultValue = false)]
@@ -156,6 +160,8 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Replication
         public string Details { get; set; }
         [DataMember]
         public string ValidationPeriodId { get; set; }
+        [DataMember]
+        public bool Exclude { get; set; }
     }
 
     [DataContract(Namespace = "http://lsretail.com/LSOmniService/Base/2017")]
@@ -210,6 +216,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Replication
             CustomerDiscountGroup = string.Empty;
             LoyaltySchemeCode = string.Empty;
             MemberAttribute = string.Empty;
+            MemberAttributeValue = string.Empty;
             TenderTypeCode = string.Empty;
             TenderTypeValue = string.Empty;
             Type = ReplDiscountType.Unknown; //Disc. Offer, Multibuy
@@ -281,6 +288,8 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Replication
         public ReplDiscMemberType MemberType { get; set; }
         [DataMember]
         public string MemberAttribute { get; set; }
+        [DataMember]
+        public string MemberAttributeValue { get; set; }
         [DataMember]
         public decimal MaxDiscountAmount { get; set; }
         [DataMember]
@@ -397,6 +406,8 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Replication
             EndDate = new DateTime(year, 1, 1);
             StartTime = new DateTime(year, 1, 1);
             EndTime = new DateTime(year, 1, 1);
+            OfferStartTime = new DateTime(year, 1, 1);
+            OfferEndTime = new DateTime(year, 1, 1);
             MondayStart = new DateTime(year, 1, 1);
             MondayEnd = new DateTime(year, 1, 1);
             TuesdayStart = new DateTime(year, 1, 1);
@@ -456,6 +467,10 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Replication
         public DateTime StartTime { get; set; }
         [DataMember(IsRequired = false, EmitDefaultValue = false)]
         public DateTime EndTime { get; set; }
+        [DataMember(IsRequired = false, EmitDefaultValue = false)]
+        public DateTime OfferStartTime { get; set; }
+        [DataMember(IsRequired = false, EmitDefaultValue = false)]
+        public DateTime OfferEndTime { get; set; }
         [DataMember]
         public bool TimeWithinBounds { get; set; }
         [DataMember]

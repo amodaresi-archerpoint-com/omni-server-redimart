@@ -141,10 +141,11 @@ namespace LSOmni.Service
         /// </remarks>
         /// <param name="cardId">Member Card Id to look for</param>
         /// <param name="itemId">Only show Offers for this item</param>
+        /// <param name="storeId">Store Id</param>
         /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        List<PublishedOffer> PublishedOffersGetByCardId(string cardId, string itemId);
+        List<PublishedOffer> PublishedOffersGetByCardId(string cardId, string itemId, string storeId);
 
         /// <summary>
         /// Get related items in a published offer
@@ -749,7 +750,7 @@ namespace LSOmni.Service
         /// Edit Customer Order
         /// </summary>
         /// <remarks>
-        /// LS Central WS2 : CustomerOrderEdit
+        /// LS Central WS2 : CustomerOrderEditV2
         /// </remarks>
         /// <param name="request">Updated Order object</param>
         /// <param name="orderId">Order Id to edit</param>
@@ -763,6 +764,9 @@ namespace LSOmni.Service
         /// <summary>
         /// Update payments for Customer Order
         /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : COUpdatePaymentV2
+        /// </remarks>
         /// <param name="payment"></param>
         /// <param name="orderId">Customer Order Id</param>
         /// <param name="storeId"></param>
@@ -1094,7 +1098,7 @@ namespace LSOmni.Service
         List<SalesEntry> SalesEntriesGetByCardIdEx(string cardId, string storeId, DateTime date, bool dateGreaterThan, int maxNumberOfEntries);
 
         /// <summary>
-        /// Get the Sale details (order/transaction)
+        /// Get the SaleEntry details (order/transaction). Use Id and IdType found in result from SalesEntriesGetByCardId
         /// </summary>
         /// <remarks>
         /// LS Central OData: GetSelectedSalesDoc
@@ -1403,6 +1407,22 @@ namespace LSOmni.Service
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         MemberContact ContactGet(ContactSearchType searchType, string search);
+
+        /// <summary>
+        /// Create new Member Card for existing Member Contact
+        /// </summary>
+        /// <remarks>
+        /// LS Central WS2 : CreateNewCardForContact
+        /// </remarks>
+        /// <param name="contactId"></param>
+        /// <param name="accountId"></param>
+        /// <param name="cardId"></param>
+        /// <param name="clubId"></param>
+        /// <param name="schemeId"></param>
+        /// <returns></returns>
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
+        bool ContactCreateCard(string contactId, string accountId, string cardId, string clubId, string schemeId);
 
         /// <summary>
         /// Add new card to existing Member Contact
@@ -1916,14 +1936,15 @@ namespace LSOmni.Service
         /// <summary>
         /// Load Hospitality Menu
         /// </summary>
-        /// <param name="storeId">Store to load, empty loads all</param>
+        /// <param name="restaurantNo">Store to load, empty loads all</param>
+        /// <param name="terminalNo">Terminal to load, empty loads all</param>
         /// <param name="salesType">Sales type to load, empty loads all</param>
         /// <param name="loadDetails">Load Item Details and Image data</param>
         /// <param name="imageSize">Size of Image if loadDetails is set to true</param>
         /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        MobileMenu MenuGet(string storeId, string salesType, bool loadDetails, ImageSize imageSize);
+        MobileMenu MenuGet(string restaurantNo, string terminalNo, string salesType, bool loadDetails, ImageSize imageSize);
 
         #endregion menu
 
@@ -1958,6 +1979,15 @@ namespace LSOmni.Service
 
         #region Images
 
+        /// <summary>
+        /// Get Image by Image Id and resizes the image if set
+        /// </summary>
+        /// <remarks>
+        /// LS Central WS4 : GetImage
+        /// </remarks>
+        /// <param name="id">Image Id</param>
+        /// <param name="imageSize">Resize image to specific size</param>
+        /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         ImageView ImageGetById(string id, ImageSize imageSize);
@@ -2193,14 +2223,14 @@ namespace LSOmni.Service
         /// Replicate Item Barcodes (supports Item distribution)
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 99001451 - LSC Barcodes
+        /// LS Central Main Table data: 99001451 LSC Barcodes<p/>
         /// LS Central WS4 : GetBarcode
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.  
         /// Item distribution is based on StoreId, and pulls all record related to Item include for distribution to that store.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2214,13 +2244,13 @@ namespace LSOmni.Service
         /// Replicate Currency setup
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 4 - Currency
+        /// LS Central Main Table data: 4 Currency<p/>
         /// LS Central WS4 : GetCurrency
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2234,13 +2264,13 @@ namespace LSOmni.Service
         /// Replicate Currency Rate Setup
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 330 - Currency Exchange Rate
+        /// LS Central Main Table data: 330 Currency Exchange Rate<p/>
         /// LS Central WS4 : GetCurrencyExchRate
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2254,14 +2284,14 @@ namespace LSOmni.Service
         /// Replicate Item Extended Variants Setup (supports Item distribution)
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10001413 - LSC Extd. Variant Values
+        /// LS Central Main Table data: 10001413 LSC Extd. Variant Values<p/>
         /// LS Central WS4 : GetExtdVariantValues
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// Item distribution is based on StoreId, and pulls all record related to Item include for distribution to that store.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2275,13 +2305,13 @@ namespace LSOmni.Service
         /// Replicate Retail Image links
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 99009064 - LSC Retail Image Link
+        /// LS Central Main Table data: 99009064 LSC Retail Image Link<p/>
         /// LS Central WS4 : GetImageLink
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2295,13 +2325,13 @@ namespace LSOmni.Service
         /// Replicate Retail Images
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 99009063 - LSC Retail Image
+        /// LS Central Main Table data: 99009063 LSC Retail Image<p/>
         /// LS Central WS4 : GetWIImageBuffer
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2315,14 +2345,14 @@ namespace LSOmni.Service
         /// Replicate Item Categories (supports Item distribution)
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 5722 - Item Category
+        /// LS Central Main Table data: 5722 Item Category<p/>
         /// LS Central WS4 : GetItemCategory
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// Item distribution is based on StoreId, and pulls all record related to Item include for distribution to that store.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2336,14 +2366,15 @@ namespace LSOmni.Service
         /// Replicate Retail Items (supports Item distribution)
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 27 - Item
+        /// LS Central Main Table data: 27 Item<p/>
+        /// LS Central Delta Sub Tables: 10001410 LSC Item HTML ML - 10001404 LSC Item Status Link - 10000704 LSC Item Distribution<p/>
         /// LS Central WS4 : GetWIItemBuffer
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// Item distribution is based on StoreId, and pulls all record related to Item include for distribution to that store.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// For update, actions for Item, Item HTML and distribution tables are used to find changes,
@@ -2359,14 +2390,14 @@ namespace LSOmni.Service
         /// Replicate Item Unit of Measures (supports Item distribution)
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 5404 - Item Unit of Measure
+        /// LS Central Main Table data: 5404 Item Unit of Measure<p/>
         /// LS Central WS4 : GetItemUnitOfMeasure
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// Item distribution is based on StoreId, and pulls all record related to Item include for distribution to that store.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2380,14 +2411,15 @@ namespace LSOmni.Service
         /// Replicate Variant Registrations (supports Item distribution)
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10001414 - LSC Item Variant Registration
+        /// LS Central Main Table data: 10001414 LSC Item Variant Registration<p/>
+        /// LS Central Delta Sub Tables: 10001404 LSC Item Status Link<p/>
         /// LS Central WS4 : GetVariantRegWithStatus
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// Item distribution is based on StoreId, and pulls all record related to Item include for distribution to that store.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2401,14 +2433,14 @@ namespace LSOmni.Service
         /// Replicate Item Variant (supports Item distribution)
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 5401 - Item Variant
+        /// LS Central Main Table data: 5401 Item Variant<p/>
         /// LS Central WS4 : GetItemVariant
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// Item distribution is based on StoreId, and pulls all record related to Item include for distribution to that store.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2422,15 +2454,15 @@ namespace LSOmni.Service
         /// Replicate Best Prices for Items from WI Price table in LS Central (supports Item distribution)<p/>
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10012861 - LSC WI Price
+        /// LS Central Main Table data: 10012861 LSC WI Price<p/>
         /// LS Central WS4 : GetWIPrice
         /// <p/><p/>
         /// Data for this function needs to be generated in LS Central by running either COMMERCE_XXXX Scheduler Jobs.  
-        /// This will generate the Best price for product based on date and offers available at the time.<p/><p/>
+        /// This will generate the Best price for product based on date and offers available at the time, and store in LSC WI Price table.<p/><p/>
         /// Item distribution is based on StoreId, and pulls all record related to Item include for distribution to that store.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// For update, actions for Item and Sales Price tables are used to find deleted changes.
@@ -2445,14 +2477,14 @@ namespace LSOmni.Service
         /// Replicate Item Prices from Sales Price table (supports Item distribution)
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 7002 - Sales Price
+        /// LS Central Main Table data: 7002 Sales Price<p/>
         /// LS Central WS4 : GetSalesPrice, GetPriceListLine
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// Item distribution is based on StoreId, and pulls all record related to Item include for distribution to that store.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2466,14 +2498,14 @@ namespace LSOmni.Service
         /// Replicate Product groups (supports Item distribution)
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10000705 - LSC Retail Product Group
+        /// LS Central Main Table data: 10000705 LSC Retail Product Group<p/>
         /// LS Central WS4 : GetProductGroup
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// Item distribution is based on StoreId, and pulls all record related to Item include for distribution to that store.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2487,7 +2519,7 @@ namespace LSOmni.Service
         /// Replicate Store setups
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 99001470 - LSC Store
+        /// LS Central Main Table data: 99001470 LSC Store<p/>
         /// LS Central WS4 : GetStoreBuffer
         /// <p/><p/>
         /// Only store with Loyalty or Mobile Checked will be replicated
@@ -2495,7 +2527,7 @@ namespace LSOmni.Service
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2509,13 +2541,13 @@ namespace LSOmni.Service
         /// Replicate Unit of Measures
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 204 - Unit of Measure
+        /// LS Central Main Table data: 204 Unit of Measure<p/>
         /// LS Central WS4 : GetUnitOfMeasure
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2529,13 +2561,13 @@ namespace LSOmni.Service
         /// Replicate Collection for Unit of Measures
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10001430 - LSC Collection Framework
+        /// LS Central Main Table data: 10001430 LSC Collection Framework<p/>
         /// LS Central WS4 : GetCollection
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2549,13 +2581,13 @@ namespace LSOmni.Service
         /// Replicate Vendors
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 23 - Vendor
+        /// LS Central Main Table data: 23 Vendor<p/>
         /// LS Central WS4 : GetVendor
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2569,14 +2601,14 @@ namespace LSOmni.Service
         /// Replicate Vendor Item Mapping (supports Item distribution)
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 27 - Item (Lookup by [Vendor No_])
+        /// LS Central Main Table data: 27 Item (Lookup by [Vendor No_])<p/>
         /// LS Central WS4 : GetVendorItem
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// Item distribution is based on StoreId, and pulls all record related to Item include for distribution to that store.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2590,13 +2622,13 @@ namespace LSOmni.Service
         /// Replicate Attributes
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10000784 - LSC Attribute
+        /// LS Central Main Table data: 10000784 LSC Attribute<p/>
         /// LS Central WS4 : GetAttribute
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2627,13 +2659,13 @@ namespace LSOmni.Service
         /// Replicate Attribute Values
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10000786 - LSC Attribute Value
+        /// LS Central Main Table data: 10000786 LSC Attribute Value<p/>
         /// LS Central WS4 : GetAttributeValues
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2647,13 +2679,13 @@ namespace LSOmni.Service
         /// Replicate Attribute Option Values
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10000785 - LSC Attribute Option Value
+        /// LS Central Main Table data: 10000785 LSC Attribute Option Value<p/>
         /// LS Central WS4 : GetAttributeOptionValues
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2667,13 +2699,13 @@ namespace LSOmni.Service
         /// Replicate Translation text
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10000971 - LSC Data Translation
+        /// LS Central Main Table data: 10000971 LSC Data Translation<p/>
         /// LS Central WS4 : GetDataTranslation
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2687,13 +2719,13 @@ namespace LSOmni.Service
         /// Replicate Translation text for Item HTML table
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10001410 - LSC Item HTML ML
+        /// LS Central Main Table data: 10001410 LSC Item HTML ML<p/>
         /// LS Central WS4 : GetItemHTML
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2707,13 +2739,13 @@ namespace LSOmni.Service
         /// Replicate Translation text for Deal HTML table
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10001410 - LSC Deal HTML ML
+        /// LS Central Main Table data: 10001410 LSC Deal HTML ML<p/>
         /// LS Central WS4 : GetDealHTML
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2727,7 +2759,7 @@ namespace LSOmni.Service
         /// Replicate Translation Language Codes
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10000972 - LSC Data Translation Language
+        /// LS Central Main Table data: 10000972 LSC Data Translation Language
         /// <p/><p/>
         /// This will always replicate all Code
         /// </remarks>
@@ -2741,7 +2773,7 @@ namespace LSOmni.Service
         /// Replicate Validation Scheduling data for Hierarchy
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10000955 - LSC Validation Schedule
+        /// LS Central Main Table data: 10000955 LSC Validation Schedule
         /// <p/><p/>
         /// This function only checks if there are any available pre-actions for any of the tables involved in the Schedule data 
         /// and if there is, the whole Validation Schedule will be replicated again.
@@ -2758,13 +2790,13 @@ namespace LSOmni.Service
         /// Replicate Hierarchy roots
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10000920 - LSC Hierarchy
+        /// LS Central Main Table data: 10000920 LSC Hierarchy<p/>
         /// LS Central WS4 : GetHierarchy
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2778,13 +2810,13 @@ namespace LSOmni.Service
         /// Replicate Hierarchy Nodes
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10000921 - LSC Hierar. Nodes
+        /// LS Central Main Table data: 10000921 LSC Hierar. Nodes<p/>
         /// LS Central WS4 : GetHierarchyNodes
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2798,13 +2830,13 @@ namespace LSOmni.Service
         /// Replicate Hierarchy Node Leaves
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10000922 - LSC Hierar. Node Link
+        /// LS Central Main Table data: 10000922 LSC Hierar. Node Link<p/>
         /// LS Central WS4 : GetHierarchyLeaf
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2818,13 +2850,14 @@ namespace LSOmni.Service
         /// Replicate Hierarchy Hospitality Deals for Node Leaf
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 99001503 - LSC Offer Line
+        /// LS Central Main Table data: 99001503 LSC Offer Line<p/>
+        /// LS Central Delta Sub Tables: 10000922 LSC Hierar. Node Link<p/>
         /// LS Central WS4 : GetHierarchyDeal
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2838,13 +2871,14 @@ namespace LSOmni.Service
         /// Replicate Hierarchy Hospitality Deal lines for Deal
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 99001651 - LSC Deal Modifier Item
+        /// LS Central Main Table data: 99001651 LSC Deal Modifier Item<p/>
+        /// LS Central Delta Sub Tables: 10000922 LSC Hierar. Node Link<p/>
         /// LS Central WS4 : GetHierarchyDealLine
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2858,13 +2892,13 @@ namespace LSOmni.Service
         /// Replicate Hierarchy Hospitality Recipe lines for Node Leaf
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 90 - BOM Component
+        /// LS Central Main Table data: 90 BOM Component<p/>
         /// LS Central WS4 : GetWIItemRecipeBuffer
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2878,13 +2912,13 @@ namespace LSOmni.Service
         /// Replicate Hierarchy Hospitality Modifier lines for Node Leaf
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 99001483 - LSC Information Subcode
+        /// LS Central Main Table data: 99001483 LSC Information Subcode<p/>
         /// LS Central WS4 : GetWIItemModifier
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2898,7 +2932,9 @@ namespace LSOmni.Service
         /// Replicate Item with full detailed data (supports Item distribution)<p/>
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 27 - Item
+        /// LS Central Main Table data: 27 Item<p/>
+        /// LS Central Delta Sub Tables: 7002 Sales Price - 5401 Item Variant - 5404 Item Unit of Measure - 10001414 LSC Item Variant Registration - 10001410 LSC Item HTML ML - 10001404 LSC Item Status Link - 10000704 LSC Item Distribution<p/>
+        /// LS Central WS4: Not supported in SaaS environment
         /// <p/><p/>
         /// FullItem replication includes all variants, unit of measures, attributes and prices for an item<p/>
         /// NOTE: It is recommended to replicate item data separately using<p/>
@@ -2908,7 +2944,7 @@ namespace LSOmni.Service
         /// Item distribution is based on StoreId, and pulls all record related to Item include for distribution to that store.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// For update, actions for Item, Item HTML, Sales Price, Item Variant, Item Unit of Measure, Variants and distribution tables are used to find changes,
@@ -2924,14 +2960,14 @@ namespace LSOmni.Service
         /// Replicate Periodic Discounts and MultiBuy for Items from WI Discount table in LS Central (supports Item distribution)<p/>
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10012862 - LSC WI Discounts
+        /// LS Central Main Table data: 10012862 LSC WI Discounts<p/>
         /// LS Central WS4 : GetWIDiscounts
         /// <p/><p/>
         /// Data for this function needs to be generated in LS Central by running either COMMERCE_XXXX Scheduler Jobs<p/><p/>
         /// Item distribution is based on StoreId, and pulls all record related to Item include for distribution to that store.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2945,14 +2981,14 @@ namespace LSOmni.Service
         /// Replicate Mix and Match Offers for Items from WI Mix and Match Offer table in LS Central (supports Item distribution)<p/>
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 10012863 - LSC WI Mix and Match Offer
+        /// LS Central Main Table data: 10012863 LSC WI Mix and Match Offer<p/>
         /// LS Central WS4 : GetWIMixMatch
         /// <p/><p/>
         /// Data for this function needs to be generated in LS Central by running either COMMERCE_XXXX Scheduler Jobs<p/><p/>
         /// Item distribution is based on StoreId, and pulls all record related to Item include for distribution to that store.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2967,11 +3003,13 @@ namespace LSOmni.Service
         /// Only Multibuy, Discount, Total and Tender discounts are replicated
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 99001453 - LSC Periodic Discount
+        /// LS Central Main Table data: 99001453 LSC Periodic Discount<p/>
+        /// LS Central Delta Sub Tables: 99001454 LSC Periodic Discount Line<p/>
+        /// LS Central WS4 : GetDiscountSetup
         /// <p/><p/>
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -2985,7 +3023,7 @@ namespace LSOmni.Service
         /// Replicate Validation Periods for Discounts<p/>
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 99001481 - LSC Validation Period
+        /// LS Central Main Table data: 99001481 LSC Validation Period<p/>
         /// LS Central WS4 : GetValidationPeriod
         /// <p/><p/>
         /// Data for this function needs to be generated in LS Central by running either COMMERCE_XXXX Scheduler Jobs<p/><p/>
@@ -2993,7 +3031,7 @@ namespace LSOmni.Service
         /// Item distribution is based on StoreId, and pulls all record related to Item include for distribution to that store.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -3007,12 +3045,12 @@ namespace LSOmni.Service
         /// Replicate all Shipping agents and services
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 291 - Shipping Agent
+        /// LS Central Main Table data: 291 Shipping Agent
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -3026,13 +3064,13 @@ namespace LSOmni.Service
         /// Replicate Member contacts
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 99009002 - LSC Member Contact (with valid Membership Card)
+        /// LS Central Main Table data: 99009002 LSC Member Contact (with valid Membership Card)<p/>
         /// LS Central WS4 : GetContact
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -3046,13 +3084,13 @@ namespace LSOmni.Service
         /// Replicate Customers
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 18 - Customer
+        /// LS Central Main Table data: 18 Customer<p/>
         /// LS Central WS4 : GetCustomer
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -3066,12 +3104,12 @@ namespace LSOmni.Service
         /// Replicate all Country Codes
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 9 - Country/Region
+        /// LS Central Main Table data: 9 Country/Region<p/>
         /// LS Central WS4 : GetCountryCode
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// This function always performs full replication
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// </remarks>
         /// <param name="replRequest">Replication request object</param>
         /// <returns>Replication result object with List of Country codes</returns>
@@ -3083,13 +3121,13 @@ namespace LSOmni.Service
         /// Replicate Tender types for Store
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 99001466 - LSC Tender Type Setup
+        /// LS Central Main Table data: 99001466 LSC Tender Type Setup<p/>
         /// LS Central WS4 : GetTenderType
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -3103,13 +3141,13 @@ namespace LSOmni.Service
         /// Replicate Tax setup
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 325 - VAT Posting Setup
+        /// LS Central Main Table data: 325 VAT Posting Setup<p/>
         /// LS Central WS4 : GetVATPostingSetup
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// For full replication of all data, set FullReplication to true and LastKey and MaxKey to 0.
         /// For delta (or updated data) replication, set FullReplication to false and LastKey and MaxKey to the last value returned from previous call. 
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey and MaxKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central, both during full or delta replication.
         /// To reset replication and get all delta data again, set LastKey and MaxKey to 0 and perform a full replication.
         /// </remarks>
@@ -3123,16 +3161,16 @@ namespace LSOmni.Service
         /// Replicate Inventory Status
         /// </summary>
         /// <remarks>
-        /// LS Central Main Table data: 99001608 - LSC Inventory Lookup Table
+        /// LS Central Main Table data: 99001608 LSC Inventory Lookup Table<p/>
         /// LS Central WS4 : GetInventoryStatus
         /// <p/><p/>
         /// Net Inventory field in Inventory Lookup Table must be updated before the replication can be done.  
         /// In Retail Product Group card, set up which products to check status for by click on Update POS Inventory Lookup button. Set store to be Web Store.
-        /// Run Scheduler job with CodeUnit 10012871 - WI Update Inventory which will update the Net Inventory field.
+        /// Run Scheduler job with CodeUnit 10012871 WI Update Inventory which will update the Net Inventory field.
         /// <p/><p/>
         /// Most ReplEcommXX web methods work the same way.
         /// This function always performs full replication
-        /// The BatchSize is how many records are to be returned in each batch.<p/><p/>
+        /// The BatchSize is how many records are to be returned in each batch. Delta replication uses PreActions in LS Central, IsDeleted field will true if Delete PreAction is found.<p/><p/>
         /// NOTE: LastKey from each ReplEcommXX call needs to be stored between all calls to Commerce Service for LS Central.
         /// </remarks>
         /// <param name="replRequest">Replication request object</param>
@@ -3157,31 +3195,6 @@ namespace LSOmni.Service
         SearchRs Search(string cardId, string search, SearchType searchTypes);
 
         #endregion search
-
-        #region LS Recommends
-
-        /// <summary>
-        /// Checks if LS Recommend is active in Commerce Service for LS Central
-        /// <p/>NOTE: Not supported anymore
-        /// </summary>
-        /// <returns></returns>
-        [OperationContract]
-        [Obsolete("Not supported anymore", true)]
-        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        bool RecommendedActive();
-
-        /// <summary>
-        /// Get Recommended Items based of list of items
-        /// <p/>NOTE: Not supported anymore
-        /// </summary>
-        /// <param name="items"></param>
-        /// <returns></returns>
-        [OperationContract]
-        [Obsolete("Not supported anymore", true)]
-        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        List<RecommendedItem> RecommendedItemsGet(List<string> items);
-
-        #endregion
 
         #region Activity
 
@@ -3964,15 +3977,6 @@ namespace LSOmni.Service
         #endregion
 
         #region ScanPayGo
-
-        /// <summary>
-        /// Creates a client token for payment provider
-        /// </summary>
-        /// <param name="customerId">Customer id, used to show saved cards</param>
-        /// <returns></returns>
-        [OperationContract]
-        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
-        ClientToken PaymentClientTokenGet(string customerId);
 
         /// <summary>
         /// Gets Profile setup for SPG App

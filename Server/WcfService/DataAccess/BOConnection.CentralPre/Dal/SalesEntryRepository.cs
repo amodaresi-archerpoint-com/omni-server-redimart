@@ -616,7 +616,6 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre.Dal
                         command.Parameters.Clear();
                         command.Parameters.AddWithValue("@id", custOrderNo);
                         TraceSqlCommand(command);
-                        connection.Open();
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             while (reader.Read())

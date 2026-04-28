@@ -153,11 +153,18 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             logger.StatisticStartSub(false, ref stat, out int index);
             string select = "SELECT ml.[Number],ml.[Variant Code],ml.[Unit of Measure Code],ml.[Line No_],ml.[Line Type]," +
                             "ml.[Net Price],ml.[Price],ml.[Quantity],ml.[Discount Amount],ml.[Discount Percent]," +
-                            "ml.[Net Amount],ml.[Vat Amount],ml.[Amount],ml.[Item Description],ml.[Variant Description]" +
-                            ",ml.[Document ID],ml.[External ID],ml.[Click and Collect Line],ml.[Store No_],st.[Name],st.[Currency Code]";
+                            "ml.[Net Amount],ml.[Vat Amount],ml.[Amount],ml.[Item Description],ml.[Variant Description]," +
+                            "ml.[Document ID],ml.[External ID],ml.[Click and Collect Line],ml.[Store No_],st.[Name],st.[Currency Code]";
 
             if (LSCVersion >= new Version("24.0"))
                 select += ",ml.[Qty_ Canceled in Picking]";
+
+            string select2 = select;
+            if (LSCVersion >= new Version("27.0")) 
+            {
+                select += ",ml.[Lot No_],ml.[Serial No_]";
+                select2 += ",'' AS [Lot No_], '' AS [Serial No_]";
+            }
 
             storeCurCode = string.Empty;
             List<SalesEntryLine> list = new List<SalesEntryLine>();
@@ -167,7 +174,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 {
                     command.CommandText = "SELECT * FROM ( " + select + " FROM [" + navCompanyName + "LSC Customer Order Line$5ecfc871-5d82-43f1-9c54-59685e82318d] ml " +
                                           "JOIN [" + navCompanyName + "LSC Store$5ecfc871-5d82-43f1-9c54-59685e82318d] st ON st.[No_]=ml.[Store No_] " +
-                                          "UNION " + select + " FROM [" + navCompanyName + "LSC Posted Customer Order Line$5ecfc871-5d82-43f1-9c54-59685e82318d] ml " +
+                                          "UNION " + select2 + " FROM [" + navCompanyName + "LSC Posted Customer Order Line$5ecfc871-5d82-43f1-9c54-59685e82318d] ml " +
                                           "JOIN [" + navCompanyName + "LSC Store$5ecfc871-5d82-43f1-9c54-59685e82318d] st ON st.[No_]=ml.[Store No_]" +
                                           ") AS OrderLines WHERE [Document ID]=@id" +
                                           " ORDER BY [Line No_]";
@@ -307,15 +314,17 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             List<SalesEntryPayment> list = new List<SalesEntryPayment>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string select = "SELECT ml.[Store No_],ml.[Line No_],ml.[Pre Approved Amount],ml.[Pre Approved Amount LCY],ml.[Tender Type],ml.[Finalized Amount],ml.[Type]," +
+                string select = "SELECT ml.[Store No_],ml.[Line No_],ml.[Tender Type],ml.[Type],ml.[Document ID]," +
+                                "ml.[Pre Approved Amount],ml.[Pre Approved Amount LCY],ml.[Finalized Amount],ml.[Finalized Amount LCY]," +
                                 "ml.[Card Type],ml.[Currency Code],ml.[Currency Factor],ml.[Pre Approved Valid Date]," +
-                                "ml.[Card or Customer No_],ml.[Document ID],ml.[Token No_],ml.[EFT Authorization Code],ml.[External Reference],ml.[Authorization Expired]";
+                                "ml.[Card or Customer No_],ml.[Token No_],ml.[EFT Authorization Code],ml.[External Reference],ml.[Authorization Expired]";
 
                 using (SqlCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT * FROM (" + select +
+                    command.CommandText = "SELECT * FROM (" + select + ",0 AS [Src]" +
                                           " FROM [" + navCompanyName + "LSC Customer Order Payment$5ecfc871-5d82-43f1-9c54-59685e82318d] ml " +
-                                          " UNION " + select + " FROM [" + navCompanyName + "LSC Posted CO Payment$5ecfc871-5d82-43f1-9c54-59685e82318d] ml " +
+                                          " UNION " + select + ",1 AS [Src]" +
+                                          " FROM [" + navCompanyName + "LSC Posted CO Payment$5ecfc871-5d82-43f1-9c54-59685e82318d] ml " +
                                           ") AS OrderTotal WHERE [Document ID]=@id";
 
                     command.Parameters.AddWithValue("@id", id);
@@ -323,6 +332,8 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                     connection.Open();
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
+                        decimal finalAmt = 0;
+                        decimal finalAmtLCY = 0;
                         while (reader.Read())
                         {
                             SalesEntryPayment pay = new SalesEntryPayment()
@@ -342,11 +353,19 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                                 ExternalReference = SQLHelper.GetString(reader["External Reference"])
                             };
 
-                            decimal amt = SQLHelper.GetDecimal(reader, "Finalized Amount");
-                            if (amt > 0)
+                            finalAmt = SQLHelper.GetDecimal(reader, "Finalized Amount");
+                            finalAmtLCY = SQLHelper.GetDecimal(reader, "Finalized Amount LCY");
+
+                            int src = SQLHelper.GetInt32(reader["Src"]);
+                            if (src == 1)
                             {
-                                pay.Amount = amt;
+                                if (finalAmt == 0)
+                                    continue;
+
+                                pay.Amount = finalAmt;
+                                pay.AmountLCY = finalAmtLCY;
                             }
+
                             list.Add(pay);
                         }
                     }
@@ -530,6 +549,11 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             {
                 decimal cancelQty = SQLHelper.GetDecimal(reader["Qty_ Canceled in Picking"]);
                 line.Quantity -= cancelQty;
+            }
+            if (LSCVersion >= new Version("27.0"))
+            {
+                line.LotNumber = SQLHelper.GetString(reader["Lot No_"]);
+                line.SerialNumber = SQLHelper.GetString(reader["Serial No_"]);
             }
             return line;
         }

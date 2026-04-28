@@ -380,6 +380,23 @@ namespace LSRetail.Omni.Domain.DataModel.Base
         [EnumMember]
         ContactIsBlocked = 2000,  //2000 in nav
 
+        [EnumMember]
+        InvTransSendNoLines = 2001,
+        [EnumMember]
+        InvTransSendAlreadyReceived = 2002,
+        [EnumMember]
+        InvTransSendWorkSheetNotFound = 2003,
+        [EnumMember]
+        InvTransSendWorkSheetSeqNoNotUnique = 2004,
+        [EnumMember]
+        InvTransSendNoNotUnique = 2005,
+        [EnumMember]
+        InvTransSendUnexpectedEnd = 2006,
+        [EnumMember]
+        InvTransSendTooManyLines = 2007,
+        [EnumMember]
+        InvTransSendAreaCodeMissing = 2008,
+
         #region Customer Order
 
         [EnumMember]
@@ -390,6 +407,25 @@ namespace LSRetail.Omni.Domain.DataModel.Base
         PaymentError = 2203,
         [EnumMember]
         PaymentAuthError = 2204,
+
+        #endregion
+
+        #region Inventory LicManager
+
+        [EnumMember]
+        POSTerminalIDMandatory = 2300,
+        [EnumMember]
+        AppIdMandatory = 2301,
+        [EnumMember]
+        AppVersionMandatory = 2302,
+        [EnumMember]
+        DeviceUnitMandatory = 2303,
+        [EnumMember]
+        SignatureInvalid = 2304,
+        [EnumMember]
+        POSTerminalNotFound = 2305,
+        [EnumMember]
+        NoAvailableUnitFound = 2306,
 
         #endregion
 
@@ -434,6 +470,13 @@ namespace LSRetail.Omni.Domain.DataModel.Base
         HMPMenuNoDynamicContentFoundToday= 4033, // 1014 from nav,
 
         #endregion hospPos
+
+        [EnumMember]
+        WishListEmpty = 4410,
+        [EnumMember]
+        WishListNumberMissing = 4411,
+        [EnumMember]
+        WishListNotFound = 4412,
 
         //Inventory - LSOne
         [EnumMember]
@@ -494,6 +537,8 @@ namespace LSRetail.Omni.Domain.DataModel.Base
         NavWSQryError = 8001,
         [EnumMember]
         NavODataError = 8002,
+        [EnumMember]
+        NavODataReplicationError = 8003,
 
         //Inventory App codes
         [EnumMember]
@@ -547,6 +592,10 @@ namespace LSRetail.Omni.Domain.DataModel.Base
         SettingsConfigDelete = 11000,
         SettingsConfigDeleteAll = 11001,
         SettingsConfigSave = 11002,
+
+        SystemSettingsGet = 11100,
+        SystemSettingsSave = 11101,
+        SystemSettingsDelete = 11102,
 
         #endregion
     }

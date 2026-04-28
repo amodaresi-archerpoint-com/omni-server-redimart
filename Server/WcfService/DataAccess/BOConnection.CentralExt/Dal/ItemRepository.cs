@@ -92,7 +92,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 actions = LoadActions(fullReplication, TABLEID, batchSize, ref mainlastkey, ref recordsRemaining);
 
                 // get item HTML
-                recordsRemaining += GetRecordCount(10001411, tmplastkey, string.Empty, keys, ref maxKey);
+                recordsRemaining += GetRecordCount(TABLEHTMLID, tmplastkey, string.Empty, keys, ref maxKey);
                 List<JscActions> itemact = LoadActions(fullReplication, TABLEHTMLID, batchSize, ref tmplastkey, ref recordsRemaining);
                 if (Convert.ToInt32(tmplastkey) > Convert.ToInt32(mainlastkey))
                     mainlastkey = tmplastkey;
@@ -439,7 +439,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
 
                 // Check for actions from Item HTML
                 tmplastkey = lastKey;
-                recordsRemaining += GetRecordCount(10001411, tmplastkey, string.Empty, keys, ref maxKey);
+                recordsRemaining += GetRecordCount(TABLEHTMLID, tmplastkey, string.Empty, keys, ref maxKey);
                 itemact.AddRange(LoadActions(fullReplication, TABLEHTMLID, batchSize, ref tmplastkey, ref recordsRemaining));
                 if (Convert.ToInt32(tmplastkey) > Convert.ToInt32(mainlastkey))
                     mainlastkey = tmplastkey;

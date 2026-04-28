@@ -44,6 +44,7 @@ namespace LSOmni.DataAccess.Interface.BOConnection
 
         MemberContact ContactCreate(MemberContact contact, Statistics stat);
         void ContactUpdate(MemberContact contact, string accountId, Statistics stat);
+        void ContactCreateCard(string contactId, string accountId, string cardId, string clubId, string schemeId, Statistics stat);
         double ContactAddCard(string contactId, string accountId, string cardId, Statistics stat);
         MemberContact ContactGet(ContactSearchType searchType, string searchValue, Statistics stat);
         List<Customer> CustomerSearch(CustomerSearchType searchType, string search, int maxNumberOfRowsReturned, Statistics stat);
@@ -56,7 +57,7 @@ namespace LSOmni.DataAccess.Interface.BOConnection
         string SPGPassword(string email, string token, string newPwd, Statistics stat);
         void LoginChange(string oldUserName, string newUserName, string password, Statistics stat);
 
-        List<Profile> ProfileGetByCardId(string id, Statistics stat);
+        List<Profile> ProfileGetByCardId(string id, bool includeAll, Statistics stat);
         List<Profile> ProfileGetAll(Statistics stat);
         List<Scheme> SchemeGetAll(Statistics stat);
         Scheme SchemeGetById(string schemeId, Statistics stat);
@@ -151,6 +152,11 @@ namespace LSOmni.DataAccess.Interface.BOConnection
         string OrderEdit(Order request, ref string orderId, OrderEditType editType, Statistics stat);
         bool OrderUpdatePayment(string orderId, string storeId, OrderPayment payment, Statistics stat);
         Order BasketCalcToOrder(OneList list, Statistics stat);
+        string OneListSave(OneList oneList, Statistics stat);
+        void OneListModify(string listId, OneListItem line, bool remove, Statistics stat);
+        void OneListLink(string listId, string cardId, string contactNo, LinkStatus status, Statistics stat);
+        List<OneList> OneListGet(string listId, string cardId, bool includeLines, Statistics stat);
+        void OneListDelete(string listId, Statistics stat);
 
         #endregion
 
@@ -172,7 +178,7 @@ namespace LSOmni.DataAccess.Interface.BOConnection
         List<ProductGroup> ProductGroupGetByItemCategoryId(string itemcategoryId, string culture, bool includeChildren, bool includeItems, Statistics stat);
         ProductGroup ProductGroupGetById(string id, string culture, bool includeItems, bool includeItemDetail, Statistics stat);
         List<Hierarchy> HierarchyGet(string storeId, Statistics stat);
-        MobileMenu MenuGet(string storeId, string salesType, Currency currency, Statistics stat);
+        MobileMenu MenuGet(string restaurantNo, string terminalNo, string salesType, Currency currency, Statistics stat);
 
         #endregion
 

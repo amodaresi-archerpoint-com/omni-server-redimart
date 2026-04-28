@@ -114,6 +114,11 @@ namespace LSOmni.DataAccess.BOConnection.NavSQL
             return rep.CustomerSearch(searchType, search, maxNumberOfRowsReturned);
         }
 
+        public virtual void ContactCreateCard(string contactId, string accountId, string cardId, string clubId, string schemeId, Statistics stat)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual double ContactAddCard(string contactId, string accountId, string cardId, Statistics stat)
         {
             return NavWSBase.ContactAddCard(contactId, accountId, cardId);
@@ -155,7 +160,7 @@ namespace LSOmni.DataAccess.BOConnection.NavSQL
             NavWSBase.LoginChange(oldUserName, newUserName, password);
         }
 
-        public virtual List<Profile> ProfileGetByCardId(string id, Statistics stat)
+        public virtual List<Profile> ProfileGetByCardId(string id, bool includeAll, Statistics stat)
         {
             ContactRepository rep = new ContactRepository(config, NAVVersion);
             return rep.ProfileGetByCardId(id);
@@ -391,9 +396,9 @@ namespace LSOmni.DataAccess.BOConnection.NavSQL
             return rep.HierarchyGetByStore(storeId);
         }
 
-        public virtual MobileMenu MenuGet(string storeId, string salesType, Currency currency, Statistics stat)
+        public virtual MobileMenu MenuGet(string restaurantNo, string terminalNo, string salesType, Currency currency, Statistics stat)
         {
-            return NavWSBase.MenuGet(storeId, salesType, currency);
+            return NavWSBase.MenuGet(restaurantNo, terminalNo, salesType, currency);
         }
 
         #endregion
@@ -492,6 +497,31 @@ namespace LSOmni.DataAccess.BOConnection.NavSQL
         }
 
         public virtual bool OrderUpdatePayment(string orderId, string storeId, OrderPayment payment, Statistics stat)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual string OneListSave(OneList oneList, Statistics stat)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void OneListModify(string listId, OneListItem line, bool remove, Statistics stat)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void OneListLink(string listId, string cardId, string contactNo, LinkStatus status, Statistics stat)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual List<OneList> OneListGet(string listId, string cardId, bool includeLines, Statistics stat)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void OneListDelete(string listId, Statistics stat)
         {
             throw new NotImplementedException();
         }
