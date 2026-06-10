@@ -110,6 +110,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
                     discount.No = mobileTransDisc.Id;
                     discount.OfferNo = mobileTransDisc.OfferNo;
                     discount.LineNumber = mobileTransDisc.LineNo;
+                    discount.CouponCode = mobileTransDisc.CouponCode;
+                    discount.CouponBarcodeNo = mobileTransDisc.CouponBarcodeNo;
                     discounts.Add(discount);
                 }
             }
@@ -233,7 +235,9 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
                         Description = mobileTransDisc.Description,
                         No = mobileTransDisc.Id,
                         OfferNumber = mobileTransDisc.OfferNo,
-                        LineNumber = mobileTransDisc.LineNo
+                        LineNumber = mobileTransDisc.LineNo,
+                        CouponCode = mobileTransDisc.CouponCode,
+                        CouponBarcodeNo = mobileTransDisc.CouponBarcodeNo
                     };
 
                     if (discount.DiscountType == DiscountType.Coupon)
@@ -421,6 +425,8 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
                             DiscountType = (int)disc.Type,
                             OfferNo = XMLHelper.GetString(disc.OfferNo),
                             Description = XMLHelper.GetString(disc.Description),
+                            CouponCode = XMLHelper.GetString(disc.CouponCode),
+                            CouponBarcodeNo = XMLHelper.GetString(disc.CouponBarcodeNo),
                             PeriodicDiscType = (int)disc.PeriodicType,
                             DiscountAmount = disc.Amount.Value,
                             DiscountPercent = disc.Percentage
@@ -471,7 +477,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
                     StoreId = order.StoreId,
                     TransactionType = 2,
                     EntryStatus = (int)EntryStatus.Normal,
-                    TransDate = DateTime.Now,
+                    TransDate = (order.DocumentRegTime == DateTime.MinValue) ? DateTime.Now : order.DocumentRegTime,
                     SaleIsReturnSale = false,
                     MemberCardNo = XMLHelper.GetString(order.CardId),
                     CurrencyFactor = 1,
@@ -1135,7 +1141,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
                 Id = id,
                 LineNo = line.LineNumber,
                 EntryStatus = (int)EntryStatus.Normal,
-                LineType = (int)LineType.Item,
+                LineType = (int)line.Type,
                 Number = line.ItemId,
                 StoreId = storeId,
                 CurrencyFactor = 1,
@@ -1161,7 +1167,7 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.Mapping25
                 LineNo = XMLHelper.LineNumberToNav(line.LineNumber),
                 EntryStatus = (int)EntryStatus.Normal,
                 LineType = (int)line.LineType,
-                Number = (line.LineType == LineType.Item ? line.ItemId : string.Empty),
+                Number = line.ItemId,
                 Barcode = (line.LineType == LineType.Coupon ? line.ItemId : string.Empty),
                 StoreId = storeId,
                 CurrencyFactor = 1,

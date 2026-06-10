@@ -195,6 +195,9 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
                 case "GOOGLE IOS CLIENT ID":
                     flagName = FeatureFlagName.GoogleIosClientId;
                     break;
+                case "GOOGLE REQUEST ID":
+                    flagName = FeatureFlagName.GoogleRequestId;
+                    break;
                 case "APPLE LOGIN ENABLED":
                     flagName = FeatureFlagName.AppleLoginEnabled;
                     break;
@@ -226,6 +229,14 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
                     break;
                 case "LS PAY GOOGLE PLUGIN ID":
                     flagName = FeatureFlagName.LsPayGooglePluginId;
+                    break;
+
+                //Update App Flags
+                case "FORCE UPDATE VERSION":
+                    flagName = FeatureFlagName.ForceUpdateVersion;
+                    break;
+                case "FORCE UPDATE APPLE STORE ID":
+                    flagName = FeatureFlagName.ForceUpdateAppStoreId;
                     break;
             }
 
@@ -353,6 +364,9 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
         AllowedPaymentToCustomerAccount = 226,
         EnableNotifications = 227,
 
+        ForceUpdateVersion = 228,
+        ForceUpdateAppStoreId = 229,
+
         //ScanPayGoPaymentFlags
         EnablePlatformPayment = 300,
         CardPaymentMethod = 307,
@@ -379,6 +393,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
         //Google
         GoogleLoginEnabled = 410,
         GoogleIosClientId = 411,
+        GoogleRequestId = 412,
 
         //Facebook
         FacebookLoginEnabled = 420,

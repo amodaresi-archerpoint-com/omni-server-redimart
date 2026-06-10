@@ -18,6 +18,8 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Orders
             PeriodicDiscType = PeriodicDiscType.Unknown;
             PeriodicDiscGroup = string.Empty;
             Description = string.Empty;
+            CouponBarcodeNo = string.Empty;
+            CouponCode = string.Empty;
             DiscountAmount = 0M;
             DiscountPercent = 0M;
         }
@@ -62,6 +64,10 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Orders
         public decimal DiscountPercent { get; set; }
         [DataMember]
         public string Description { get; set; }
+        [DataMember]
+        public string CouponCode { get; set; }
+        [DataMember]
+        public string CouponBarcodeNo { get; set; }
 
         public override string ToString()
         {

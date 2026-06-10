@@ -32,6 +32,7 @@
 
     public enum BarcodeSystem
     {
+        QRCODE,
         UPC_A,
         UPC_E,
         EAN13,

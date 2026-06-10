@@ -24,9 +24,9 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                          "ic.[Max_ Selection] AS [GrMaxSel],ic.[Min_ Selection] AS [GrMinSel],mt.[Time Modifier Minutes]," +
                          "tsi.[Usage Category],tsi.[Usage Sub-Category],ic.[Explanatory Header Text],ic.[Prompt]," +
                          "(SELECT icc.[Min_ Selection] FROM [" + navCompanyName + "LSC Infocode$5ecfc871-5d82-43f1-9c54-59685e82318d] icc " +
-                         "WHERE icc.[Code]=mt.[Trigger Code]) AS [MinSel]," +
+                         "WHERE icc.[Code]=mt.[Code]) AS [MinSel]," +
                          "(SELECT icc.[Max_ Selection] FROM [" + navCompanyName + "LSC Infocode$5ecfc871-5d82-43f1-9c54-59685e82318d] icc " +
-                         "WHERE icc.[Code]=mt.[Trigger Code]) AS [MaxSel]";
+                         "WHERE icc.[Code]=mt.[Code]) AS [MaxSel]";
 
             sqlfrom = " FROM [" + navCompanyName + "LSC Table Specific Infocode$5ecfc871-5d82-43f1-9c54-59685e82318d] tsi" +
                       " JOIN [" + navCompanyName + "LSC Information Subcode$5ecfc871-5d82-43f1-9c54-59685e82318d] mt ON mt.[Code]=tsi.[Infocode Code]";
@@ -37,25 +37,86 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
             if (string.IsNullOrWhiteSpace(lastKey))
                 lastKey = "0";
 
-            List<JscKey> keys = GetPrimaryKeys("LSC Information Subcode$5ecfc871-5d82-43f1-9c54-59685e82318d");
+            List<JscKey> keys = GetPrimaryKeys("LSC Infocode$5ecfc871-5d82-43f1-9c54-59685e82318d");
+            List<JscActions> actions = new List<JscActions>();
             string prevlastkey = lastKey;
+            string sql = string.Empty;
 
             // get records remaining
-            string sql = string.Empty;
             if (fullReplication)
             {
                 sql = "SELECT COUNT(*) " + sqlfrom + GetWhereStatementWithStoreDist(true, keys, "tsi.[Value]", storeId, false);
+                recordsRemaining = GetRecordCount(TABLEID, lastKey, sql, keys, ref maxKey);
             }
-            recordsRemaining = GetRecordCount(TABLEID, lastKey, sql, keys, ref maxKey);
+            else
+            {
+                string tmplastkey = lastKey;
+                string mainlastkey = lastKey;
+                recordsRemaining = 0;
 
-            List<JscActions> actions = LoadActions(fullReplication, TABLEID, batchSize, ref lastKey, ref recordsRemaining);
-            List<ReplItemModifier> list = new List<ReplItemModifier>();
+                // get LSC Infocode
+                recordsRemaining = GetRecordCount(99001482, lastKey, string.Empty, keys, ref maxKey);
+                actions = LoadActions(fullReplication, 99001482, batchSize, ref mainlastkey, ref recordsRemaining);
+
+                // get LSC Information Subcode
+                recordsRemaining += GetRecordCount(TABLEID, tmplastkey, string.Empty, keys, ref maxKey);
+                List<JscActions> itemact = LoadActions(fullReplication, TABLEID, batchSize, ref tmplastkey, ref recordsRemaining);
+                if (Convert.ToInt32(tmplastkey) > Convert.ToInt32(mainlastkey))
+                    mainlastkey = tmplastkey;
+
+                // get LSC Table Specific Infocode
+                recordsRemaining += GetRecordCount(99001479, tmplastkey, string.Empty, keys, ref maxKey);
+                itemact.AddRange(LoadActions(fullReplication, 99001479, batchSize, ref tmplastkey, ref recordsRemaining));
+                if (Convert.ToInt32(tmplastkey) > Convert.ToInt32(mainlastkey))
+                    mainlastkey = tmplastkey;
+
+                lastKey = mainlastkey;
+                foreach (JscActions act in itemact)
+                {
+                    if (act.Type == DDStatementType.Delete)
+                    {
+                        actions.Add(act);
+                        continue;
+                    }
+
+                    string[] parvalues = act.ParamValue.Split(';');
+                    JscActions newact;
+
+                    if (act.TableId == 99001479)
+                    {
+                        newact = new JscActions()
+                        {
+                            id = act.id,
+                            TableId = act.TableId,
+                            Type = DDStatementType.Insert,
+                            ParamValue = (parvalues.Length > 2) ? parvalues[2] : act.ParamValue
+                        };
+                    }
+                    else
+                    {
+                        newact = new JscActions()
+                        {
+                            id = act.id,
+                            TableId = act.TableId,
+                            Type = DDStatementType.Insert,
+                            ParamValue = (parvalues.Length == 1) ? act.ParamValue : parvalues[0]
+                        };
+                    }
+
+                    JscActions findme = actions.Find(x => x.ParamValue.Equals(newact.ParamValue));
+                    if (findme == null)
+                    {
+                        actions.Add(newact);
+                    }
+                }
+            }
 
             // get records
             sql = GetSQL(fullReplication, batchSize) + sqlcolumns + sqlfrom +
                 " LEFT JOIN [" + navCompanyName + "LSC Infocode$5ecfc871-5d82-43f1-9c54-59685e82318d] ic ON ic.[Code]=mt.[Code]" +
                 GetWhereStatementWithStoreDist(fullReplication, keys, "tsi.[Value]", storeId, true);
 
+            List<ReplItemModifier> list = new List<ReplItemModifier>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = connection.CreateCommand())
@@ -95,15 +156,30 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                             if (act.Type == DDStatementType.Delete)
                             {
                                 string[] par = act.ParamValue.Split(';');
-                                if (par.Length < 2 || par.Length != keys.Count)
-                                    continue;
-
-                                list.Add(new ReplItemModifier()
+                                if (act.TableId == 99001479)
                                 {
-                                    Code = par[0],
-                                    SubCode = par[1],
-                                    IsDeleted = true
-                                });
+                                    if (par.Length != 3)
+                                        continue;
+
+                                    list.Add(new ReplItemModifier()
+                                    {
+                                        Id = par[1],
+                                        Code = par[2],
+                                        IsDeleted = true
+                                    });
+                                }
+                                else
+                                {
+                                    ReplItemModifier dmod = new ReplItemModifier()
+                                    {
+                                        Code = par[0],
+                                        IsDeleted = true
+                                    };
+                                    if (par.Length == 2)
+                                        dmod.SubCode = par[1];
+
+                                    list.Add(dmod);
+                                }
                                 continue;
                             }
 

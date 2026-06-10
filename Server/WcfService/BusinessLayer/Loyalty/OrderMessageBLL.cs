@@ -133,6 +133,31 @@ namespace LSOmni.BLL.Loyalty
             }
         }
 
+        public virtual OrderMessageResult OrderMessageReturns(OrderMessageReturns orderReturns)
+        {
+            string payloadJson = new JavaScriptSerializer().Serialize(orderReturns);
+            string json = SendToEcom("orderreturns", payloadJson);
+
+            try
+            {
+                if (json[0] == '[') // remove [ ] 
+                    json = json.Substring(1, json.Length - 2);
+                if (json[0] == '[') // remove [ ] 
+                    json = json.Substring(1, json.Length - 2);
+
+                return Serialization.Deserialize<OrderMessageResult>(json);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(config.LSKey.Key, ex);
+                return new OrderMessageResult()
+                {
+                    success = false,
+                    message = ex.Message
+                };
+            }
+        }
+
 
         #region private
 

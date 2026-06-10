@@ -74,6 +74,19 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Orders
     }
 
     [DataContract(Namespace = "http://lsretail.com/LSOmniService/Loy/2017")]
+    public class OrderMessageReturns
+    {
+        [DataMember]
+        public string OrderId { get; set; }
+        [DataMember]
+        public string ReturnType { get; set; } //Online or //Offline
+        [DataMember]
+        public decimal Amount { get; set; }
+        [DataMember]
+        public List<OrderMessageLine> Lines { get; set; }
+    }
+
+    [DataContract(Namespace = "http://lsretail.com/LSOmniService/Loy/2017")]
     public class OrderMessageShipping
     {
         [DataMember]

@@ -39,7 +39,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
 
         public virtual string Ping(out string centralVersion)
         {
-            string ver = LSCentralWSBase.NavVersionToUse(out centralVersion);
+            string ver = LSCentralWSBase.NavVersionToUse(true, out centralVersion);
             if (ver.Contains("ERROR"))
                 throw new ApplicationException(ver);
 
@@ -106,7 +106,15 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
         public virtual MemberContact ContactGet(ContactSearchType searchType, string searchValue, Statistics stat)
         {
             ContactRepository rep = new ContactRepository(config, LSCVersion);
-            return rep.ContactGet(searchType, searchValue, stat);
+            MemberContact contact = rep.ContactGet(searchType, searchValue, stat);
+
+            if (searchType != ContactSearchType.CardId)
+                return contact;
+
+            List<Profile> profiles = rep.ProfileGetByCardId(searchValue, true);
+            contact.Profiles = profiles.FindAll(p => p.AttributeType == 0 && p.VisibleType == 0 && p.LookupType == 0);
+            contact.MemberAttributes = profiles.FindAll(p => p.AttributeType == 0 && p.VisibleType != 0 && p.LookupType != 0);
+            return contact;
         }
 
         public virtual List<Customer> CustomerSearch(CustomerSearchType searchType, string search, int maxNumberOfRowsReturned, Statistics stat)
@@ -116,6 +124,11 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
             List<Customer> list = rep.CustomerSearch(searchType, search, maxNumberOfRowsReturned);
             logger.StatisticEndSub(ref stat, index);
             return list;
+        }
+
+        public virtual void ContactCreateCard(string contactId, string accountId, string cardId, string clubId, string schemeId, Statistics stat)
+        {
+            LSCentralWSBase.ContactCreateCard(contactId, accountId, cardId, clubId, schemeId, stat);
         }
 
         public virtual double ContactAddCard(string contactId, string accountId, string cardId, Statistics stat)
@@ -159,11 +172,11 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
             LSCentralWSBase.LoginChange(oldUserName, newUserName, password, stat);
         }
 
-        public virtual List<Profile> ProfileGetByCardId(string id, Statistics stat)
+        public virtual List<Profile> ProfileGetByCardId(string id, bool includeAll, Statistics stat)
         {
             logger.StatisticStartSub(false, ref stat, out int index);
             ContactRepository rep = new ContactRepository(config, LSCVersion);
-            List<Profile> list = rep.ProfileGetByCardId(id);
+            List<Profile> list = rep.ProfileGetByCardId(id, includeAll);
             logger.StatisticEndSub(ref stat, index);
             return list;
         }
@@ -456,9 +469,9 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
             return rep.HierarchyGetByStore(storeId, stat);
         }
 
-        public virtual MobileMenu MenuGet(string storeId, string salesType, Currency currency, Statistics stat)
+        public virtual MobileMenu MenuGet(string restaurantNo, string terminalNo, string salesType, Currency currency, Statistics stat)
         {
-            return LSCentralWSBase.MenuGet(storeId, salesType, currency);
+            return LSCentralWSBase.MenuGet(restaurantNo, terminalNo, salesType, currency, stat);
         }
 
         #endregion
@@ -545,7 +558,6 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
         {
             if (request.OrderType == OrderType.ScanPayGoSuspend)
             {
-                orderId = string.Empty;
                 return LSCentralWSBase.ScanPayGoSuspend(request, out orderId, stat);
             }
 
@@ -560,6 +572,31 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
         public virtual bool OrderUpdatePayment(string orderId, string storeId, OrderPayment payment, Statistics stat)
         {
             return LSCentralWSBase.OrderUpdatePayment(orderId, storeId, payment, stat);
+        }
+
+        public virtual string OneListSave(OneList oneList, Statistics stat)
+        {
+            return LSCentralWSBase.OneListSave(oneList, stat);
+        }
+
+        public virtual void OneListModify(string listId, OneListItem line, bool remove, Statistics stat)
+        {
+            LSCentralWSBase.OneListModify(listId, line, remove, stat);
+        }
+
+        public virtual void OneListLink(string listId, string cardId, string contactNo, LinkStatus status, Statistics stat)
+        {
+            LSCentralWSBase.OneListLink(listId, cardId, contactNo, status, stat);
+        }
+
+        public virtual List<OneList> OneListGet(string listId, string cardId, bool includeLines, Statistics stat)
+        {
+            return LSCentralWSBase.OneListGet(listId, cardId, includeLines, stat);
+        }
+
+        public virtual void OneListDelete(string listId, Statistics stat)
+        {
+            LSCentralWSBase.OneListDelete(listId, stat);
         }
 
         public virtual SalesEntry SalesEntryGet(string entryId, DocumentIdType type, Statistics stat)
@@ -708,7 +745,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
             StoreRepository rep = new StoreRepository(config, LSCVersion);
             AttributeValueRepository arep = new AttributeValueRepository(config);
             ImageRepository irep = new ImageRepository(config, LSCVersion);
-            Store store = rep.StoreLoyGetById(id, true);
+            Store store = rep.StoreLoyGetById(id);
             if (store != null)
             {
                 store.Images = irep.ImageGetByKey("LSC Store", store.Id, string.Empty, string.Empty, 0, false);
@@ -725,7 +762,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralPre
             StoreRepository rep = new StoreRepository(config, LSCVersion);
             AttributeValueRepository arep = new AttributeValueRepository(config);
             ImageRepository irep = new ImageRepository(config, LSCVersion);
-            List<Store> stores = rep.StoreLoyGetAll(storeType, inclDetails);
+            List<Store> stores = rep.StoreLoyGetAll(storeType);
             if (inclDetails)
             {
                 foreach (Store store in stores)

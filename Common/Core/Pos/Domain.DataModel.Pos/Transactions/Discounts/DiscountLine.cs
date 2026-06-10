@@ -19,6 +19,10 @@ namespace LSRetail.Omni.Domain.DataModel.Pos.Transactions.Discounts
         public PeriodicDiscType PeriodicType { get; set; }
         [DataMember]
         public string Description { get; set; }
+        [DataMember]
+        public string CouponCode { get; set; }
+        [DataMember]
+        public string CouponBarcodeNo { get; set; }
 
         public DiscountLine()
         {

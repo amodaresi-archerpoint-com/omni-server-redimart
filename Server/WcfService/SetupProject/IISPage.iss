@@ -51,7 +51,7 @@ begin
   begin
     IISPage_lblNavTen.Visible := True;
     IISPage_txtNavTen.Visible := True;
-	  IISPage_lblComment2.Visible := False;
+	IISPage_lblComment2.Visible := False;
     IISPage_lblNavUser.Caption := 'Client Id:';
     IISPage_lblNavPwd.Caption := 'Client Secret:';
   end
@@ -59,8 +59,7 @@ begin
   begin
     IISPage_lblNavTen.Visible := False;
     IISPage_txtNavTen.Visible := False;
-	  IISPage_lblComment2.Visible := True;
-    IISPage_txtNavTen.Text := '';
+	IISPage_lblComment2.Visible := True;
     IISPage_lblNavUser.Caption := 'User name:';
     IISPage_lblNavPwd.Caption := 'Password/WebKey:';
   end
@@ -70,7 +69,6 @@ procedure IISCustomForm_Activate(Page: TWizardPage) ;
 begin
   Log(Format('IISCustomForm_Activate called (v:%d)', [CheckPage_MultiCheckBox.Checked]));
   WizardForm.NextButton.Enabled := False;
-  IISPage_xS2S.Checked := False;
   if CheckPage_MultiCheckBox.Checked then
   begin
     WizardForm.NextButton.Enabled := True;
@@ -84,6 +82,12 @@ begin
       WizardForm.NextButton.Enabled := True;
     end;
   end;
+end;
+
+function IISCustomForm_Back(Page: TWizardPage): Boolean;
+begin
+  IISPage_xS2S.Checked := False;
+  Result := True;
 end;
 
 { IISCustomForm_CreatePage }
@@ -361,6 +365,7 @@ begin
   with IISPage do
   begin
     OnActivate := @IISCustomForm_Activate;
+	OnBackButtonClick := @IISCustomForm_Back;
   end;
 
   Result := IISPage;

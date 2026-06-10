@@ -4,7 +4,9 @@ using System.Runtime.Serialization;
 
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
 using LSRetail.Omni.Domain.DataModel.Base.Base;
+using LSRetail.Omni.Domain.DataModel.Base.Hierarchies;
 using LSRetail.Omni.Domain.DataModel.Loyalty.Items;
+using LSRetail.Omni.Domain.DataModel.Base.SalesEntries;
 
 namespace LSRetail.Omni.Domain.DataModel.Loyalty.Baskets
 {
@@ -30,6 +32,7 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Baskets
             BarcodeId = string.Empty;
             CreateDate = DateTime.Now;
             Detail = string.Empty;
+            Type = LineType.Item;
             Quantity = 0M;
             NetPrice = 0M;
             Price = 0M;
@@ -107,6 +110,8 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Baskets
         /// </summary>
         [DataMember]
         public int LineNumber { get; set; }
+        [DataMember]
+        public LineType Type { get; set; }
         [DataMember(IsRequired = true)]
         public string ItemId { get; set; }
         [DataMember]
@@ -346,6 +351,42 @@ namespace LSRetail.Omni.Domain.DataModel.Loyalty.Baskets
         {
             return string.Format(@"Id:{0}  Qty:{1}  Item:{2}  CreateDate:{3}  Variant:{4}  Uom:{5}  BarcodeId:{6}",
                  Id, Quantity, ItemId, CreateDate, VariantId, UnitOfMeasureId, BarcodeId);
+        }
+
+        public static OneListItem FromHierarchyPoint(HierarchyPoint point, decimal qty)
+        {
+            if (point == null)
+            {
+                return null;
+            }
+
+            var item = new OneListItem();
+            item.ItemId = point.Id;
+            item.ItemDescription = point.Description;
+            item.Image = new ImageView(point.ImageId);
+            item.Quantity = qty;
+
+            if (point is HierarchyLeaf leaf)
+            {
+                item.OnelistSubLines = new List<OneListItemSubLine>();
+
+                foreach (var leafModifier in leaf.Modifiers)
+                {
+                    item.OnelistSubLines.Add(new OneListItemSubLine()
+                    {
+                        ModifierGroupCode = leafModifier.Code,
+                        ModifierSubCode = leafModifier.SubCode,
+                        VariantId = leafModifier.VariantCode,
+                        Description = leafModifier.Description,
+                        Uom = leafModifier.UnitOfMeasure,
+                        Quantity = leafModifier.Selection,
+                        Type = SubLineType.Modifier,
+                        ItemId = point.Id,
+                    });
+                }
+            }
+
+            return item;
         }
     }
 

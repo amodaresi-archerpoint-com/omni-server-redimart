@@ -166,6 +166,8 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Replication
         public SendEmail SendReceiptByEMail { get; set; }
         [DataMember]
         public string GuestType { get; set; }
+        [DataMember(IsRequired = false, EmitDefaultValue = false)]
+        public DateTime BirthDay { get; set; }
 
         [DataMember]
         public List<Card> Cards { get; set; }

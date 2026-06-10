@@ -97,6 +97,10 @@ namespace LSOmni.Service
         [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
         OrderMessageShippingResult OrderMessageShipping(OrderMessageShipping orderShipping);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST", BodyStyle = WebMessageBodyStyle.Wrapped, ResponseFormat = WebMessageFormat.Json)]
+        OrderMessageResult OrderMessageReturns(OrderMessageReturns orderReturns);
+
         #endregion OrderMessage
 
         #region OneList

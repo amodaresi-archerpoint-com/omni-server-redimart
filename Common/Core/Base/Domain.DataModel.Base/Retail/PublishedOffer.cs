@@ -15,10 +15,13 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Retail
             Description = string.Empty;   //primary text
             Details = string.Empty;       //secondary text
             ValidationText = string.Empty;  //text about when the expiration date is etc in text 
-            EncodedHtml = string.Empty;
+            MemberAttribute = string.Empty;
+            MemberAttributeValue = string.Empty;
+            EncodedHtml = string.Empty;  //anmo
             Images = new List<ImageView>();
             OfferDetails = new List<OfferDetails>();
             OfferLines = new List<PublishedOfferLine>();
+            Coupons = new List<Coupon>();
             ExpirationDate = null;
             Selected = false;
             Code = OfferDiscountType.Unknown;   //discount type
@@ -59,7 +62,11 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Retail
         [DataMember]
         public string ValidationText { get; set; }
         [DataMember]
-        public string EncodedHtml{ get; set; }
+        public string MemberAttribute { get; set; }
+        [DataMember]
+        public string MemberAttributeValue { get; set; }
+        [DataMember]
+        public string EncodedHtml{ get; set; } //anmo
         [DataMember]
         public bool Selected { get; set; }
         [DataMember]
@@ -74,6 +81,8 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Retail
         public OfferType Type { get; set; }
         [DataMember]
         public List<OfferDetails> OfferDetails { get; set; }
+        [DataMember]
+        public List<Coupon> Coupons { get; set; }
 #if WCFSERVER
         //not all data goes to wcf clients
         public byte[] ImgBytes { get; set; }

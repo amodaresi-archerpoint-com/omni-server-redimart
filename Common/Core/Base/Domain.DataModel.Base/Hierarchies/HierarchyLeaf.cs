@@ -43,8 +43,15 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Hierarchies
         [DataMember]
         public decimal Prepayment { get; set; }
         [DataMember]
+        public decimal Price { get; set; }
+        [DataMember]
+        public decimal PriceWithTax { get; set; }
+        [DataMember]
         public List<ItemModifier> Modifiers { get; set; }
         [DataMember]
         public List<ItemRecipe> Recipies { get; set; }
+
+        [IgnoreDataMember]
+        public bool HasModifiers => Modifiers != null && Modifiers.Count > 0;
     }
 }

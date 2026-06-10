@@ -15,7 +15,9 @@ namespace LSRetail.Omni.Domain.DataModel.Base.Setup
         [EnumMember]
         RestOrderTaking = 3,
         [EnumMember]
-        Other = 7
+        Other = 7,
+        [EnumMember]
+        SelfServiceKiosk = 8
     }
 
     [DataContract(Namespace = "http://lsretail.com/LSOmniService/Base/2017")]

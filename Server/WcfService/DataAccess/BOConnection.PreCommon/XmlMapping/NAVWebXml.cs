@@ -539,7 +539,6 @@ namespace LSOmni.DataAccess.BOConnection.PreCommon.XmlMapping
             return doc.ToString();
         }
 
-
         public XMLTableData GetGeneralWebResponseXML(string responseXml)
         {
             #region xml

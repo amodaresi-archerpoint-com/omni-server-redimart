@@ -442,20 +442,10 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
 
         public bool UsesNewPriceLines()
         {
-            bool isEnabled = false;
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                using (SqlCommand command = connection.CreateCommand())
-                {
-                    command.CommandText = "SELECT [Enabled] FROM [Tenant Feature Key] WHERE [ID]='SalesPrices'";
-                    connection.Open();
-                    TraceSqlCommand(command);
-                    var data = command.ExecuteScalar();
-                    isEnabled = Convert.ToBoolean(data);
-                    connection.Close();
-                }
-            }
-            return isEnabled;
+            if (config.SettingsKeyExists(ConfigKey.UseSalesPrice) == false)
+                return true;
+
+            return (config.SettingsBoolGetByKey(ConfigKey.UseSalesPrice) == false);
         }
 
         public List<Price> PricesGetByItemId(string itemId, string storeId, string culture, Statistics stat)
@@ -546,7 +536,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 UnitOfMeasure = SQLHelper.GetString(reader["Unit of Measure Code"]),
                 CurrencyCode = SQLHelper.GetString(reader["Currency Code"]),
                 UnitPrice = SQLHelper.GetDecimal(reader, "Unit Price"),
-                UnitPriceInclVat = SQLHelper.GetDecimal(reader, "LSC Unit Price Including VAT"),
+                UnitPriceInclVat = SQLHelper.GetDecimal(reader, "LSC Unit Price Including VAT$5ecfc871-5d82-43f1-9c54-59685e82318d"),
                 PriceInclVat = SQLHelper.GetBool(reader["Price Includes VAT"]),
                 MinimumQuantity = SQLHelper.GetDecimal(reader, "Minimum Quantity"),
                 StartingDate = ConvertTo.SafeJsonDate(SQLHelper.GetDateTime(reader["Starting Date"]), config.IsJson),
@@ -577,7 +567,7 @@ namespace LSOmni.DataAccess.BOConnection.CentralExt.Dal
                 UnitOfMeasure = SQLHelper.GetString(reader["Unit of Measure Code"]),
                 CurrencyCode = SQLHelper.GetString(reader["Currency Code"]),
                 UnitPrice = SQLHelper.GetDecimal(reader, "Unit Price"),
-                UnitPriceInclVat = SQLHelper.GetDecimal(reader, "LSC Unit Price Including VAT"),
+                UnitPriceInclVat = SQLHelper.GetDecimal(reader, "LSC Unit Price Including VAT$5ecfc871-5d82-43f1-9c54-59685e82318d"),
                 PriceInclVat = SQLHelper.GetBool(reader["Price Includes VAT"]),
                 MinimumQuantity = SQLHelper.GetDecimal(reader, "Minimum Quantity"),
                 StartingDate = ConvertTo.SafeJsonDate(SQLHelper.GetDateTime(reader["Starting Date"]), config.IsJson),

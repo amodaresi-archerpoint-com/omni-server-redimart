@@ -42,7 +42,7 @@ namespace LSOmni.DataAccess.BOConnection.NavWS
             if (NAVVersion < new Version("17.5"))
                 ver = NavWSBase.NavVersionToUse(true, true, out centralVersion);
             else
-                ver = LSCWSBase.NavVersionToUse(out centralVersion);
+                ver = LSCWSBase.NavVersionToUse(true, out centralVersion);
 
             if (ver.Contains("ERROR"))
                 throw new ApplicationException(ver);
@@ -201,6 +201,14 @@ namespace LSOmni.DataAccess.BOConnection.NavWS
             return LSCWSBase.CustomerSearch(searchType, search, maxNumberOfRowsReturned, stat);
         }
 
+        public virtual void ContactCreateCard(string contactId, string accountId, string cardId, string clubId, string schemeId, Statistics stat)
+        {
+            if (NAVVersion < new Version("17.5"))
+                throw new NotImplementedException();
+
+            LSCWSBase.ContactCreateCard(contactId, accountId, cardId, clubId, schemeId, stat);
+        }
+
         public virtual double ContactAddCard(string contactId, string accountId, string cardId, Statistics stat)
         {
             return ContactAddCard(contactId, accountId, cardId, stat);
@@ -269,7 +277,7 @@ namespace LSOmni.DataAccess.BOConnection.NavWS
             LSCWSBase.LoginChange(oldUserName, newUserName, password, stat);
         }
 
-        public virtual List<Profile> ProfileGetByCardId(string id, Statistics stat)
+        public virtual List<Profile> ProfileGetByCardId(string id, bool includeAll, Statistics stat)
         {
             if (NAVVersion < new Version("17.5"))
                 return NavWSBase.ProfileGetAll();
@@ -279,7 +287,7 @@ namespace LSOmni.DataAccess.BOConnection.NavWS
 
         public virtual List<Profile> ProfileGetAll(Statistics stat)
         {
-            return ProfileGetByCardId(string.Empty, stat);
+            return ProfileGetByCardId(string.Empty, true, stat);
         }
 
         public virtual List<Scheme> SchemeGetAll(Statistics stat)
@@ -618,12 +626,12 @@ namespace LSOmni.DataAccess.BOConnection.NavWS
             return LSCWSBase.HierarchyGet(storeId, stat);
         }
 
-        public virtual MobileMenu MenuGet(string storeId, string salesType, Currency currency, Statistics stat)
+        public virtual MobileMenu MenuGet(string restaurantNo, string terminalNo, string salesType, Currency currency, Statistics stat)
         {
             if (NAVVersion < new Version("17.5"))
-                return NavWSBase.MenuGet(storeId, salesType, currency);
+                return NavWSBase.MenuGet(restaurantNo, terminalNo, salesType, currency);
 
-            return LSCWSBase.MenuGet(storeId, salesType, currency);
+            return LSCWSBase.MenuGet(restaurantNo, terminalNo, salesType, currency, stat);
         }
 
         #endregion
@@ -782,6 +790,46 @@ namespace LSOmni.DataAccess.BOConnection.NavWS
                 return NavWSBase.BasketCalcToOrder(list);
 
             return LSCWSBase.BasketCalcToOrder(list, stat);
+        }
+
+        public virtual string OneListSave(OneList oneList, Statistics stat)
+        {
+            if (NAVVersion < new Version("17.5"))
+                return string.Empty;
+
+            return LSCWSBase.OneListSave(oneList, stat);
+        }
+
+        public virtual void OneListModify(string listId, OneListItem line, bool remove, Statistics stat)
+        {
+            if (NAVVersion < new Version("17.5"))
+                return;
+
+            LSCWSBase.OneListModify(listId, line, remove, stat);
+        }
+
+        public virtual void OneListLink(string listId, string cardId, string contactNo, LinkStatus status, Statistics stat)
+        {
+            if (NAVVersion < new Version("17.5"))
+                return;
+
+            LSCWSBase.OneListLink(listId, cardId, contactNo, status, stat);
+        }
+
+        public virtual List<OneList> OneListGet(string listId, string cardId, bool includeLines, Statistics stat)
+        {
+            if (NAVVersion < new Version("17.5"))
+                return new List<OneList>();
+
+            return LSCWSBase.OneListGet(listId, cardId, includeLines, stat);
+        }
+
+        public virtual void OneListDelete(string listId, Statistics stat)
+        {
+            if (NAVVersion < new Version("17.5"))
+                return;
+
+            LSCWSBase.OneListDelete(listId, stat);
         }
 
         #endregion

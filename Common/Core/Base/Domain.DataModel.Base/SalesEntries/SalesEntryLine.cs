@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using LSRetail.Omni.Domain.DataModel.Base.Base;
 using LSRetail.Omni.Domain.DataModel.Base.Retail;
@@ -10,6 +11,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base.SalesEntries
     {
         private ImageView image;
         private bool isChecked;
+        private List<SalesEntryLine> childLines;
 
         public SalesEntryLine(string id) : base(id)
         {
@@ -78,6 +80,12 @@ namespace LSRetail.Omni.Domain.DataModel.Base.SalesEntries
         [DataMember]
         public string UomId { get; set; }
         [DataMember]
+        public string LotNumber { get; set; }
+        [DataMember]
+        public string SerialNumber { get; set; }
+        [DataMember]
+        public string WishListNo { get; set; }
+        [DataMember]
         public string StoreId { get; set; }
         [DataMember]
         public string StoreName { get; set; }
@@ -124,7 +132,7 @@ namespace LSRetail.Omni.Domain.DataModel.Base.SalesEntries
                 image = value; 
                 NotifyPropertyChanged();
             }
-            
+
         }
 
         [IgnoreDataMember]
@@ -136,7 +144,17 @@ namespace LSRetail.Omni.Domain.DataModel.Base.SalesEntries
                 isChecked = value;
                 NotifyPropertyChanged();
             }
+        }
 
+        [IgnoreDataMember]
+        public List<SalesEntryLine> ChildLines
+        {
+            get => childLines;
+            set
+            {
+                childLines = value;
+                NotifyPropertyChanged();
+            }
         }
 
         public bool ItemHasDiscount => DiscountAmount != 0m;
