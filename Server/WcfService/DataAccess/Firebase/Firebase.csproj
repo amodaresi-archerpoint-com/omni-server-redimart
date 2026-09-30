@@ -16,7 +16,7 @@
     <OutputPath>..\..\Service\bin\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="FirebaseAdmin" Version="3.0.1" />
+    <PackageReference Include="FirebaseAdmin" Version="3.7.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FirebaseCustom.cs" />
