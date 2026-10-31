@@ -34,7 +34,7 @@ namespace LSOmni.DataAccess.Firebase
                     {
                         Credential = GoogleCredential.GetApplicationDefault()
                                      .CreateScoped("https://www.googleapis.com/auth/firebase.messaging"),
-                        ServiceAccountId = "firebase-adminsdk-drcwr@spg-pn1.iam.gserviceaccount.com",
+                        ServiceAccountId = "firebase-adminsdk-zq9fs@redi-mart-spg-app.iam.gserviceaccount.com",
                         ProjectId = "redi-mart-spg-app",
                         HttpClientFactory = new FirebaseHttpClientFactory(),
                     }, RediMartAppName);
