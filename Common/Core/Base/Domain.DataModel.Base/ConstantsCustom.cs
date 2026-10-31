@@ -26,6 +26,6 @@ namespace LSRetail.Omni.Domain.DataModel.Base
         public const string FIREBASE_TOPIC_DEFAULT = "general";
         public const int HIST_MAX = 50;
         public const int MIN_REQ_BUILD = 63;
-        public const int CS_BUILD = 66;
+        public const int CS_BUILD = 67;
     }
 }
